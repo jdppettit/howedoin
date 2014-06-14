@@ -120,6 +120,18 @@ def dashboard():
 	else:
 		return render_template('login.html', error="You must be logged in first.")
 
+@app.route('/dashboard/rating')
+def dashboardRatings():
+	return render_template("dashboard_ratings.html")
+
+@app.route('/dashboard/team')
+def dashboardTeams():
+	return render_template("dashboard_teams.html")
+
+@app.route('/dashboard/user')
+def dashboardUsers():
+	return render_template("dashboard_users.html")
+
 @app.route('/team/add', methods=['POST','GET'])
 def teamAdd():
 	if request.method == "POST":
@@ -154,6 +166,20 @@ def userAdd():
 	elif request.method == "GET":
 		return render_template('add_user.html')
 
+@app.route('/user/edit/<user_id>', methods=['GET','POST'])
+def userEdit(user_id):
+	if request.method == "POST":
+		if user_id:
+			return "Poop"
+		else:
+			return render_template("dashboard.html", error="That wasn't a valid user ID.")
+	elif request.method == "GET":
+		if user_id:
+			you = User.query.filter_by(id=user_id).first()
+			return render_template("edit_user.html", user=you)
+		else:
+			return render_template("dashboard.html", error="That wasn't a valid user ID.")
+
 @app.route('/user/activate/<activation_string>', methods=['GET','POST'])
 def userActivate(activation_string):
 	if request.method == "GET":
@@ -163,32 +189,6 @@ def userActivate(activation_string):
 				return redirect("/user/activate/%s/form" % activation_string)
 			else:
 				return render_template("index.html", error="That is not a valid activation URL.")
-		else:
-			return render_template("index.html", error="That is not a valid activation URL.")
-	elif request.method == "POST":
-		if activation_string:
-			if request.form['password'] and request.form['password_again'] and request.form['email']:
-				you = User.query.filter_by(activation_link=activation_string, email=request.form['email']).first()
-				if request.form['password'] == request.form['password_again']:
-					if you:
-						hashedPassword = hashPassword(request.form['password'])
-						you.password = hashedPassword
-						db.session.commit()
-						
-						session['username'] = you.username
-		                                session['name'] = you.name
-        		                        session['user_id'] = you.id
-                		                session['account_id'] = you.account_id
-                        		        session['teams'] = you.teams
-                                		session['email'] = you.email
-			
-						return redirect('/dashboard')
-					else:
-						return render_template("index.html", error="Your email does not match an existing user.")
-				else:
-					return render_template("index.html", error="Your passwords do not match.")
-			else:
-				return render_template("index.html", error="Please fill out all of the fields.")
 		else:
 			return render_template("index.html", error="That is not a valid activation URL.")
 
