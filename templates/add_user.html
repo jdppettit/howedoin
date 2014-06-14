@@ -1,0 +1,18 @@
+{% extends 'dashboard.html' %}
+{% block title %}
+howedoin - Login
+{% endblock %}
+{% block page_title %}
+Dashboard - Add User
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+	<h2>Add User</h2>
+	<form action="/user/add" method="post">
+		<input type="text" name="name" placeholder="Name" class="form-control"/><br/>
+		<input type="text" name="username" placeholder="Username" class="form-control"/><br/>
+		<input type="email" name="email" placeholder="Email" class="form-control"/><br/>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Add User</button>
+	</form>
+</div>
+{% endblock %}

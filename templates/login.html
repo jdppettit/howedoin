@@ -1,0 +1,14 @@
+{% extends 'index.html' %}
+{% block title %}
+howedoin - Login
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+	<h2>Login</h2>
+	<form action="/login" method="post">
+		<input type="text" name="username" class="form-control" placeholder="Username"/><br/>
+		<input type="password" name="password" class="form-control" placeholder="Password"/><br/>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+	</form>
+</div>
+{% endblock %}
