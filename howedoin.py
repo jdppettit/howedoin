@@ -166,6 +166,21 @@ def userAdd():
 	elif request.method == "GET":
 		return render_template('add_user.html')
 
+@app.route('/team/edit/<team_id>', methods=['GET','POST'])
+def teamEdit(team_id):
+	if request.method == "POST":
+		if team_id:
+			return "Poop"
+		else:
+			return render_template("dashboard.html", error="That wasn't a valid team ID.")
+	elif request.method == "GET":
+		if team_id:
+			team = Team.query.filter_by(id=team_id).first()
+			users = User.query.filter_by(account_id=session['account_id']).all()
+			return render_template("edit_team.html", team=team, users=users)
+		else:
+			return render_template("dashboard.html", error="That wasn't a valid team ID.")
+
 @app.route('/user/edit/<user_id>', methods=['GET','POST'])
 def userEdit(user_id):
 	if request.method == "POST":

@@ -1,0 +1,26 @@
+{% extends 'dashboard.html' %}
+{% block title %}
+howedoin - Login
+{% endblock %}
+{% block page_title %}
+Dashboard - Edit Team
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+	<h2>Edit Team</h2>
+	<form action="/team/edit/{{ team.id }}" method="post">
+		<input type="text" name="team_name" placeholder="{{ team.team_name }}" class="form-control"/><br/>
+		<h3>Team Leader</h3>
+		<select name="team_leader" class="form-control">
+			{% for user in users %}
+			{% if user.id == team.team_leader %}
+			<option name="{{ user.id }}" selected>{{ user.name }}</option>
+			{% else %}
+			<option name="{{ user.id }}">{{ user.name }}</option>
+			{% endif %}
+			{% endfor %}
+		</select><br/>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Add Team</button>
+	</form>
+</div>
+{% endblock %}

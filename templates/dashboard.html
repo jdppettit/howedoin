@@ -94,7 +94,7 @@
         You haven't made any teams yet.
         {% else %}
                 {% for team in teams %}
-                        {{ team.team_name }}<br/>
+                       <a href="/team/edit/{{ team.id }}"> {{ team.team_name }}</a><br/>
                 {% endfor %}
         {% endif %}
         <br/>
