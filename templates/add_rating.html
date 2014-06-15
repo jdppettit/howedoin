@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+{% block title %}
+howedoin - Login
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+	<h2>Rate a User</h2>
+	<form action="/rate/{{ team_id }}/item/{{ item_id }}/user/{{ username }}/{{ score }}/update/{{ rating_id }}" method="post">
+		<textarea name="comment" class="form-control"></textarea><br/>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Submit Rating</button>
+	</form>
+</div>
+{% endblock %}

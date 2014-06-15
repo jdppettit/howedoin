@@ -110,13 +110,93 @@ def getActivationURL(size=6, chars=string.ascii_uppercase + string.digits):
 def index():
 	return render_template('index.html')
 
+@app.route('/rate/<team_id>/item/<item_id>/user/<username>/<score>')
+def makeRating(team_id, item_id, username, score):
+	try:
+		if team_id and item_id and username and score:
+			team = Team.query.filter_by(id=team_id).first()
+			if team:
+				user = User.query.filter_by(username=username, account_id=team.account_id).first()
+				if user:
+					if int(score) >= 1 and int(score) <= 3:
+						rating = Rating(team.account_id, user.id, item_id, int(score))
+						db.session.add(rating)
+						db.session.commit()
+						rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
+						rating_id = rating.id
+						return render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username, score=score, rating_id=rating_id)
+					else:
+						return render_template("index.html", error="Please enter a score between 1 and 3")
+				else:
+					return render_template('index.html', error="That user doesn't exist!")
+			else:
+				return render_template('index.html', error="That team doesn't exist!")	
+	except Exception, e:
+		print e
+		return render_template('index.html', error="That team or username does not exist.")
+
+@app.route('/rate/<team_id>/item/<item_id>/user/<username>/<score>/update/<rating_id>', methods=['POST'])
+def updateRating(team_id, item_id, username, score, rating_id):
+	try:
+		if team_id and item_id and username and score and rating_id:
+			rating = Rating.query.filter_by(id=rating_id).first()
+			if rating:
+				if request.form['comment']:
+					rating.comment = request.form['comment']
+					db.session.commit()
+					return render_template('index.html', message="Rating successfully added.")
+				else:
+					return render_template('index.html', message="Rating successfully added.")
+			else:
+				return render_template('index.html', error="Invalid rating ID")
+		else:
+			return render_template('index.html', error="Missing information!")
+	except Exception, e:
+		print e
+                return render_template('index.html', error="That team or username does not exist.")
+
+
 @app.route('/dashboard')
 def dashboard():
 	if session['username']:
 		teams = Team.query.filter_by(account_id=session['account_id']).all()
 		account = Account.query.filter_by(id=session['account_id']).all()
 		users = User.query.filter_by(account_id=session['account_id']).all()
-		return render_template('dashboard.html', teams=teams, account=account, users=users)
+		ratings = Rating.query.filter_by(account_id=session['account_id']).all()
+		numRatings = len(ratings)
+		numBad = 0.00
+		numMed = 0.00
+		numGod = 0.00
+		for rating in ratings:
+			if rating.score == 1:
+				numBad += 1
+				print "One bad"
+			elif rating.score == 2:
+				numMed += 1
+				print "One med"
+			elif rating.score == 3:
+				numGod += 1
+				print "One good"
+		if numBad != 0:
+			percentBad = (numBad / numRatings) * 100.00
+		else:
+			percentBad = 0
+	
+		if numMed != 0:
+			percentMed = (numMed / numRatings) * 100.00
+		else:
+			percentMed = 0
+	
+		if numGod != 0:
+			percentGod = (numGod / numRatings) * 100.00
+		else:
+			percentGod = 0
+		
+		percentBad = round(percentBad, 2)
+		percentGod = round(percentGod, 2)
+		percentMed = round(percentMed, 2)
+
+		return render_template('dashboard.html', teams=teams, account=account, users=users, ratings=ratings, num_ratings=numRatings, percentBad = percentBad, percentMed = percentMed, percentGod = percentGod)
 	else:
 		return render_template('login.html', error="You must be logged in first.")
 
