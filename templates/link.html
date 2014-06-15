@@ -1,0 +1,15 @@
+{% extends 'dashboard.html' %}
+{% block title %}
+howedoin - Login
+{% endblock %}
+{% block page_title %}
+Dashboard - My Link
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+	<h2>My Link</h2>
+	<p>Here is your link to request feedback from a user. Be sure to replace [item_id] with a unique tracking ID
+	for the thing you are requesting feedback for.</p>
+	<textarea>How am I doing? <a href="https://howedo.in/rate/{{ team_id }}/item/[item_id]/user/{{ username }}/1">Bad</a> / <a href="https://howedo.in/rate/{{ team_id }}/item/[item_id]/user/{{ username }}/2">Okay</a> / <a href="https://howedo.in/rate/{{ team_id }}/item/[item_id]/user/{{ username }}/3">Great</a></textarea>
+</div>
+{% endblock %}

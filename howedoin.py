@@ -93,12 +93,14 @@ class Rating(db.Model):
 	item_number = db.Column(db.String(25))
 	score = db.Column(db.Integer)
 	comment = db.Column(db.Text)
+	username = db.Column(db.String(35))
 
-	def __init__(self, account_id, user_id, item_number, score):
+	def __init__(self, account_id, user_id, item_number, score, username):
 		self.account_id = account_id
 		self.user_id = user_id
 		self.item_number = item_number
 		self.score = score
+		self.username = username
 	
 db.create_all()
 db.session.commit()
@@ -108,7 +110,13 @@ def getActivationURL(size=6, chars=string.ascii_uppercase + string.digits):
 
 @app.route('/')
 def index():
-	return render_template('index.html')
+	try:
+		if session['username']:
+			return redirect('/dashboard')
+		else:
+			return render_template('index.html')
+	except Exception, e:
+		return render_template('index.html')
 
 @app.route('/rate/<team_id>/item/<item_id>/user/<username>/<score>')
 def makeRating(team_id, item_id, username, score):
@@ -119,7 +127,7 @@ def makeRating(team_id, item_id, username, score):
 				user = User.query.filter_by(username=username, account_id=team.account_id).first()
 				if user:
 					if int(score) >= 1 and int(score) <= 3:
-						if request.cookies.get('rated_user'):
+						if request.cookies.get('rated_user_%s' % str(user.id)):
 							cookie = request.cookies.get('rated_user')
 							print cookie
 							checkString = "%s-%s" % (str(user.id), str(item_id))
@@ -132,17 +140,16 @@ def makeRating(team_id, item_id, username, score):
 								rating_id = rating.id
 								return render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username,score=score,rating_id=rating_id)
 							else:
-								return render_template("index.html", error="Unexpected response, please try again.")
+								return "poop"							
+
 						else:
-							rating = Rating(team.account_id, user.id, item_id, int(score))
+							rating = Rating(team.account_id, user.id, item_id, int(score), username)
 							db.session.add(rating)
 							db.session.commit()
 							rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
 							rating_id = rating.id
 							resp = make_response(render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username, score=score, rating_id=rating_id))
-							print "before set cookie"
-							resp.set_cookie('rated_user',"%s-%s" % (str(user.id), str(item_id)))
-							print "before return"
+							resp.set_cookie('rated_user_%s' % str(user.id),"%s-%s" % (str(user.id), str(item_id)))
 							return resp
 					else:
 						return render_template("index.html", error="Please enter a score between 1 and 3")
@@ -219,6 +226,10 @@ def dashboard():
 	else:
 		return render_template('login.html', error="You must be logged in first.")
 
+@app.route('/dashboard/link')
+def link():
+	return render_template("link.html", team_id=3, username=session['username'])
+
 @app.route('/dashboard/rating')
 def dashboardRatings():
 	return render_template("dashboard_ratings.html")
@@ -227,7 +238,7 @@ def dashboardRatings():
 def dashboardTeams():
 	return render_template("dashboard_teams.html")
 
-@app.route('/dashboard/user')
+@app.route('/dashboard/users')
 def dashboardUsers():
 	return render_template("dashboard_users.html")
 

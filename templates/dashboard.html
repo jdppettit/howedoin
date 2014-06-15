@@ -64,10 +64,10 @@
           </ul>
           <ul class="nav nav-sidebar">
             <li><a href="/dashboard/account">Account</a></li>
-            <li><a href="">Nav</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-            <li><a href="">More navigation</a></li>
+            <li><a href="/dashboard/me">My Ratings</a></li>
+            <li><a href="/dashboard/link">My Link</a></li>
+            <li><a href="/dashboard/settings">Settings</a></li>
+            <li><a href="/dashboard/help">Help</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -94,7 +94,7 @@
 	{% for rating in ratings %}
 	<tr>
 		<td>{{ rating.id }}</td>
-		<td>{{ rating.user_id }}</td>
+		<td>{{ rating.username }}</td>
 		<td>{{ rating.item_number }}</td>
 		<td>{{ rating.score }}</td>
 		<td>{{ rating.comment }}</td>
