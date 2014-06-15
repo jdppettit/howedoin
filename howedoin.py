@@ -260,6 +260,20 @@ def login():
 	elif request.method == "GET":
 		return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+	try:
+		session.pop('username', None)
+		session.pop('name', None)
+		session.pop('user_id', None)
+		session.pop('account_id', None)
+		session.pop('teams', None)
+		session.pop('email', None)
+	
+		return render_template('index.html', message="Successfully logged out.")
+	except Exception, e:
+		return render_template('index.html')
+
 @app.route('/register', methods=['GET','POST'])
 def register():
 	if request.method == "POST":
