@@ -119,12 +119,31 @@ def makeRating(team_id, item_id, username, score):
 				user = User.query.filter_by(username=username, account_id=team.account_id).first()
 				if user:
 					if int(score) >= 1 and int(score) <= 3:
-						rating = Rating(team.account_id, user.id, item_id, int(score))
-						db.session.add(rating)
-						db.session.commit()
-						rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
-						rating_id = rating.id
-						return render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username, score=score, rating_id=rating_id)
+						if request.cookies.get('rated_user'):
+							cookie = request.cookies.get('rated_user')
+							print cookie
+							checkString = "%s-%s" % (str(user.id), str(item_id))
+							if checkString == cookie:
+								oldRating = Rating.query.filter_by(user_id=user.id, item_number=item_id).first()
+								oldRating.score = score
+								db.session.commit()
+								# do update logic
+								rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
+								rating_id = rating.id
+								return render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username,score=score,rating_id=rating_id)
+							else:
+								return render_template("index.html", error="Unexpected response, please try again.")
+						else:
+							rating = Rating(team.account_id, user.id, item_id, int(score))
+							db.session.add(rating)
+							db.session.commit()
+							rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
+							rating_id = rating.id
+							resp = make_response(render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username, score=score, rating_id=rating_id))
+							print "before set cookie"
+							resp.set_cookie('rated_user',"%s-%s" % (str(user.id), str(item_id)))
+							print "before return"
+							return resp
 					else:
 						return render_template("index.html", error="Please enter a score between 1 and 3")
 				else:

@@ -72,31 +72,22 @@
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">{% block page_title %}Dashboard - Overview{% endblock %}</h1>
+	{% block content %}
 	<div class="progress">
   <div class="progress-bar progress-bar-success" style="width: {{ percentGod }}%">
-  	{{ percentGod }}% Positive
+        {{ percentGod }}% Positive
   </div>
   <div class="progress-bar progress-bar-warning" style="width: {{ percentMed }}%">
-	{{ percentMed }}% Neutral  
+        {{ percentMed }}% Neutral
 </div>
   <div class="progress-bar progress-bar-danger" style="width: {{ percentBad }}%">
-	{{ percentBad }}% Negative  
+        {{ percentBad }}% Negative
 </div>
 </div>
 {{ num_ratings }} total ratings.<br/>
 {{ percentGod }} rated us as good.<br/>
 {{ percentMed }} rated us as okay.<br/>
 {{ percentBad }} rated us as bad.<br/><br/>
-	{% block content %}
-        {% if not teams %}
-        You haven't made any teams yet.
-        {% else %}
-                {% for team in teams %}
-                       <a href="/team/edit/{{ team.id }}"> {{ team.team_name }}</a><br/>
-                {% endfor %}
-        {% endif %}
-        <br/>
-        <a href="/team/add" class="btn btn-success btn-lg" role="button">Add a Team</a>
         <h2>Account Ratings</h2>
 	<table>
 	<tr><th>ID</th><th>UserID</th><th>ItemID</th><th>Score</th><th>Comment</th></tr>
@@ -117,7 +108,17 @@
         <br/>
         <a href="/user/add" class="btn btn-success btn-lg" role="button">Add a User</a>
 	{% endblock %}
-        </div>
+        <h2>Teams</h2>
+        {% if not teams %}
+        You haven't made any teams yet.
+        {% else %}
+                {% for team in teams %}
+                       <a href="/team/edit/{{ team.id }}"> {{ team.team_name }}</a><br/>
+                {% endfor %}
+        {% endif %}
+        <br/>
+        <a href="/team/add" class="btn btn-success btn-lg" role="button">Add a Team</a>
+	</div>
       </div>
     </div>
 
