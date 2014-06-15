@@ -266,7 +266,14 @@ def userAdd():
 			activation_url = getActivationURL(10)
 			msg = Message(subject, sender="Howedoin <donotreply@howedo.in>",recipients=[request.form['email']])
 			msg.html = "Hello %s!<br/><br/>%s would like you add you to their Howedoin account! Howedoin lets you measure your customer satisfaction and receive useful feedback (and maybe rewards)! To finish up the process, you'll just need to make a password and sign in. Please click the link below to complete your sign up:<br/><br/><a href=\"https://howedo.in/user/activate/%s\">https://howedo.in/user/activate/%s</a><br/><br/>Thanks for signing up!<br/><br/>Regards,<br/><br/>The Howedoin Team<br/><a href=\"https://howedo.in\">https://howedo.in</a>" % (request.form['name'], session['name'], activation_url, activation_url)
-			user = User(session['account_id'], request.form['name'], request.form['username'], hashPassword(getActivationURL(25)), "", "", 0, activation_url)
+			teams = Team.query.filter_by(account_id=session['account_id'])
+			userTeams = ""
+			for team in teams:
+				if str(team.id) in request.form:
+					print "Found team %s" % str(team.team_name)
+					userTeams += "%s-" % request.form[str(team.id)]
+						
+			user = User(session['account_id'], request.form['name'], request.form['username'], hashPassword(getActivationURL(25)), request.form['email'], userTeams, 0, activation_url)
 			db.session.add(user)
 			db.session.commit()
 			mail.send(msg)
@@ -274,7 +281,8 @@ def userAdd():
 		else:
 			return render_template('add_user.html', error="Please fill out all of the fields and try again")
 	elif request.method == "GET":
-		return render_template('add_user.html')
+		teams = Team.query.filter_by(account_id=session['account_id'])
+		return render_template('add_user.html', teams=teams)
 
 @app.route('/team/edit/<team_id>', methods=['GET','POST'])
 def teamEdit(team_id):
@@ -301,7 +309,9 @@ def userEdit(user_id):
 	elif request.method == "GET":
 		if user_id:
 			you = User.query.filter_by(id=user_id).first()
-			return render_template("edit_user.html", user=you)
+			teams = Team.query.filter_by(account_id=session['account_id']).all()
+			member_teams = you.teams.split("-")
+			return render_template("edit_user.html", user=you, teams=teams, member_teams=member_teams)
 		else:
 			return render_template("dashboard.html", error="That wasn't a valid user ID.")
 

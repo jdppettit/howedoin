@@ -12,6 +12,10 @@ Dashboard - Add User
 		<input type="text" name="name" placeholder="Name" class="form-control"/><br/>
 		<input type="text" name="username" placeholder="Username" class="form-control"/><br/>
 		<input type="email" name="email" placeholder="Email" class="form-control"/><br/>
+		<h3>Add to Team</h3>
+		{% for team in teams %}
+		<input type="checkbox" class="form-control" value="{{ team.id }}" name="{{ team.id }}">{{ team.team_name }}</input>
+		{% endfor %}
 		<button class="btn btn-lg btn-primary btn-block" type="submit">Add User</button>
 	</form>
 </div>
