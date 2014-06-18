@@ -42,14 +42,14 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
+        {% if not session['username'] %}
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+                {% else %}
+            <li><a href="/logout">Logout</a></li>
             <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/teams">Teams</a></li>
-            <li><a href="/users">Users</a></li>
-            <li><a href="/help">Help</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
+                {% endif %}  
+	</ul>
         </div>
       </div>
     </div>
@@ -72,35 +72,18 @@
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">{% block page_title %}Dashboard - Overview{% endblock %}</h1>
-	<div class="progress">
-  <div class="progress-bar progress-bar-success" style="width: 51%">
-  	51% Positive
-  </div>
-  <div class="progress-bar progress-bar-warning" style="width: 25%">
-	25% Neutral  
-</div>
-  <div class="progress-bar progress-bar-danger" style="width: 24%">
-	24% Negative  
-</div>
-</div>
-	{% block content %}
-        {% if not teams %}
-        You haven't made any teams yet.
-        {% else %}
-                {% for team in teams %}
-                        {{ team.team_name }}<br/>
-                {% endfor %}
-        {% endif %}
-        <br/>
-        <a href="/team/add" class="btn btn-success btn-lg" role="button">Add a Team</a>
-        <h2>Account Ratings</h2>
-        <h2>Users</h2>
-        {% for user in users %}
-               <a href="/user/edit/{{ user.id }}"> {{ user.username }}</a><br/>
-        {% endfor %}
-        <br/>
-        <a href="/user/add" class="btn btn-success btn-lg" role="button">Add a User</a>
+         <h1 class="page-header">{% block page_title %}Dashboard - Users{% endblock %}</h1>
+       	{% block content %}
+	<table class="table">
+	<tr><th>Name</th><th>Username</th><th>Email</th><th>Actions</th></tr>
+ 	{% for user in users %}
+	<tr>
+		<td>{{ user.name }}</td>
+		<td>{{ user.username }}</td>
+		<td>{{ user.email }}</td>
+		<td>Buttons</td>
+	</tr>
+	{% endfor %}
 	{% endblock %}
         </div>
       </div>

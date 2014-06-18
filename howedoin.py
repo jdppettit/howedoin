@@ -101,6 +101,21 @@ class Rating(db.Model):
 		self.item_number = item_number
 		self.score = score
 		self.username = username
+
+class Membership(db.Model):
+	__tablename__ = "membership"
+	
+	id = db.Column(db.Integer, primary_key=True)
+	account_id= db.Column(db.Integer)
+	user_id = db.Column(db.Integer)
+	team_id = db.Column(db.Integer)
+	is_admin = db.Column(db.Integer)
+	
+	def __init__(self, account_id, user_id, team_id, is_admin):
+		self.account_id = account_id
+		self.user_id = user_id
+		self.team_id = team_id
+		self.is_admin = is_admin
 	
 db.create_all()
 db.session.commit()
@@ -232,7 +247,8 @@ def link():
 
 @app.route('/dashboard/rating')
 def dashboardRatings():
-	return render_template("dashboard_ratings.html")
+	ratings = Rating.query.filter_by(account_id=session['account_id']).all()
+	return render_template("dashboard_ratings.html", ratings=ratings)
 
 @app.route('/dashboard/team')
 def dashboardTeams():
@@ -240,7 +256,8 @@ def dashboardTeams():
 
 @app.route('/dashboard/users')
 def dashboardUsers():
-	return render_template("dashboard_users.html")
+	users = User.query.filter_by(account_id=session['account_id']).all()
+	return render_template("dashboard_users.html", users=users)
 
 @app.route('/team/add', methods=['POST','GET'])
 def teamAdd():
@@ -267,14 +284,14 @@ def userAdd():
 			msg = Message(subject, sender="Howedoin <donotreply@howedo.in>",recipients=[request.form['email']])
 			msg.html = "Hello %s!<br/><br/>%s would like you add you to their Howedoin account! Howedoin lets you measure your customer satisfaction and receive useful feedback (and maybe rewards)! To finish up the process, you'll just need to make a password and sign in. Please click the link below to complete your sign up:<br/><br/><a href=\"https://howedo.in/user/activate/%s\">https://howedo.in/user/activate/%s</a><br/><br/>Thanks for signing up!<br/><br/>Regards,<br/><br/>The Howedoin Team<br/><a href=\"https://howedo.in\">https://howedo.in</a>" % (request.form['name'], session['name'], activation_url, activation_url)
 			teams = Team.query.filter_by(account_id=session['account_id'])
-			userTeams = ""
-			for team in teams:
-				if str(team.id) in request.form:
-					print "Found team %s" % str(team.team_name)
-					userTeams += "%s-" % request.form[str(team.id)]
-						
-			user = User(session['account_id'], request.form['name'], request.form['username'], hashPassword(getActivationURL(25)), request.form['email'], userTeams, 0, activation_url)
+			user = User(session['account_id'], request.form['name'], request.form['username'], hashPassword(getActivationURL(25)), request.form['email'], "", 0, activation_url)
 			db.session.add(user)
+			db.session.flush()
+			db.session.refresh(user)
+			for team in teams:
+                        	if str(team.id) in request.form:
+                                        newMembership = Membership(session['account_id'], user.id, team.id, 0)
+                                        db.session.add(newMembership)
 			db.session.commit()
 			mail.send(msg)
 			return redirect('/dashboard')
@@ -303,15 +320,18 @@ def teamEdit(team_id):
 def userEdit(user_id):
 	if request.method == "POST":
 		if user_id:
-			return "Poop"
+			return "poop"		
 		else:
 			return render_template("dashboard.html", error="That wasn't a valid user ID.")
 	elif request.method == "GET":
 		if user_id:
 			you = User.query.filter_by(id=user_id).first()
 			teams = Team.query.filter_by(account_id=session['account_id']).all()
-			member_teams = you.teams.split("-")
-			return render_template("edit_user.html", user=you, teams=teams, member_teams=member_teams)
+			membership = Membership.query.filter_by(account_id=session['account_id'], user_id=user_id).all()
+			membership_list = []
+			for member in membership:
+				membership_list.append(member.team_id)
+			return render_template("edit_user.html", user=you, teams=teams, membership=membership_list)
 		else:
 			return render_template("dashboard.html", error="That wasn't a valid user ID.")
 

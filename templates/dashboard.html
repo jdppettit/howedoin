@@ -89,7 +89,7 @@
 {{ percentMed }} rated us as okay.<br/>
 {{ percentBad }} rated us as bad.<br/><br/>
         <h2>Account Ratings</h2>
-	<table>
+	<table class="table" width="100%">
 	<tr><th>ID</th><th>UserID</th><th>ItemID</th><th>Score</th><th>Comment</th></tr>
 	{% for rating in ratings %}
 	<tr>
@@ -102,22 +102,31 @@
 	{% endfor %}
 	</table>
         <h2>Users</h2>
+        <table class="table">
+        <tr><th>Name</th><th>Username</th><th>Email</th><th>Actions</th></tr>
         {% for user in users %}
-               <a href="/user/edit/{{ user.id }}"> {{ user.username }}</a><br/>
+        <tr>
+                <td><a href="/user/edit/{{ user.id }}">{{ user.name }}</a></td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>Buttons</td>
+        </tr>
         {% endfor %}
-        <br/>
-        <a href="/user/add" class="btn btn-success btn-lg" role="button">Add a User</a>
-	{% endblock %}
+        </table>
+        <a href="/user/add" class="btn btn-success btn-lg" role="button">Add a User</a>	
         <h2>Teams</h2>
-        {% if not teams %}
-        You haven't made any teams yet.
-        {% else %}
+	<table class="table">
+	<tr><th>Team Name</th><th>Team Leader</th><th>Actions</th></tr>
                 {% for team in teams %}
-                       <a href="/team/edit/{{ team.id }}"> {{ team.team_name }}</a><br/>
+		<tr>
+                      <td><a href="/team/edit/{{ team.id }}"> {{ team.team_name }}</a></td>
+			<td>{{ team.team_leader }}</td>
+			<td>Buttons</td>
+		</tr>
                 {% endfor %}
-        {% endif %}
-        <br/>
+		</table>
         <a href="/team/add" class="btn btn-success btn-lg" role="button">Add a Team</a>
+	{% endblock %}
 	</div>
       </div>
     </div>
