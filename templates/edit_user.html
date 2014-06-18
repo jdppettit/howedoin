@@ -8,7 +8,7 @@ Dashboard - Edit User
 {% block content %}
 <div class="jumbotron">
 	<h2>Edit User</h2>
-	<form action="/user/add" method="post">
+	<form action="/user/edit/{{ user.id }}" method="post">
 		<input type="text" name="name" placeholder="{{ user.name }}" class="form-control"/><br/>
 		<input type="text" name="username" placeholder="{{ user.username }}" class="form-control"/><br/>
 		<input type="email" name="email" placeholder="{{ user.email }}" class="form-control"/><br/>

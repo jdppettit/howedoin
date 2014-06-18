@@ -146,16 +146,14 @@ def makeRating(team_id, item_id, username, score):
 							cookie = request.cookies.get('rated_user')
 							print cookie
 							checkString = "%s-%s" % (str(user.id), str(item_id))
-							if checkString == cookie:
-								oldRating = Rating.query.filter_by(user_id=user.id, item_number=item_id).first()
-								oldRating.score = score
-								db.session.commit()
-								# do update logic
-								rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
-								rating_id = rating.id
-								return render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username,score=score,rating_id=rating_id)
-							else:
-								return "poop"							
+							oldRating = Rating.query.filter_by(user_id=user.id, item_number=item_id).first()
+							oldRating.score = score
+							db.session.commit()
+							# do update logic
+							rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
+							rating_id = rating.id
+							return render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username,score=score,rating_id=rating_id)
+												
 
 						else:
 							rating = Rating(team.account_id, user.id, item_id, int(score), username)
@@ -305,7 +303,14 @@ def userAdd():
 def teamEdit(team_id):
 	if request.method == "POST":
 		if team_id:
-			return "Poop"
+			print request.form
+			team = Team.query.filter_by(id=team_id).first()
+			if request.form['team_name']:
+				team.team_name = request.form['team_name']
+			if request.form['team_leader'] != team.team_leader:
+				team.team_leader = request.form['team_leader']
+			db.session.commit()
+			return redirect('/dashboard')
 		else:
 			return render_template("dashboard.html", error="That wasn't a valid team ID.")
 	elif request.method == "GET":
@@ -316,11 +321,56 @@ def teamEdit(team_id):
 		else:
 			return render_template("dashboard.html", error="That wasn't a valid team ID.")
 
+@app.route('/team/delete/<team_id>')
+def teamDelete(team_id):
+	if team_id and session['username']:
+		team = Team.query.filter_by(id=team_id, account_id=session['account_id']).first()
+		db.session.delete(team)
+		db.session.commit()
+		return redirect('/dashboard')
+	else:
+		return render_template('index.html', error="You can't delete that team.")
+
+@app.route('/user/delete/<user_id>')
+def userDelete(user_id):
+	if user_id and session['username']:
+		user = User.query.filter_by(id=user_id, account_id=session['account_id']).first()
+		db.session.delete(user)
+		db.session.commit()
+		return redirect('/dashboard')
+	else:
+		return render_template('index.html', error="You can't delete that user.")
+
 @app.route('/user/edit/<user_id>', methods=['GET','POST'])
 def userEdit(user_id):
 	if request.method == "POST":
 		if user_id:
-			return "poop"		
+			you = User.query.filter_by(id=user_id).first()
+			if request.form['username']:
+				you.username = request.form['username']
+			if request.form['name']:
+				you.name = request.form['name']
+			if request.form['email']:
+				you.email = request.form['email']
+
+			teams = Team.query.filter_by(account_id=session['account_id']).all()
+			membership = Membership.query.filter_by(user_id=user_id).all()
+			member_list = []
+			for member in membership:
+				member_list.append(member.team_id)
+			for team in teams:
+				if str(team.id) in request.form:
+					if not team.id in member_list:
+						newMembership = Membership(session['account_id'], user_id, team.id, 0)
+						db.session.add(newMembership)
+				else:
+					print member_list
+					if team.id in member_list:
+						member = Membership.query.filter_by(user_id=user_id, team_id=team.id).all()
+						for m in member:
+							db.session.delete(m)
+			db.session.commit()
+			return redirect('/dashboard')		
 		else:
 			return render_template("dashboard.html", error="That wasn't a valid user ID.")
 	elif request.method == "GET":
