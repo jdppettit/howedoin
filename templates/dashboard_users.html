@@ -74,14 +74,14 @@
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
          <h1 class="page-header">{% block page_title %}Dashboard - Users{% endblock %}</h1>
        	{% block content %}
-	<table class="table">
+	<table class="table tablesorter">
 	<tr><th>Name</th><th>Username</th><th>Email</th><th>Actions</th></tr>
  	{% for user in users %}
 	<tr>
-		<td>{{ user.name }}</td>
+		<td><a href="/user/edit/{{ user.id }}">{{ user.name }}</a></td>
 		<td>{{ user.username }}</td>
 		<td>{{ user.email }}</td>
-		<td>Buttons</td>
+		<td><a href="/user/edit/{{ user.id }}" class="btn btn-info btn-xs">Edit</a>&nbsp;<a href="/user/delete/{{ user.id }}" class="btn btn-danger btn-xs">Delete</a></td>
 	</tr>
 	{% endfor %}
 	{% endblock %}
@@ -95,6 +95,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/docs.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery.tablesorter.min.js') }}"></script>
   </body>
 </html>
 
