@@ -100,9 +100,10 @@ class Rating(db.Model):
 	hidden = db.Column(db.Integer)
 	followup = db.Column(db.Text)
 
-	def __init__(self, account_id, user_id, item_number, score, username, date=datetime.datetime.now(), hidden=0):		
+	def __init__(self, account_id, user_id, team_id, item_number, score, username, date=datetime.datetime.now(), hidden=0):		
 		self.account_id = account_id
 		self.user_id = user_id
+		self.team_id = team_id
 		self.item_number = item_number
 		self.score = score
 		self.username = username
@@ -151,19 +152,27 @@ def makeRating(team_id, item_id, username, score):
 					if int(score) >= 1 and int(score) <= 3:
 						if request.cookies.get('rated_user_%s' % str(user.id)):
 							cookie = request.cookies.get('rated_user')
-							print cookie
 							checkString = "%s-%s" % (str(user.id), str(item_id))
-							oldRating = Rating.query.filter_by(user_id=user.id, item_number=item_id).first()
-							oldRating.score = score
-							db.session.commit()
-							# do update logic
-							rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
-							rating_id = rating.id
-							return render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username,score=score,rating_id=rating_id)
-												
+							if checkString in request.cookies:
+								oldRating = Rating.query.filter_by(user_id=user.id, item_number=item_id).first()
+								oldRating.score = score
+								db.session.commit()
+								rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
+								rating_id = rating.id
+								return render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username,score=score,rating_id=rating_id)
+							else:
+								rating = Rating(team.account_id, user.id, team.id, item_id, int(score), username)
+	                                                        db.session.add(rating)
+	                                                        db.session.commit()
+	                                                        rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
+	                                                        rating_id = rating.id
+	                                                        resp = make_response(render_template("add_rating.html", team_id=team_id, item_id=item_id, username=username, score=score, rating_id=rating_id))
+	                                                        resp.set_cookie('rated_user_%s' % str(user.id),"%s-%s" % (str(user.id), str(item_id)))
+	                                                        return resp
+										
 
 						else:
-							rating = Rating(team.account_id, user.id, item_id, int(score), username)
+							rating = Rating(team.account_id, user.id, team.id, item_id, int(score), username)
 							db.session.add(rating)
 							db.session.commit()
 							rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=item_id).first()
