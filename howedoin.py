@@ -8,7 +8,7 @@ from password import *
 
 import random
 import string
-
+import datetime
 app = Flask(__name__)
 connectionString = "mysql://%s:%s@%s:3306/%s" % (USERNAME, PASSWORD, HOSTNAME, DATABASE)
 app.config['SQLALCHEMY_DATABASE_URI'] = connectionString
@@ -72,8 +72,9 @@ class User(db.Model):
 	teams = db.Column(db.String(50))
 	active = db.Column(db.Integer)
 	activation_link = db.Column(db.String(10))
-		
-	def __init__(self, account_id, name, username, password, email, teams, active=1, activation_link=""):
+	date = db.Column(db.String(50))
+	
+	def __init__(self, account_id, name, username, password, email, teams, active=1, activation_link="", date=datetime.datetime.now()):
 		self.account_id = account_id
 		self.name = name
 		self.username = username
@@ -82,6 +83,7 @@ class User(db.Model):
 		self.teams = teams
 		self.active = active
 		self.activation_link = activation_link
+		self.date = date
 
 class Rating(db.Model):
 	__tablename__ = "rating"
@@ -94,13 +96,18 @@ class Rating(db.Model):
 	score = db.Column(db.Integer)
 	comment = db.Column(db.Text)
 	username = db.Column(db.String(35))
+	date = db.Column(db.String(50))
+	hidden = db.Column(db.Integer)
+	followup = db.Column(db.Text)
 
-	def __init__(self, account_id, user_id, item_number, score, username):
+	def __init__(self, account_id, user_id, item_number, score, username, date=datetime.datetime.now(), hidden=0):		
 		self.account_id = account_id
 		self.user_id = user_id
 		self.item_number = item_number
 		self.score = score
 		self.username = username
+		self.date = date
+		self.hidden = hidden
 
 class Membership(db.Model):
 	__tablename__ = "membership"
@@ -209,13 +216,10 @@ def dashboard():
 		for rating in ratings:
 			if rating.score == 1:
 				numBad += 1
-				print "One bad"
 			elif rating.score == 2:
 				numMed += 1
-				print "One med"
 			elif rating.score == 3:
 				numGod += 1
-				print "One good"
 		if numBad != 0:
 			percentBad = (numBad / numRatings) * 100.00
 		else:
@@ -235,9 +239,62 @@ def dashboard():
 		percentGod = round(percentGod, 2)
 		percentMed = round(percentMed, 2)
 
+		best_team = ""
+		worst_team = ""
+	
+		best_team_score = 0
+		worst_team_score = 0
+
+		team_dict = {}
+
+		for team in teams:
+			team_dict[str(team.id)] = 0			
+			for rating in ratings:
+				if rating.team_id == team.id:
+					team_dict[str(team.id)] += rating.score
+		
+		print team_dict	
+		#for a in team_dict:
+		#	if b > best_team_score:
+		#		best_team = a
+		#		best_team_score = b
+		#	if b < worst_team_score:
+		#		worst_team_score = a
+		#		worst_tem_score = b
+
+		#best_team = Team.query.filter_by(id=best_team).first()
+		#best_team_name = best_team.team_name
+		
+		#worst_team = Team.query.filter_by(id=worst_team).first()
+		#worst_team_name = worst_team.team_name
+
 		return render_template('dashboard.html', teams=teams, account=account, users=users, ratings=ratings, num_ratings=numRatings, percentBad = percentBad, percentMed = percentMed, percentGod = percentGod)
 	else:
 		return render_template('login.html', error="You must be logged in first.")
+
+@app.route('/rating/hide/<rating_id>')
+def hideRating(rating_id):
+	if rating_id:
+		rating = Rating.query.filter_by(id=rating_id).first()
+		rating.hidden = 1
+		db.session.commit()
+		return redirect('/dashboard/rating')
+	else:
+		return redirect('/dashboard')
+
+@app.route('/rating/followup/<rating_id>', methods=['POST','GET'])
+def followupRating(rating_id):
+	if rating_id:
+		if request.method == "POST":
+			if request.form['followup']:
+				rating = Rating.query.filter_by(id=rating_id).first()
+				rating.followup = request.form['followup']
+				db.session.commit()
+				return redirect('/dashboard/rating')
+		elif request.method == "GET":
+			return render_template("add_followup.html", rating_id=rating_id)
+	else:
+		return redirect('/dashboard/rating')
 
 @app.route('/dashboard/link')
 def link():
@@ -250,7 +307,8 @@ def dashboardRatings():
 
 @app.route('/dashboard/team')
 def dashboardTeams():
-	return render_template("dashboard_teams.html")
+	teams = Team.query.filter_by(account_id=session['account_id']).all()
+	return render_template("dashboard_teams.html", teams=teams)
 
 @app.route('/dashboard/users')
 def dashboardUsers():
@@ -409,6 +467,7 @@ def userActivateForm(activation_string):
                                         if you:
                                                 hashedPassword = hashPassword(request.form['password'])
                                                 you.password = hashedPassword
+						you.activation_link = ""
                                                 db.session.commit()
 
                                                 session['username'] = you.username

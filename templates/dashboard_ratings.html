@@ -75,22 +75,27 @@
           <h1 class="page-header">{% block page_title %}Dashboard - Ratings{% endblock %}</h1>
 	{% block content %}
 	<table class="table">
-        <tr><th>#</th><th>Username</th><th>Item</th><th>Score</th><th>Actions</th></tr>
+        <tr><th>#</th><th>Username</th><th>Team</th><th>Item</th><th>Score</th><th>Comment</th><th>Followup</th><th>Actions</th></tr>
         {% for rating in ratings %}
         <tr>
                 <td>{{ rating.id }}</td>
-                <td>{{ rating.username  }}</td>
-                <td>{{ rating.item_number }}</td>
+                <td><a href="/dashboard/rating/user/{{ rating.user_id }}">{{ rating.username  }}</a></td>
+		<td><a href="/dashboard/rating/team/{{ rating.team_id }}">{{ rating.team_id }}</a></td>
+                <td><a href="yourcustomurlthing">{{ rating.item_number }}</a></td>
 		<td>
-		{% if rating.score == 1 %}
-			Bad
-		{% elif rating.score == 2 %}
-			Neutral
-		{% elif rating.score == 3 %}
-			Good
-		{% endif %}
-		</td>
-                <td>Buttons</td>
+                {% if rating.score == 1 %}
+                       <a href="/dashboard/rating/score/1">Bad</a>
+                {% elif rating.score == 2 %}
+                       <a href="/dashboard/rating/score/2">Neutral</a>
+                {% elif rating.score == 3 %}
+                       <a href="/dashboard/rating/score/3">Good</a>
+                {% endif %}
+                </td>
+		<td>{{ rating.comment }}</td>
+		<td>{{ rating.followup }}</td>
+                <td><a href="/rating/followup/{{ rating.id }}" class="btn btn-info btn-xs">Follow Up</a>&nbsp;
+		{% if rating.hidden == 0 or rating.hidden == None %}<a href="/rating/hide/{{ rating.id }}" class="btn btn-warning btn-xs">Hide</a>
+		{% else %}<a href="/rating/unhide/{{ rating.id }}" class="btn btn-warning btn-xs">Unhide</a>{% endif %}</td>
         </tr>
         {% endfor %}
         </table>

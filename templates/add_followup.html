@@ -1,0 +1,16 @@
+{% extends 'dashboard.html' %}
+{% block title %}
+howedoin - Login
+{% endblock %}
+{% block page_title %}
+Dashboard - Add Followup Contents
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+	<h2>Add Followup Comments</h2>
+	<form action="/rating/followup/{{ rating_id }}" method="post">
+		<textarea name="followup" class="form-control"></textarea>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Add Followup</button>
+	</form>
+</div>
+{% endblock %}

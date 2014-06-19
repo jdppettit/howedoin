@@ -72,37 +72,21 @@
           </ul>
         </div>
 	<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">{% block page_title %}Dashboard - Overview{% endblock %}</h1>
-	<div class="progress">
-  <div class="progress-bar progress-bar-success" style="width: 51%">
-  	51% Positive
-  </div>
-  <div class="progress-bar progress-bar-warning" style="width: 25%">
-	25% Neutral  
-</div>
-  <div class="progress-bar progress-bar-danger" style="width: 24%">
-	24% Negative  
-</div>
-</div>
+          <h1 class="page-header">{% block page_title %}Dashboard - Teams{% endblock %}</h1>
 	{% block content %}
-        {% if not teams %}
-        You haven't made any teams yet.
-        {% else %}
+        <table class="table">
+	<tr><th>Team Name</th><th>Team Leader</th><th>Actions</th></tr>
                 {% for team in teams %}
-                        {{ team.team_name }}<br/>
+		<tr>
+                      <td><a href="/team/edit/{{ team.id }}"> {{ team.team_name }}</a></td>
+			<td>{{ team.team_leader }}</td>
+			<td><a href="/team/edit/{{ team.id }}" class="btn btn-info btn-xs">Edit</a>&nbsp;<a href="/team/delete/{{ team.id }}" class="btn btn-danger btn-xs">Delete</a></td>
+		</tr>
                 {% endfor %}
-        {% endif %}
-        <br/>
+		</table>
         <a href="/team/add" class="btn btn-success btn-lg" role="button">Add a Team</a>
-        <h2>Account Ratings</h2>
-        <h2>Users</h2>
-        {% for user in users %}
-               <a href="/user/edit/{{ user.id }}"> {{ user.username }}</a><br/>
-        {% endfor %}
-        <br/>
-        <a href="/user/add" class="btn btn-success btn-lg" role="button">Add a User</a>
 	{% endblock %}
-        </div>
+	</div>
       </div>
     </div>
 
