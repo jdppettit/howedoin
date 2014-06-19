@@ -59,7 +59,7 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li><a href="/dashboard">Overview</a></li>
-            <li class="active"><a href="/dashboard/rating">Ratings</a></li>
+            <li><a href="/dashboard/rating">Ratings</a></li>
             <li><a href="/dashboard/team">Teams</a></li>
             <li><a href="/dashboard/users">Users</a></li>
           </ul>
@@ -68,11 +68,11 @@
             <li><a href="/dashboard/me">My Ratings</a></li>
             <li><a href="/dashboard/link">My Link</a></li>
             <li><a href="/dashboard/settings">Settings</a></li>
-            <li><a href="/dashboard/help">Help</a></li>
+            <li class="active"><a href="/dashboard/help">Help</a></li>
           </ul>
         </div>
 	<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">{% block page_title %}Dashboard - Account{% endblock %}</h1>
+          <h1 class="page-header">{% block page_title %}Dashboard - Help{% endblock %}</h1>
 	{% block content %}
 	{% endblock %}
         </div>

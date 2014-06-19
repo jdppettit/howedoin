@@ -75,7 +75,7 @@
           <h1 class="page-header">{% block page_title %}Dashboard - Ratings{% endblock %}</h1>
 	{% block content %}
 	<table class="table">
-        <tr><th>#</th><th>Username</th><th>Team</th><th>Item</th><th>Score</th><th>Comment</th><th>Followup</th><th>Actions</th></tr>
+        <tr><th>#</th><th>Username</th><th>Team</th><th>Item</th><th>Score</th><th>Comment</th><th>Followup</th><th>Followup User</th><th>Actions</th></tr>
         {% for rating in ratings %}
         <tr>
                 <td>{{ rating.id }}</td>
@@ -93,6 +93,7 @@
                 </td>
 		<td>{{ rating.comment }}</td>
 		<td>{{ rating.followup }}</td>
+		<td>{{ rating.followup_user }}</td>
                 <td><a href="/rating/followup/{{ rating.id }}" class="btn btn-info btn-xs">Follow Up</a>&nbsp;
 		{% if rating.hidden == 0 or rating.hidden == None %}<a href="/rating/hide/{{ rating.id }}" class="btn btn-warning btn-xs">Hide</a>
 		{% else %}<a href="/rating/unhide/{{ rating.id }}" class="btn btn-warning btn-xs">Unhide</a>{% endif %}</td>

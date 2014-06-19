@@ -99,6 +99,7 @@ class Rating(db.Model):
 	date = db.Column(db.String(50))
 	hidden = db.Column(db.Integer)
 	followup = db.Column(db.Text)
+	followup_user = db.Column(db.String(50))
 
 	def __init__(self, account_id, user_id, team_id, item_number, score, username, date=datetime.datetime.now(), hidden=0):		
 		self.account_id = account_id
@@ -376,6 +377,7 @@ def followupRating(rating_id):
 			if request.form['followup']:
 				rating = Rating.query.filter_by(id=rating_id).first()
 				rating.followup = request.form['followup']
+				rating.followup_user = session['username']
 				db.session.commit()
 				return redirect('/dashboard/rating')
 		elif request.method == "GET":
