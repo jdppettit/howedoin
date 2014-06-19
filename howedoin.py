@@ -247,6 +247,14 @@ def dashboard():
 		percentBad = round(percentBad, 2)
 		percentGod = round(percentGod, 2)
 		percentMed = round(percentMed, 2)
+		
+		if percentBad + percentGod + percentMed > 100.00:
+			totalPerc = percentBad + percentGod + percentMed
+			overage = totalPerc - 100.00
+			each = overage / 3.00
+			percentBad = percentBad - each
+			percentMed = percentMed - each
+			percentGod = percentGod - each
 
 		best_team = ""
 		worst_team = ""
@@ -281,11 +289,81 @@ def dashboard():
 	else:
 		return render_template('login.html', error="You must be logged in first.")
 
+@app.route('/dashboard/account')
+def dashboardAccount():
+	return render_template("dashboard_account.html")
+
+@app.route('/dashboard/me')
+def dashboardMe():
+	try:
+		if session['user_id']:
+			yourRatings = Rating.query.filter_by(id=session['user_id']).first()
+			return render_template("dashboard_me.html", ratings=yourRatings)
+		else:
+			return redirect('/dashboard')
+	except Exception, e:
+		return render_template("dashboard_me.html", noRatings = True)
+
+@app.route('/dashboard/settings')
+def dashboardSettings():
+	return render_template("dashboard_settings.html")
+
+@app.route('/dashboard/help')
+def dashboardHelp():
+	return render_template("dashboard_help.html")
+
+@app.route('/rate/<team_id>/user/<username>/<score>')
+def altMakeRating(team_id, username, score):
+	return "poop"
+
+@app.route('/dashboard/rating/user/<user_id>')
+def ratingFilterUser(user_id):
+	if user_id:
+		user = User.query.filter_by(id=user_id).first()
+		userRatings = Rating.query.filter_by(account_id=session['account_id'], user_id=user_id).all()
+		return render_template("dashboard_ratings_filtered.html", ratings=userRatings, title="Ratings - %s" % user.name)
+	else:
+		return redirect('/dashboard')
+
+@app.route('/dashboard/rating/score/<score>')
+def ratingFilterScore(score):
+	if score:
+		scoreName = ""
+                if score == "1":
+			scoreName = "Bad"
+		elif score == "2":
+			scoreName = "Neutral"
+		elif score == "3":
+			scoreName = "Good"
+		scoreRatings = Rating.query.filter_by(account_id=session['account_id'], score=score).all()
+                return render_template("dashboard_ratings_filtered.html", ratings=scoreRatings, title="Ratings - %s" % scoreName)
+        else:
+                return redirect('/dashboard')
+
+@app.route('/dashboard/rating/team/<team_id>')
+def ratingFilterTeam(team_id):
+	if team_id:
+		team = Team.query.filter_by(id=team_id).first()
+		teamRatings = Rating.query.filter_by(account_id=session['account_id'], team_id=team_id).all()
+		return render_template("dashboard_ratings_filtered.html", ratings=teamRatings, title="Ratings - %s" % team.team_name)
+	else:
+		return redirect('/dashboard')
+
 @app.route('/rating/hide/<rating_id>')
 def hideRating(rating_id):
 	if rating_id:
 		rating = Rating.query.filter_by(id=rating_id).first()
 		rating.hidden = 1
+		db.session.commit()
+		return redirect('/dashboard/rating')
+	else:
+		return redirect('/dashboard')
+
+@app.route('/rating/unhide/<rating_id>')
+def unhideRating(rating_id):
+	if rating_id:
+		rating = Rating.query.filter_by(id=rating_id).first()
+		rating.hidden = 0
 		db.session.commit()
 		return redirect('/dashboard/rating')
 	else:
