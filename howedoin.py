@@ -36,15 +36,17 @@ class Account(db.Model):
 	zip = db.Column(db.Integer)
 	plan_id = db.Column(db.Integer)
 	paid_thru = db.Column(db.String(20))
+	payment_term = db.Column(db.Integer)
 	is_current = db.Column(db.Integer)
 	stripe_customer = db.Column(db.String(20))
 
-	def __init__(self, id, company_name, plan_id, paid_thru, is_current):
+	def __init__(self, id, company_name, plan_id, paid_thru, is_current, payment_term=0):
 		self.id = id
 		self.company_name = company_name
 		self.plan_id = plan_id
 		self.paid_thru = paid_thru
 		self.is_current = is_current
+		self.payment_term = payment_term
 
 class Team(db.Model):
 	__tablename__ = "team"
