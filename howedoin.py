@@ -125,6 +125,25 @@ class Membership(db.Model):
 		self.user_id = user_id
 		self.team_id = team_id
 		self.is_admin = is_admin
+
+class Package(db.Model):
+	__tablename__ = "package"
+
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String(50))
+	num_users = db.Column(db.Integer)
+	monthly_cost = db.Column(db.Float(precision=2))
+	annual_cost = db.Column(db.Float(precision=2))
+	biennial_cost = db.Column(db.Float(precision=2))
+	cost_per_additional_user = db.Column(db.Float(precision=2))
+	
+	def __init__(self, name, num_users, monthly_cost, annual_cost, biennial_cost, cost_per_additional_user):
+		self.name = name
+		self.num_users = num_users
+		self.monthly_cost = monthly_cost
+		self.annual_cost = annual_cost
+		self.biennial_cost = biennial_cost
+		self.cost_per_additional_user = cost_per_additional_user
 	
 db.create_all()
 db.session.commit()
@@ -264,29 +283,49 @@ def dashboard():
 		worst_team_score = 0
 
 		team_dict = {}
+		team_breakdowns = {}
 
 		for team in teams:
 			team_dict[str(team.id)] = 0			
+			team_breakdowns['%s_bad' % str(team.id)] = 0
+			team_breakdowns['%s_med' % str(team.id)] = 0
+			team_breakdowns['%s_god' % str(team.id)] = 0
+
 			for rating in ratings:
 				if rating.team_id == team.id:
 					team_dict[str(team.id)] += rating.score
+					if rating.score == 1:
+						team_breakdowns['%s_bad' % str(team.id)] += 1
+					elif rating.score == 2:
+						team_breakdowns["%s_med" % str(team.id)] += 1
+					elif rating.score == 3:
+						team_breakdowns['%s_god' % str(team.id)] += 1
 		
 		print team_dict	
-		#for a in team_dict:
-		#	if b > best_team_score:
-		#		best_team = a
-		#		best_team_score = b
-		#	if b < worst_team_score:
-		#		worst_team_score = a
-		#		worst_tem_score = b
-
-		#best_team = Team.query.filter_by(id=best_team).first()
-		#best_team_name = best_team.team_name
+		for a, b in team_dict.iteritems():
+			print "B was: %s " % str(b)
+			if b > best_team_score:
+				best_team = a
+				best_team_score = b
+			elif b < worst_team_score or not worst_team:
+				print "Made it to the worst"
+				worst_team = a
+				worst_team_score = b
 		
-		#worst_team = Team.query.filter_by(id=worst_team).first()
-		#worst_team_name = worst_team.team_name
+		
+		best_team = Team.query.filter_by(id=best_team).first()
+		best_team_name = best_team.team_name
+		best_team_bad = team_breakdowns['%s_bad' % str(best_team.id)]
+		best_team_med = team_breakdowns['%s_med' % str(best_team.id)]
+		best_team_god = team_breakdowns['%s_god' % str(best_team.id)]
+		
+		worst_team = Team.query.filter_by(id=worst_team).first()
+		worst_team_name = worst_team.team_name
+		worst_team_bad = team_breakdowns['%s_bad' % str(worst_team.id)]
+                worst_team_med = team_breakdowns['%s_med' % str(worst_team.id)]
+                worst_team_god = team_breakdowns['%s_god' % str(worst_team.id)]
 
-		return render_template('dashboard.html', teams=teams, account=account, users=users, ratings=ratings, num_ratings=numRatings, percentBad = percentBad, percentMed = percentMed, percentGod = percentGod)
+		return render_template('dashboard.html', teams=teams, account=account, users=users, ratings=ratings, num_ratings=numRatings, percentBad = percentBad, percentMed = percentMed, percentGod = percentGod, best_team_name=best_team_name, worst_team_name=worst_team_name, best_team_bad=best_team_bad, best_team_med=best_team_med, best_team_god=best_team_god, worst_team_bad=worst_team_bad, worst_team_med=worst_team_med, worst_team_god=worst_team_god)
 	else:
 		return render_template('login.html', error="You must be logged in first.")
 
