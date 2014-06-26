@@ -9,7 +9,8 @@ Dashboard - Add Followup Contents
 <div class="jumbotron">
 	<h2>Add Followup Comments</h2>
 	<form action="/rating/followup/{{ rating_id }}" method="post">
-		<textarea name="followup" class="form-control"></textarea>
+		<textarea name="followup" class="form-control">{% if rating_text %}{{ rating_text }}{% endif %}</textarea>
+		<br/>
 		<button class="btn btn-lg btn-primary btn-block" type="submit">Add Followup</button>
 	</form>
 </div>

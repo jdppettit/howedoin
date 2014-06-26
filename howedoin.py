@@ -163,6 +163,56 @@ def index():
 	except Exception, e:
 		return render_template('index.html')
 
+@app.route('/rate/<team_id>/user/<username>/<score>')
+def makeRatingNoItem(team_id, username, score):
+	try:
+                if team_id and username and score:
+                        team = Team.query.filter_by(id=team_id).first()
+                        if team:
+                                user = User.query.filter_by(username=username, account_id=team.account_id).first()
+                                if user:
+                                        if int(score) >= 1 and int(score) <= 3:
+                                                if request.cookies.get('rated_user_%s' % str(user.id)):
+                                                        cookie = request.cookies.get('rated_user')
+                                                        checkString = "%s-%s" % (str(user.id), str(0))
+                                                        if checkString in request.cookies:
+                                                                oldRating = Rating.query.filter_by(user_id=user.id, item_number=0).first()
+                                                                oldRating.score = score
+                                                                db.session.commit()
+                                                                rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=0).first()
+                                                                rating_id = rating.id
+                                                                return render_template("add_rating.html", team_id=team_id, item_id=0, username=username,score=score,rating_id=rating_id)
+                                                        else:
+                                                                rating = Rating(team.account_id, user.id, team.id, 0, int(score), username)
+                                                                db.session.add(rating)
+                                                                db.session.commit()
+                                                                rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=0).first()
+                                                                rating_id = rating.id
+                                                                resp = make_response(render_template("add_rating.html", team_id=team_id, item_id=0, username=username, score=score, rating_id=rating_id))
+                                                                resp.set_cookie('rated_user_%s' % str(user.id),"%s-%s" % (str(user.id), str(0)))
+                                                                return resp
+
+
+                                                else:
+                                                        rating = Rating(team.account_id, user.id, team.id, 0, int(score), username)
+                                                        db.session.add(rating)
+                                                        db.session.commit()
+                                                        rating = Rating.query.filter_by(account_id=team.account_id, user_id=user.id, item_number=0).first()
+                                                        rating_id = rating.id
+                                                        resp = make_response(render_template("add_rating.html", team_id=team_id, item_id=0, username=username, score=score, rating_id=rating_id))
+                                                        resp.set_cookie('rated_user_%s' % str(user.id),"%s-%s" % (str(user.id), str(0)))
+                                                        return resp
+                                        else:
+                                                return render_template("index.html", error="Please enter a score between 1 and 3")
+                                else:
+                                        return render_template('index.html', error="That user doesn't exist!")
+                        else:
+                                return render_template('index.html', error="That team doesn't exist!")
+        except Exception, e:
+                print e
+                return render_template('index.html', error="That team or username does not exist.")
+
+
 @app.route('/rate/<team_id>/item/<item_id>/user/<username>/<score>')
 def makeRating(team_id, item_id, username, score):
 	try:
@@ -277,7 +327,63 @@ def dashboard():
 			percentBad = percentBad - each
 			percentMed = percentMed - each
 			percentGod = percentGod - each
+		
+		best_user = ""
+		worst_user = ""
 
+		best_user_score = 0
+		worst_user_score = 0
+	
+		user_dict = {}
+		user_breakdowns = {}
+
+		for user in users:
+                        user_dict[str(user.id)] = 0
+                        user_breakdowns['%s_bad' % str(user.id)] = 0
+                        user_breakdowns['%s_med' % str(user.id)] = 0
+                        user_breakdowns['%s_god' % str(user.id)] = 0
+
+                        for rating in ratings:
+                                if rating.user_id == user.id:
+                                        user_dict[str(user.id)] += rating.score
+                                        if rating.score == 1:
+                                                user_breakdowns['%s_bad' % str(user.id)] += 1
+                                        elif rating.score == 2:
+                                                user_breakdowns["%s_med" % str(user.id)] += 1
+                                        elif rating.score == 3:
+                                                user_breakdowns['%s_god' % str(user.id)] += 1
+
+                for a, b in user_dict.iteritems():
+                        if b > best_user_score:
+                                best_user = a
+                                best_user_score = b
+                        elif b < worst_user_score or not worst_user:
+                                if b == 0:
+					continue
+				else:
+					worst_user = a
+	                                worst_user_score = b
+
+
+                best_user = User.query.filter_by(id=best_user).first()
+                best_user_name = best_user.name
+                best_user_bad = user_breakdowns['%s_bad' % str(best_user.id)]
+                best_user_med = user_breakdowns['%s_med' % str(best_user.id)]
+                best_user_god = user_breakdowns['%s_god' % str(best_user.id)]
+		
+		try:
+	                worst_user = User.query.filter_by(id=worst_user).first()
+	                worst_user_name = worst_user.name
+	                worst_user_bad = user_breakdowns['%s_bad' % str(worst_user.id)]
+	                worst_user_med = user_breakdowns['%s_med' % str(worst_user.id)]
+	                worst_user_god = user_breakdowns['%s_god' % str(worst_user.id)]
+		except:
+			worst_user_name = "There isn't one!"
+			worst_user_bad = 0
+			worst_user_med = 0
+			worst_user_god = 0
+			pass
+	
 		best_team = ""
 		worst_team = ""
 	
@@ -327,7 +433,7 @@ def dashboard():
                 worst_team_med = team_breakdowns['%s_med' % str(worst_team.id)]
                 worst_team_god = team_breakdowns['%s_god' % str(worst_team.id)]
 
-		return render_template('dashboard.html', teams=teams, account=account, users=users, ratings=ratings, num_ratings=numRatings, percentBad = percentBad, percentMed = percentMed, percentGod = percentGod, best_team_name=best_team_name, worst_team_name=worst_team_name, best_team_bad=best_team_bad, best_team_med=best_team_med, best_team_god=best_team_god, worst_team_bad=worst_team_bad, worst_team_med=worst_team_med, worst_team_god=worst_team_god)
+		return render_template('dashboard.html', teams=teams, account=account, users=users, ratings=ratings, num_ratings=numRatings, percentBad = percentBad, percentMed = percentMed, percentGod = percentGod, best_team_name=best_team_name, worst_team_name=worst_team_name, best_team_bad=best_team_bad, best_team_med=best_team_med, best_team_god=best_team_god, worst_team_bad=worst_team_bad, worst_team_med=worst_team_med, worst_team_god=worst_team_god, best_user_name=best_user_name, best_user_god=best_user_god, best_user_med=best_user_med, best_user_bad=best_user_bad, worst_user_name=worst_user_name, worst_user_god=worst_user_god, worst_user_med=worst_user_med, worst_user_bad=worst_user_bad)
 	else:
 		return render_template('login.html', error="You must be logged in first.")
 
@@ -422,7 +528,8 @@ def followupRating(rating_id):
 				db.session.commit()
 				return redirect('/dashboard/rating')
 		elif request.method == "GET":
-			return render_template("add_followup.html", rating_id=rating_id)
+			rating = Rating.query.filter_by(id=rating_id).first()
+			return render_template("add_followup.html", rating_id=rating_id, rating_text=rating.followup)
 	else:
 		return redirect('/dashboard/rating')
 
