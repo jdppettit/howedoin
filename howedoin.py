@@ -10,6 +10,7 @@ import stripe
 import random
 import string
 import datetime
+from dateutil.relativedelta import relativedelta
 
 app = Flask(__name__)
 connectionString = "mysql://%s:%s@%s:3306/%s" % (USERNAME, PASSWORD, HOSTNAME, DATABASE)
@@ -41,14 +42,18 @@ class Account(db.Model):
 	payment_term = db.Column(db.Integer)
 	is_current = db.Column(db.Integer)
 	stripe_customer = db.Column(db.String(20))
+	max_users = db.Column(db.Integer)
+	date = db.Column(db.String(50))
 
-	def __init__(self, id, company_name, plan_id, paid_thru, is_current, payment_term=0):
+	def __init__(self, id, company_name, plan_id, paid_thru, is_current, max_users, payment_term=0, date=datetime.datetime.now()):
 		self.id = id
 		self.company_name = company_name
 		self.plan_id = plan_id
 		self.paid_thru = paid_thru
 		self.is_current = is_current
 		self.payment_term = payment_term
+		self.max_users = max_users
+		self.date = date
 
 class Team(db.Model):
 	__tablename__ = "team"
@@ -186,11 +191,12 @@ def paymentProcessing(plan_id):
 			description = description_value
 		)
 	except stripe.CardError, e:
-		return render_template("index.html", error="Payment declined")
-		
+		return render_template("complete_payment.html", billing_plan=plan_id, error="Payment declined")
+	you = Account.query.filter_by(id=session['account_id']).first()
+	you.is_current = True
+	you.paid_thru = datetime.datetime.now() + relativedelta(months=1)
+	db.session.commit()	
 	return render_template("index.html", message="Payment successful")
-			
-	return render_template('echo.html', token=request.form['stripeToken'])
 
 @app.route('/')
 def index():
@@ -833,18 +839,23 @@ def register(plan_name="0"):
 					accountCheck = Account.query.filter_by(id=possibleID)
 				
 				billing_plan = 0
-				
+			  	max_users = 0
+	
 				if request.form['billing_plan'] == "free":
 					billing_plan = 1
+					max_users = 5
 				elif request.form['billing_plan'] == "small_business":
 					billing_plan = 2
+					max_users = 10
 				elif request.form['billing_plan'] == "large_business":
 					billing_plan = 3
+					max_users = 15
 				elif request.form['billing_plan'] == "enterprise":
 					billing_plan = 4
+					max_users = 9999
 				
 				password = hashPassword(request.form['password'])
-				newAccount = Account(possibleID, request.form['company_name'], billing_plan, "2999-12-31 23:59:59", 1)
+				newAccount = Account(possibleID, request.form['company_name'], billing_plan, "2999-12-31 23:59:59", 1, max_users)
 				newUser = User(possibleID, request.form['name'], request.form['username'], password, request.form['email'], teams="")
 				db.session.add(newAccount)
 				db.session.add(newUser)

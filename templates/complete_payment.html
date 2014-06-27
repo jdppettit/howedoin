@@ -9,10 +9,38 @@ howedoin - Register
 	<div class="panel-heading">
 	{% if billing_plan == 2 %}
 	Small Business Plan</div>
+	<div class="panel-body">
+		<table class="table">
+			<tr><td>Users:</td><td>10</td></tr>
+			<tr><td>Teams:</td><td>Unlimited</td></tr>
+			<tr><td>Monthly Cost:</td><td>$10.00</td></tr>
+		</table><br/>
+	<img src="/static/images/ssl.png"><br/>
+	</div>
+	<br/>
 	{% elif billing_plan == 3 %}
 	Large Business Plan</div>
+	<div class="panel-body">
+                <table class="table">
+                        <tr><td>Users:</td><td>25</td></tr>
+                        <tr><td>Teams:</td><td>Unlimited</td></tr>
+                        <tr><td>Monthly Cost:</td><td>$15.00</td></tr>
+                </table><br/>
+        <img src="/static/images/ssl.png"><br/>
+        </div>
+	<br/>
 	{% elif billing_plan == 4 %}
 	Enterprise Plan</div>
+	<div class="panel-body">
+                <table class="table">
+                        <tr><td>Users:</td><td>Unlimited</td></tr>
+                        <tr><td>Teams:</td><td>Unlimited</td></tr>
+                        <tr><td>Monthly Cost:</td><td>$100.00</td></tr>
+                </table><br/>
+        <img src="/static/images/ssl.png"><br/>
+        </div>
+	<br/>
+	<div align="center">
 	{% endif %}
 
 	{% if billing_plan == 2 %}
@@ -23,8 +51,9 @@ howedoin - Register
 		    data-amount="1000"
 		    data-name="Howedoin"
 		    data-description="Small Business Plan - Monthly ($10.00)"
-		    data-image="/128x128.png">
+		    data-image="/static/images/howedoin_128.png">
 		  </script>
+		</div><br/>
 	{% elif billing_plan == 3 %}
 		<form action="/payment/{{ billing_plan }}" method="POST">
                   <script
@@ -33,8 +62,9 @@ howedoin - Register
                     data-amount="1500"
                     data-name="Howedoin"
                     data-description="Large Business Plan - Monthly ($15.00)"
-                    data-image="/128x128.png">
+                    data-image="/static/images/howedoin_128.png">
                   </script>
+		</div><br/>
 	{% elif billing_plan == 4 %}
 		<form action="/payment/{{ billing_plan }}" method="POST">
                   <script
@@ -43,8 +73,9 @@ howedoin - Register
                     data-amount="10000"
                     data-name="Howedoin"
                     data-description="Enterprise Plan - Monthly ($100.00)"
-                    data-image="/128x128.png">
+                    data-image="/static/images/howedoin_128.png">
                   </script>
+		</div><br/>
 	{% endif %}
 </form>
 	</div>
