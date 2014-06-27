@@ -6,9 +6,11 @@ from flask.ext.mail import *
 from credentials import *
 from password import *
 
+import stripe
 import random
 import string
 import datetime
+
 app = Flask(__name__)
 connectionString = "mysql://%s:%s@%s:3306/%s" % (USERNAME, PASSWORD, HOSTNAME, DATABASE)
 app.config['SQLALCHEMY_DATABASE_URI'] = connectionString
@@ -152,6 +154,43 @@ db.session.commit()
 
 def getActivationURL(size=6, chars=string.ascii_uppercase + string.digits):
 	return ''.join(random.choice(chars) for _ in range(size))
+
+@app.route('/payment-testing/<plan_id>')
+def paymentTesting(plan_id):
+	return render_template('complete_payment.html', billing_plan=int(plan_id))
+
+@app.route('/payment/<plan_id>', methods=['POST','GET'])
+def paymentProcessing(plan_id):
+	stripe.api_key = "sk_test_XyBItKO0iLZssC4uqGCLOOWd"
+	token = request.form['stripeToken']
+	total_amount = 0
+	description_value = ""
+	if plan_id:
+		if plan_id == "2":
+			total_amount = 1000
+			description_value = "Howedoin Small Business Plan ($10.00)"
+		elif plan_id == "3":
+			total_amount = 1500
+			description_value = "Howedoin Large Business Plan ($15.00)"
+		elif plan_id == "4":
+			total_amount = 10000
+			description_value = "Howedoin Enterprise Business Plan ($100.00)"
+	else:
+		return render_template("index.html", error="Something broke.")
+
+	try:
+		charge = stripe.Charge.create(
+			amount = total_amount,
+			currency = "usd",
+			card = token,
+			description = description_value
+		)
+	except stripe.CardError, e:
+		return render_template("index.html", error="Payment declined")
+		
+	return render_template("index.html", message="Payment successful")
+			
+	return render_template('echo.html', token=request.form['stripeToken'])
 
 @app.route('/')
 def index():
@@ -364,13 +403,18 @@ def dashboard():
 					worst_user = a
 	                                worst_user_score = b
 
-
-                best_user = User.query.filter_by(id=best_user).first()
-                best_user_name = best_user.name
-                best_user_bad = user_breakdowns['%s_bad' % str(best_user.id)]
-                best_user_med = user_breakdowns['%s_med' % str(best_user.id)]
-                best_user_god = user_breakdowns['%s_god' % str(best_user.id)]
-		
+		try:
+	                best_user = User.query.filter_by(id=best_user).first()
+	                best_user_name = best_user.name
+	                best_user_bad = user_breakdowns['%s_bad' % str(best_user.id)]
+	                best_user_med = user_breakdowns['%s_med' % str(best_user.id)]
+	                best_user_god = user_breakdowns['%s_god' % str(best_user.id)]
+		except:
+			best_user_name = "There isn't one!"
+                        best_user_bad = 0
+                        best_user_med = 0
+                        best_user_god = 0		
+			pass
 		try:
 	                worst_user = User.query.filter_by(id=worst_user).first()
 	                worst_user_name = worst_user.name
@@ -420,18 +464,30 @@ def dashboard():
 				worst_team = a
 				worst_team_score = b
 		
+		try:
+			best_team = Team.query.filter_by(id=best_team).first()
+			best_team_name = best_team.team_name
+			best_team_bad = team_breakdowns['%s_bad' % str(best_team.id)]
+			best_team_med = team_breakdowns['%s_med' % str(best_team.id)]
+			best_team_god = team_breakdowns['%s_god' % str(best_team.id)]
+		except:
+                        best_team_name = "There isn't one!"
+                        best_team_bad = 0
+                        best_team_med = 0
+                        best_team_god = 0		
+			pass
 		
-		best_team = Team.query.filter_by(id=best_team).first()
-		best_team_name = best_team.team_name
-		best_team_bad = team_breakdowns['%s_bad' % str(best_team.id)]
-		best_team_med = team_breakdowns['%s_med' % str(best_team.id)]
-		best_team_god = team_breakdowns['%s_god' % str(best_team.id)]
-		
-		worst_team = Team.query.filter_by(id=worst_team).first()
-		worst_team_name = worst_team.team_name
-		worst_team_bad = team_breakdowns['%s_bad' % str(worst_team.id)]
-                worst_team_med = team_breakdowns['%s_med' % str(worst_team.id)]
-                worst_team_god = team_breakdowns['%s_god' % str(worst_team.id)]
+		try:
+			worst_team = Team.query.filter_by(id=worst_team).first()
+			worst_team_name = worst_team.team_name
+			worst_team_bad = team_breakdowns['%s_bad' % str(worst_team.id)]
+	                worst_team_med = team_breakdowns['%s_med' % str(worst_team.id)]
+	                worst_team_god = team_breakdowns['%s_god' % str(worst_team.id)]
+		except:
+                        worst_team_name = "There isn't one!"
+                        worst_team_bad = 0
+                        worst_team_med = 0
+                        worst_team_god = 0
 
 		return render_template('dashboard.html', teams=teams, account=account, users=users, ratings=ratings, num_ratings=numRatings, percentBad = percentBad, percentMed = percentMed, percentGod = percentGod, best_team_name=best_team_name, worst_team_name=worst_team_name, best_team_bad=best_team_bad, best_team_med=best_team_med, best_team_god=best_team_god, worst_team_bad=worst_team_bad, worst_team_med=worst_team_med, worst_team_god=worst_team_god, best_user_name=best_user_name, best_user_god=best_user_god, best_user_med=best_user_med, best_user_bad=best_user_bad, worst_user_name=worst_user_name, worst_user_god=worst_user_god, worst_user_med=worst_user_med, worst_user_bad=worst_user_bad)
 	else:
@@ -760,10 +816,11 @@ def logout():
 	except Exception, e:
 		return render_template('index.html')
 
+@app.route('/register/<plan_name>', methods=['GET','POST'])
 @app.route('/register', methods=['GET','POST'])
-def register():
+def register(plan_name="0"):
 	if request.method == "POST":
-		if request.form['company_name'] and request.form['name'] and request.form['username'] and request.form['email'] and request.form['password'] and request.form['password_again']:
+		if request.form['company_name'] and request.form['name'] and request.form['username'] and request.form['email'] and request.form['password'] and request.form['password_again'] and request.form['billing_plan']:
 			if request.form['password'] == request.form['password_again']:
 				# proceed
 				print request.form['username']
@@ -774,9 +831,20 @@ def register():
 				while accountCheck:
 					possibleID = random.randint(1,1000000)
 					accountCheck = Account.query.filter_by(id=possibleID)
-
+				
+				billing_plan = 0
+				
+				if request.form['billing_plan'] == "free":
+					billing_plan = 1
+				elif request.form['billing_plan'] == "small_business":
+					billing_plan = 2
+				elif request.form['billing_plan'] == "large_business":
+					billing_plan = 3
+				elif request.form['billing_plan'] == "enterprise":
+					billing_plan = 4
+				
 				password = hashPassword(request.form['password'])
-				newAccount = Account(possibleID, request.form['company_name'], 0, "2999-12-31 23:59:59", 1)
+				newAccount = Account(possibleID, request.form['company_name'], billing_plan, "2999-12-31 23:59:59", 1)
 				newUser = User(possibleID, request.form['name'], request.form['username'], password, request.form['email'], teams="")
 				db.session.add(newAccount)
 				db.session.add(newUser)
@@ -789,15 +857,18 @@ def register():
 				session['account_id'] = you.account_id
 				session['teams'] = you.teams
 				session['email'] = you.email
-			
-				return render_template('index.html', message="Account registered.")
+				
+				if billing_plan == 0:
+					return render_template('dashboard.html', message="Account registered.")
+				else:
+					return render_template('complete_payment.html', billing_plan=billing_plan)
 					
 			else:
 				return render_template('register.html', error="The passwords did not match, please try again.")
 		else:
 			return render_template('register.html', error="Please fill out the entire form.")
 	elif request.method == "GET":
-		return render_template('register.html')
+		return render_template('register.html', package_name=plan_name)
 
 if __name__ == '__main__':
         app.run(host='0.0.0.0',debug=True)

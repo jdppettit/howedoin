@@ -12,6 +12,29 @@ howedoin - Register
 		<input type="email" name="email" class="form-control" placeholder="Email Address"/><br/>
 		<input type="password" name="password" class="form-control" placeholder="Password"/><br/>
 		<input type="password" name="password_again" class="form-control" placeholder="Repeat Password"/><br/>
+		<select name="billing_plan" class="form-control">
+			{% if package_name == "free" %}
+			<option value="free" selected>Free</option>
+			{% else %}
+			<option value="free">Free</option>
+			{% endif %}
+			{% if package_name == "small-business" %}
+			<option value="small_business" selected>Small Business ($10.00)</option>
+			{% else %}
+			<option value="small_business">Small Business ($10.00)</option>
+			{% endif %}
+			{% if package_name == "large-business" %}
+			<option value="large_business" selected>Large Business ($15.00)</option>
+			{% else %}
+			<option value="large_business">Large Business ($15.00)</option>
+			{% endif %}
+			{% if package_name == "enterprise" %}
+			<option value="enterprise" selected>Enterprise ($100.00)</option>
+			{% else %}
+			<option value="enterprise">Enterprise ($100.00)</option>
+			{% endif %}
+		</select>
+		<br/>
 		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign Up</button>
 	</form>
 </div>

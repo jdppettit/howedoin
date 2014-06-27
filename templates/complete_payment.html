@@ -1,0 +1,52 @@
+{% extends 'index.html' %}
+{% block title %}
+howedoin - Register
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+	<h2>Complete your Payment</h2>
+	<div class="panel panel-default">
+	<div class="panel-heading">
+	{% if billing_plan == 2 %}
+	Small Business Plan</div>
+	{% elif billing_plan == 3 %}
+	Large Business Plan</div>
+	{% elif billing_plan == 4 %}
+	Enterprise Plan</div>
+	{% endif %}
+
+	{% if billing_plan == 2 %}
+		<form action="/payment/{{ billing_plan }}" method="POST">
+		  <script
+		    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+		    data-key="pk_test_WVA6OKKxmhXMypNiAWfF1f68"
+		    data-amount="1000"
+		    data-name="Howedoin"
+		    data-description="Small Business Plan - Monthly ($10.00)"
+		    data-image="/128x128.png">
+		  </script>
+	{% elif billing_plan == 3 %}
+		<form action="/payment/{{ billing_plan }}" method="POST">
+                  <script
+                    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                    data-key="pk_test_WVA6OKKxmhXMypNiAWfF1f68"
+                    data-amount="1500"
+                    data-name="Howedoin"
+                    data-description="Large Business Plan - Monthly ($15.00)"
+                    data-image="/128x128.png">
+                  </script>
+	{% elif billing_plan == 4 %}
+		<form action="/payment/{{ billing_plan }}" method="POST">
+                  <script
+                    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                    data-key="pk_test_WVA6OKKxmhXMypNiAWfF1f68"
+                    data-amount="10000"
+                    data-name="Howedoin"
+                    data-description="Enterprise Plan - Monthly ($100.00)"
+                    data-image="/128x128.png">
+                  </script>
+	{% endif %}
+</form>
+	</div>
+</div>
+{% endblock %}
