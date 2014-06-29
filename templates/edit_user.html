@@ -13,6 +13,7 @@ Dashboard - Edit User
 		<input type="text" name="username" placeholder="{{ user.username }}" class="form-control"/><br/>
 		<input type="email" name="email" placeholder="{{ user.email }}" class="form-control"/><br/>
 		<h3>Teams</h3>
+		{% if teams %}
 		{% for team in teams %}
                         {% if team.id in membership %}
                 <input type="checkbox" class="form-control" value="{{ team.id }}" name="{{ team.id }}" checked>{{ team.team_name }}</input>
@@ -20,6 +21,10 @@ Dashboard - Edit User
                 <input type="checkbox" class="form-control" value="{{ team.id }}" name="{{ team.id }}">{{ team.team_name }}</input>
 			{% endif %}
                 {% endfor %}
+		{% else %}
+		You have not made any teams yet!
+		{% endif %}
+		<br/><br/>
 		<button class="btn btn-lg btn-primary btn-block" type="submit">Edit User</button>
 	</form>
 </div>

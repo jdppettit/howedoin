@@ -193,8 +193,9 @@ def paymentProcessing(plan_id):
 	except stripe.CardError, e:
 		return render_template("complete_payment.html", billing_plan=plan_id, error="Payment declined")
 	you = Account.query.filter_by(id=session['account_id']).first()
-	you.is_current = True
+	you.is_current = 1
 	you.paid_thru = datetime.datetime.now() + relativedelta(months=1)
+	session['is_current'] = 1
 	db.session.commit()	
 	return render_template("index.html", message="Payment successful")
 
@@ -207,6 +208,22 @@ def index():
 			return render_template('index.html')
 	except Exception, e:
 		return render_template('index.html')
+
+@app.route('/dashboard/leaderboard/<time_frame>')
+def dashboardLeaderboard(time_frame):
+	if time_frame:
+		if time_frame == "7":
+			return render_template("dashboard_leaderboard.html")
+		elif time_frame == "30":
+			return render_template("dashboard_leaderboard.html")
+		elif time_frame == "90":
+			return render_template("dashboard_leaderboard.html")
+		elif time_frame == "year":
+			return render_template("dashboard_leaderboard.html")
+		elif time_frame == "alltime":
+			return render_template("dashboard_leaderboard.html")
+	else:	
+		return redirect('/dashboard')
 
 @app.route('/rate/<team_id>/user/<username>/<score>')
 def makeRatingNoItem(team_id, username, score):
@@ -331,177 +348,178 @@ def updateRating(team_id, item_id, username, score, rating_id):
 @app.route('/dashboard')
 def dashboard():
 	if session['username']:
-		teams = Team.query.filter_by(account_id=session['account_id']).all()
-		account = Account.query.filter_by(id=session['account_id']).all()
-		users = User.query.filter_by(account_id=session['account_id']).all()
-		ratings = Rating.query.filter_by(account_id=session['account_id']).all()
-		numRatings = len(ratings)
-		numBad = 0.00
-		numMed = 0.00
-		numGod = 0.00
-		for rating in ratings:
-			if rating.score == 1:
-				numBad += 1
-			elif rating.score == 2:
-				numMed += 1
-			elif rating.score == 3:
-				numGod += 1
-		if numBad != 0:
-			percentBad = (numBad / numRatings) * 100.00
-		else:
-			percentBad = 0
-	
-		if numMed != 0:
-			percentMed = (numMed / numRatings) * 100.00
-		else:
-			percentMed = 0
-	
-		if numGod != 0:
-			percentGod = (numGod / numRatings) * 100.00
-		else:
-			percentGod = 0
-		
-		percentBad = round(percentBad, 2)
-		percentGod = round(percentGod, 2)
-		percentMed = round(percentMed, 2)
-		
-		if percentBad + percentGod + percentMed > 100.00:
-			totalPerc = percentBad + percentGod + percentMed
-			overage = totalPerc - 100.00
-			each = overage / 3.00
-			percentBad = percentBad - each
-			percentMed = percentMed - each
-			percentGod = percentGod - each
-		
-		best_user = ""
-		worst_user = ""
-
-		best_user_score = 0
-		worst_user_score = 0
-	
-		user_dict = {}
-		user_breakdowns = {}
-
-		for user in users:
-                        user_dict[str(user.id)] = 0
-                        user_breakdowns['%s_bad' % str(user.id)] = 0
-                        user_breakdowns['%s_med' % str(user.id)] = 0
-                        user_breakdowns['%s_god' % str(user.id)] = 0
-
-                        for rating in ratings:
-                                if rating.user_id == user.id:
-                                        user_dict[str(user.id)] += rating.score
-                                        if rating.score == 1:
-                                                user_breakdowns['%s_bad' % str(user.id)] += 1
-                                        elif rating.score == 2:
-                                                user_breakdowns["%s_med" % str(user.id)] += 1
-                                        elif rating.score == 3:
-                                                user_breakdowns['%s_god' % str(user.id)] += 1
-
-                for a, b in user_dict.iteritems():
-                        if b > best_user_score:
-                                best_user = a
-                                best_user_score = b
-                        elif b < worst_user_score or not worst_user:
-                                if b == 0:
-					continue
-				else:
-					worst_user = a
-	                                worst_user_score = b
-
-		try:
-	                best_user = User.query.filter_by(id=best_user).first()
-	                best_user_name = best_user.name
-	                best_user_bad = user_breakdowns['%s_bad' % str(best_user.id)]
-	                best_user_med = user_breakdowns['%s_med' % str(best_user.id)]
-	                best_user_god = user_breakdowns['%s_god' % str(best_user.id)]
-		except:
-			best_user_name = "There isn't one!"
-                        best_user_bad = 0
-                        best_user_med = 0
-                        best_user_god = 0		
-			pass
-		try:
-	                worst_user = User.query.filter_by(id=worst_user).first()
-	                worst_user_name = worst_user.name
-	                worst_user_bad = user_breakdowns['%s_bad' % str(worst_user.id)]
-	                worst_user_med = user_breakdowns['%s_med' % str(worst_user.id)]
-	                worst_user_god = user_breakdowns['%s_god' % str(worst_user.id)]
-		except:
-			worst_user_name = "There isn't one!"
-			worst_user_bad = 0
-			worst_user_med = 0
-			worst_user_god = 0
-			pass
-	
-		best_team = ""
-		worst_team = ""
-	
-		best_team_score = 0
-		worst_team_score = 0
-
-		team_dict = {}
-		team_breakdowns = {}
-
-		for team in teams:
-			team_dict[str(team.id)] = 0			
-			team_breakdowns['%s_bad' % str(team.id)] = 0
-			team_breakdowns['%s_med' % str(team.id)] = 0
-			team_breakdowns['%s_god' % str(team.id)] = 0
-
+		if session['is_current'] == 1:
+			teams = Team.query.filter_by(account_id=session['account_id']).all()
+			account = Account.query.filter_by(id=session['account_id']).all()
+			users = User.query.filter_by(account_id=session['account_id']).all()
+			ratings = Rating.query.filter_by(account_id=session['account_id']).all()
+			numRatings = len(ratings)
+			numBad = 0.00
+			numMed = 0.00
+			numGod = 0.00
 			for rating in ratings:
-				if rating.team_id == team.id:
-					team_dict[str(team.id)] += rating.score
-					if rating.score == 1:
-						team_breakdowns['%s_bad' % str(team.id)] += 1
-					elif rating.score == 2:
-						team_breakdowns["%s_med" % str(team.id)] += 1
-					elif rating.score == 3:
-						team_breakdowns['%s_god' % str(team.id)] += 1
+				if rating.score == 1:
+					numBad += 1
+				elif rating.score == 2:
+					numMed += 1
+				elif rating.score == 3:
+					numGod += 1
+			if numBad != 0:
+				percentBad = (numBad / numRatings) * 100.00
+			else:
+				percentBad = 0
 		
-		print team_dict	
-		for a, b in team_dict.iteritems():
-			print "B was: %s " % str(b)
-			if b > best_team_score:
-				best_team = a
-				best_team_score = b
-			elif b < worst_team_score or not worst_team:
-				print "Made it to the worst"
-				worst_team = a
-				worst_team_score = b
+			if numMed != 0:
+				percentMed = (numMed / numRatings) * 100.00
+			else:
+				percentMed = 0
 		
-		try:
-			best_team = Team.query.filter_by(id=best_team).first()
-			best_team_name = best_team.team_name
-			best_team_bad = team_breakdowns['%s_bad' % str(best_team.id)]
-			best_team_med = team_breakdowns['%s_med' % str(best_team.id)]
-			best_team_god = team_breakdowns['%s_god' % str(best_team.id)]
-		except:
-                        best_team_name = "There isn't one!"
-                        best_team_bad = 0
-                        best_team_med = 0
-                        best_team_god = 0		
-			pass
+			if numGod != 0:
+				percentGod = (numGod / numRatings) * 100.00
+			else:
+				percentGod = 0
+			
+			percentBad = round(percentBad, 2)
+			percentGod = round(percentGod, 2)
+			percentMed = round(percentMed, 2)
+			
+			if percentBad + percentGod + percentMed > 100.00:
+				totalPerc = percentBad + percentGod + percentMed
+				overage = totalPerc - 100.00
+				each = overage / 3.00
+				percentBad = percentBad - each
+				percentMed = percentMed - each
+				percentGod = percentGod - each
+			
+			best_user = ""
+			worst_user = ""
+	
+			best_user_score = 0
+			worst_user_score = 0
 		
-		try:
-			worst_team = Team.query.filter_by(id=worst_team).first()
-			worst_team_name = worst_team.team_name
-			worst_team_bad = team_breakdowns['%s_bad' % str(worst_team.id)]
-	                worst_team_med = team_breakdowns['%s_med' % str(worst_team.id)]
-	                worst_team_god = team_breakdowns['%s_god' % str(worst_team.id)]
-		except:
-                        worst_team_name = "There isn't one!"
-                        worst_team_bad = 0
-                        worst_team_med = 0
-                        worst_team_god = 0
-
-		return render_template('dashboard.html', teams=teams, account=account, users=users, ratings=ratings, num_ratings=numRatings, percentBad = percentBad, percentMed = percentMed, percentGod = percentGod, best_team_name=best_team_name, worst_team_name=worst_team_name, best_team_bad=best_team_bad, best_team_med=best_team_med, best_team_god=best_team_god, worst_team_bad=worst_team_bad, worst_team_med=worst_team_med, worst_team_god=worst_team_god, best_user_name=best_user_name, best_user_god=best_user_god, best_user_med=best_user_med, best_user_bad=best_user_bad, worst_user_name=worst_user_name, worst_user_god=worst_user_god, worst_user_med=worst_user_med, worst_user_bad=worst_user_bad)
+			user_dict = {}
+			user_breakdowns = {}
+	
+			for user in users:
+	                        user_dict[str(user.id)] = 0
+	                        user_breakdowns['%s_bad' % str(user.id)] = 0
+	                        user_breakdowns['%s_med' % str(user.id)] = 0
+	                        user_breakdowns['%s_god' % str(user.id)] = 0
+	
+	                        for rating in ratings:
+	                                if rating.user_id == user.id:
+	                                        user_dict[str(user.id)] += rating.score
+	                                        if rating.score == 1:
+	                                                user_breakdowns['%s_bad' % str(user.id)] += 1
+	                                        elif rating.score == 2:
+	                                                user_breakdowns["%s_med" % str(user.id)] += 1
+	                                        elif rating.score == 3:
+	                                                user_breakdowns['%s_god' % str(user.id)] += 1
+	
+	                for a, b in user_dict.iteritems():
+	                        if b > best_user_score:
+	                                best_user = a
+	                                best_user_score = b
+	                        elif b < worst_user_score or not worst_user:
+	                                if b == 0:
+						continue
+					else:
+						worst_user = a
+	        	                        worst_user_score = b
+	
+			try:
+		                best_user = User.query.filter_by(id=best_user).first()
+		                best_user_name = best_user.name
+		                best_user_bad = user_breakdowns['%s_bad' % str(best_user.id)]
+		                best_user_med = user_breakdowns['%s_med' % str(best_user.id)]
+		                best_user_god = user_breakdowns['%s_god' % str(best_user.id)]
+			except:
+				best_user_name = "There isn't one!"
+	                        best_user_bad = 0
+	                        best_user_med = 0
+	                        best_user_god = 0		
+				pass
+			try:
+		                worst_user = User.query.filter_by(id=worst_user).first()
+		                worst_user_name = worst_user.name
+		                worst_user_bad = user_breakdowns['%s_bad' % str(worst_user.id)]
+		                worst_user_med = user_breakdowns['%s_med' % str(worst_user.id)]
+		                worst_user_god = user_breakdowns['%s_god' % str(worst_user.id)]
+			except:
+				worst_user_name = "There isn't one!"
+				worst_user_bad = 0
+				worst_user_med = 0
+				worst_user_god = 0
+				pass
+		
+			best_team = ""
+			worst_team = ""
+		
+			best_team_score = 0
+			worst_team_score = 0
+	
+			team_dict = {}
+			team_breakdowns = {}
+	
+			for team in teams:
+				team_dict[str(team.id)] = 0			
+				team_breakdowns['%s_bad' % str(team.id)] = 0
+				team_breakdowns['%s_med' % str(team.id)] = 0
+				team_breakdowns['%s_god' % str(team.id)] = 0
+	
+				for rating in ratings:
+					if rating.team_id == team.id:
+						team_dict[str(team.id)] += rating.score
+						if rating.score == 1:
+							team_breakdowns['%s_bad' % str(team.id)] += 1
+						elif rating.score == 2:
+							team_breakdowns["%s_med" % str(team.id)] += 1
+						elif rating.score == 3:
+							team_breakdowns['%s_god' % str(team.id)] += 1
+			
+			for a, b in team_dict.iteritems():
+				if b > best_team_score:
+					best_team = a
+					best_team_score = b
+				elif b < worst_team_score or not worst_team:
+					worst_team = a
+					worst_team_score = b
+		
+			try:
+				best_team = Team.query.filter_by(id=best_team).first()
+				best_team_name = best_team.team_name
+				best_team_bad = team_breakdowns['%s_bad' % str(best_team.id)]
+				best_team_med = team_breakdowns['%s_med' % str(best_team.id)]
+				best_team_god = team_breakdowns['%s_god' % str(best_team.id)]
+			except:
+	                        best_team_name = "There isn't one!"
+	                        best_team_bad = 0
+	                        best_team_med = 0
+	                        best_team_god = 0		
+				pass
+			
+			try:
+				worst_team = Team.query.filter_by(id=worst_team).first()
+				worst_team_name = worst_team.team_name
+				worst_team_bad = team_breakdowns['%s_bad' % str(worst_team.id)]
+		                worst_team_med = team_breakdowns['%s_med' % str(worst_team.id)]
+		                worst_team_god = team_breakdowns['%s_god' % str(worst_team.id)]
+			except:
+	                        worst_team_name = "There isn't one!"
+	                        worst_team_bad = 0
+	                        worst_team_med = 0
+	                        worst_team_god = 0
+	
+			return render_template('dashboard.html', teams=teams, account=account, users=users, ratings=ratings, num_ratings=numRatings, percentBad = percentBad, percentMed = percentMed, percentGod = percentGod, best_team_name=best_team_name, worst_team_name=worst_team_name, best_team_bad=best_team_bad, best_team_med=best_team_med, best_team_god=best_team_god, worst_team_bad=worst_team_bad, worst_team_med=worst_team_med, worst_team_god=worst_team_god, best_user_name=best_user_name, best_user_god=best_user_god, best_user_med=best_user_med, best_user_bad=best_user_bad, worst_user_name=worst_user_name, worst_user_god=worst_user_god, worst_user_med=worst_user_med, worst_user_bad=worst_user_bad)
+		else:
+			return render_template('complete_payment.html', error="Your account is not current, please activate your account.", billing_plan=session['plan']) 
 	else:
 		return render_template('login.html', error="You must be logged in first.")
 
 @app.route('/dashboard/account')
 def dashboardAccount():
-	return render_template("dashboard_account.html")
+	account = Account.query.filter_by(id=session['account_id']).first()
+	return render_template("dashboard_account.html", account=account)
 
 @app.route('/dashboard/me')
 def dashboardMe():
@@ -597,7 +615,12 @@ def followupRating(rating_id):
 
 @app.route('/dashboard/link')
 def link():
-	return render_template("link.html", team_id=3, username=session['username'])
+	if session['username']:
+		you = User.query.filter_by(id=session['user_id']).first()
+		membership = Membership.query.filter_by(user_id=you.id).all()
+		return render_template("link.html", membership=membership, you=you, username=session['username'])
+	else:
+		return render_template("index.html", error="You must be logged in first!")
 
 @app.route('/dashboard/rating')
 def dashboardRatings():
@@ -762,7 +785,8 @@ def userActivateForm(activation_string):
 		if activation_string:
                         if request.form['password'] and request.form['password_again'] and request.form['email']:
                                 you = User.query.filter_by(activation_link=activation_string, email=request.form['email']).first()
-                                if request.form['password'] == request.form['password_again']:
+        			account = Account.query.filter_by(id=you.account_id).first()
+	                        if request.form['password'] == request.form['password_again']:
                                         if you:
                                                 hashedPassword = hashPassword(request.form['password'])
                                                 you.password = hashedPassword
@@ -775,7 +799,10 @@ def userActivateForm(activation_string):
                                                 session['account_id'] = you.account_id
                                                 session['teams'] = you.teams
                                                 session['email'] = you.email
-
+						session['is_current'] = account.is_current
+						session['max_users'] = account.max_users
+						session['plan'] = account.plan_id
+	
                                                 return redirect('/dashboard')
                                         else:
                                                 return render_template("index.html", error="Your email does not match an existing user.")
@@ -792,6 +819,7 @@ def login():
 		if request.form['password'] and request.form['username']:
 			hashedPassword = hashPassword(request.form['password'])
 			you = User.query.filter_by(username=request.form['username'], password=hashedPassword).first()
+			account = Account.query.filter_by(id=you.account_id).first()
 			if you:
 				session['username'] = you.username
 				session['name'] = you.name
@@ -799,6 +827,10 @@ def login():
                                 session['account_id'] = you.account_id
                                 session['teams'] = you.teams
                                 session['email'] = you.email
+				session['is_current'] = account.is_current
+				session['max_users'] = account.max_users
+				session['plan'] = account.plan_id
+				
 				
 				return redirect('/dashboard')
 			else:
@@ -817,6 +849,9 @@ def logout():
 		session.pop('account_id', None)
 		session.pop('teams', None)
 		session.pop('email', None)
+		session.pop('is_current', None)
+		session.pop('max_users', None)
+		session.pop('plan', None)
 	
 		return render_template('index.html', message="Successfully logged out.")
 	except Exception, e:
@@ -853,9 +888,14 @@ def register(plan_name="0"):
 				elif request.form['billing_plan'] == "enterprise":
 					billing_plan = 4
 					max_users = 9999
+	
+				is_active = 0
+				
+				if billing_plan == 1:
+					is_active = 1
 				
 				password = hashPassword(request.form['password'])
-				newAccount = Account(possibleID, request.form['company_name'], billing_plan, "2999-12-31 23:59:59", 1, max_users)
+				newAccount = Account(possibleID, request.form['company_name'], billing_plan, "2999-12-31 23:59:59", is_active, max_users)
 				newUser = User(possibleID, request.form['name'], request.form['username'], password, request.form['email'], teams="")
 				db.session.add(newAccount)
 				db.session.add(newUser)
@@ -868,6 +908,9 @@ def register(plan_name="0"):
 				session['account_id'] = you.account_id
 				session['teams'] = you.teams
 				session['email'] = you.email
+				session['max_users'] = max_users
+				session['is_current'] = is_active
+				session['plan'] = billing_plan
 				
 				if billing_plan == 0:
 					return render_template('dashboard.html', message="Account registered.")

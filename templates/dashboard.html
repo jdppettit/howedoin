@@ -281,6 +281,11 @@
           <h1 class="page-header">{% block page_title %}Dashboard - Overview{% endblock %}</h1>
 	{% block content %}
 	<div class="progress">
+	{% if percentGod + percentMed + percentBad == 0 %}
+	<div class="progress-bar process-bar-success" style="width: 100%">
+		No Ratings
+	</div>
+	{% endif %}
   <div class="progress-bar progress-bar-success" style="width: {{ percentGod }}%">
         {{ percentGod }}% Positive
   </div>
@@ -300,7 +305,7 @@
 </div>
 	<h2>Team Statistics</h2>
 	<div class="row">
-		<div class="col-md-4">
+		<div class="col-md-6">
 		<div class="panel panel-default panel-body">
 			<h3>Best Team</h3>
 			<strong>{{ best_team_name }}</strong><br>
@@ -310,7 +315,7 @@
 			<div id="best_team_chart"></div>
 		</div>
 		</div>
-		<div class="col-md-4">
+		<div class="col-md-6">
 		<div class="panel panel-default panel-body">
 			<h3>Worst Team</h3>
                         <strong>{{ worst_team_name }}</strong><br/>
@@ -323,7 +328,7 @@
 	</div>
 	<h2>User Statistics</h2>
 	<div class="row">
-		<div class="col-md-4">
+		<div class="col-md-6">
 			<div class="panel panel-default panel-body">
                         <h3>Best User</h3>
                         <strong>{{ best_user_name }}</strong><br/>
@@ -333,7 +338,7 @@
 			<div id="best_user_chart"></div>
 			</div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
 			<div class="panel panel-default panel-body">
                         <h3>Worst User</h3>
                         <strong>{{ worst_user_name }}</strong><br/>

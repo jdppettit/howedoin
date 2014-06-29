@@ -59,12 +59,12 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li><a href="/dashboard">Overview</a></li>
-            <li><a href="/dashboard/rating">Ratings</a></li>
+            <li class="active"><a href="/dashboard/rating">Ratings</a></li>
             <li><a href="/dashboard/team">Teams</a></li>
             <li><a href="/dashboard/users">Users</a></li>
           </ul>
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="/dashboard/account">Account</a></li>
+            <li><a href="/dashboard/account">Account</a></li>
             <li><a href="/dashboard/me">My Ratings</a></li>
             <li><a href="/dashboard/link">My Link</a></li>
             <li><a href="/dashboard/settings">Settings</a></li>
@@ -72,22 +72,34 @@
           </ul>
         </div>
 	<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">{% block page_title %}Dashboard - Account{% endblock %}</h1>
+          <h1 class="page-header">{% block page_title %}Dashboard - Ratings{% endblock %}</h1>
 	{% block content %}
-	<div class="jumbotron">	
-	<form action="/dashboard/account/edit" method="post">
-			<input type="text" name="company_name" placeholder="{{ account.company_name }}" class="form-control"/><br/>
-			<input type="text" name="contact_name" placeholder="{{ account.contact_name }}" class="form-control"/><br/>
-			<select name="billing_plan" class="form-control">
-				<option value="free">Free</option>
-				<option value="small_business">Small Business</option>
-				<option value="large_business">Large Business</option>
-				<option value="enterprise">Enterprise</option>
-			</select>
-			<h3>Your account is currently paid through:</h3>{{ account.paid_thru }}<br/><br/>
-			<button class="btn btn-lg btn-primary btn-block" type="submit">Submit Changes</button><br/>
-		</form>
-	
+	<table class="table">
+        <tr><th>#</th><th>Username</th><th>Team</th><th>Item</th><th>Score</th><th>Comment</th><th>Followup</th><th>Followup User</th><th>Actions</th></tr>
+        {% for rating in ratings %}
+        <tr>
+                <td>{{ rating.id }}</td>
+                <td><a href="/dashboard/rating/user/{{ rating.user_id }}">{{ rating.username  }}</a></td>
+		<td><a href="/dashboard/rating/team/{{ rating.team_id }}">{{ rating.team_id }}</a></td>
+                <td><a href="yourcustomurlthing">{{ rating.item_number }}</a></td>
+		<td>
+                {% if rating.score == 1 %}
+                       <a href="/dashboard/rating/score/1">Bad</a>
+                {% elif rating.score == 2 %}
+                       <a href="/dashboard/rating/score/2">Neutral</a>
+                {% elif rating.score == 3 %}
+                       <a href="/dashboard/rating/score/3">Good</a>
+                {% endif %}
+                </td>
+		<td>{{ rating.comment }}</td>
+		<td>{{ rating.followup }}</td>
+		<td>{{ rating.followup_user }}</td>
+                <td><a href="/rating/followup/{{ rating.id }}" class="btn btn-info btn-xs">Follow Up</a>&nbsp;
+		{% if rating.hidden == 0 or rating.hidden == None %}<a href="/rating/hide/{{ rating.id }}" class="btn btn-warning btn-xs">Hide</a>
+		{% else %}<a href="/rating/unhide/{{ rating.id }}" class="btn btn-warning btn-xs">Unhide</a>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </table>
 	{% endblock %}
         </div>
       </div>
