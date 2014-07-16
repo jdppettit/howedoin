@@ -209,6 +209,7 @@ def index():
 	except Exception, e:
 		return render_template('index.html')
 
+<<<<<<< HEAD
 @app.route('/dashboard/timeline/<time_frame>')
 def dashboardLeaderboard(time_frame):
         if time_frame:
@@ -225,6 +226,8 @@ def dashboardLeaderboard(time_frame):
         else:
                 return redirect('/dashboard')
 
+=======
+>>>>>>> 00a5cce95cf8a35e041ccc9897010dd8a79276d3
 @app.route('/dashboard/leaderboard/<time_frame>')
 def dashboardLeaderboard(time_frame):
 	if time_frame:
