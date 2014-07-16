@@ -43,7 +43,7 @@ class Account(db.Model):
 	is_current = db.Column(db.Integer)
 	stripe_customer = db.Column(db.String(20))
 	max_users = db.Column(db.Integer)
-	date = db.Column(db.String(50))
+	date = db.Column(db.Date)
 
 	def __init__(self, id, company_name, plan_id, paid_thru, is_current, max_users, payment_term=0, date=datetime.datetime.now()):
 		self.id = id
@@ -81,7 +81,7 @@ class User(db.Model):
 	teams = db.Column(db.String(50))
 	active = db.Column(db.Integer)
 	activation_link = db.Column(db.String(10))
-	date = db.Column(db.String(50))
+	date = db.Column(db.Date)
 	
 	def __init__(self, account_id, name, username, password, email, teams, active=1, activation_link="", date=datetime.datetime.now()):
 		self.account_id = account_id
@@ -105,7 +105,7 @@ class Rating(db.Model):
 	score = db.Column(db.Integer)
 	comment = db.Column(db.Text)
 	username = db.Column(db.String(35))
-	date = db.Column(db.String(50))
+	date = db.Column(db.Date)
 	hidden = db.Column(db.Integer)
 	followup = db.Column(db.Text)
 	followup_user = db.Column(db.String(50))
@@ -157,8 +157,14 @@ class Package(db.Model):
 db.create_all()
 db.session.commit()
 
+# Returns a 6 character string for user as the activation token
 def getActivationURL(size=6, chars=string.ascii_uppercase + string.digits):
 	return ''.join(random.choice(chars) for _ in range(size))
+
+# Used to get all of the leaderboard data
+def getLeaderboardStats(time):
+	timeNow = datetime.datetime.now()
+	return 1
 
 @app.route('/payment-testing/<plan_id>')
 def paymentTesting(plan_id):
@@ -209,9 +215,8 @@ def index():
 	except Exception, e:
 		return render_template('index.html')
 
-<<<<<<< HEAD
 @app.route('/dashboard/timeline/<time_frame>')
-def dashboardLeaderboard(time_frame):
+def dashboardTimeline(time_frame):
         if time_frame:
                 if time_frame == "7":
                         return render_template("dashboard_timeline.html")
@@ -226,8 +231,6 @@ def dashboardLeaderboard(time_frame):
         else:
                 return redirect('/dashboard')
 
-=======
->>>>>>> 00a5cce95cf8a35e041ccc9897010dd8a79276d3
 @app.route('/dashboard/leaderboard/<time_frame>')
 def dashboardLeaderboard(time_frame):
 	if time_frame:
