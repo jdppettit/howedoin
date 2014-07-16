@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+{% block title %}
+howedoin - Rate Me
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+	<h2>Rate a User</h2>
+	<form action="/rate/{{ team_id }}/item/{{ item_id }}/user/{{ username }}/{{ score }}/update/{{ rating_id }}" method="post">
+		<input type="radio" name="score" value="1" class="form-control" {% if score == "1" %}checked{% endif %}>Bad
+		<input type="radio" name="score" value="2" class="form-control" {% if score == "2" %}checked{% endif %}>Okay
+		<input type="radio" name="score" value="3" class="form-control" {% if score == "3" %}checked{% endif %}>Good<br/><br/>
+		<textarea name="comment" class="form-control"></textarea><br/>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Submit Rating</button>
+	</form>
+</div>
+{% endblock %}

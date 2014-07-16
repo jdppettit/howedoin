@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>{% block title %}howedoin - Dashboard{% endblock %}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static',filename='css/dashboard.css') }}" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
+	<!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	<script type="text/javascript">
+		$(document).ready(function(){
+		makeBestTeamGraph();
+		makeWorstTeamGraph();
+		makeBestUserGraph();
+		makeWorstUserGraph();
+		});
+		function makeBestTeamGraph() {
+			$('#best_team_chart').highcharts({
+				 chart: {
+			            plotBackgroundColor: null,
+			            plotBorderWidth: null,
+			            plotShadow: false
+			        },
+				title: {
+					text:''
+				},
+				credits: {
+					enabled: false
+				},
+				exporting: {
+					enabled: false
+				},
+			        tooltip: {
+			    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+			        },
+			        plotOptions: {
+			            pie: {
+			                allowPointSelect: true,
+			                cursor: 'pointer',
+			                dataLabels: {
+                			    enabled: true,
+			                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+            				        style: {
+           				             color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                				    }
+              				  },
+					colors: ["#5cb85c", "#d9534f", "#f0ad4e", "#8a8a8a"]
+        			    }
+  			      },
+			      series: [{
+			            type: 'pie',
+			            name: 'Team Performance',
+			            data: [
+			                ['Good',   {{ best_team_god }}],
+			                ['Bad',    {{ best_team_bad }}],
+			                ['Okay',   {{ best_team_med }}],
+					{% if best_team_god == 0 and best_team_bad == 0 and best_team_med == 0 %}
+                                        ['No Ratings', 1],
+                                        {% endif %}
+
+			            ]
+			        }]
+		 });
+	}
+
+	function makeWorstTeamGraph() {
+                        $('#worst_team_chart').highcharts({
+                                 chart: {
+                                    plotBackgroundColor: null,
+                                    plotBorderWidth: null,
+                                    plotShadow: false
+                                },
+                                title: {
+                                        text:''
+                                },
+                                credits: {
+                                        enabled: false
+                                },
+                                exporting: {
+                                        enabled: false
+                                },
+                                tooltip: {
+                                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                                },
+                                plotOptions: {
+                                    pie: {
+                                        allowPointSelect: true,
+                                        cursor: 'pointer',
+                                        dataLabels: {
+                                            enabled: true,
+                                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                                style: {
+                                                     color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                                    }
+                                          },
+                                        colors: ["#5cb85c",  "#d9534f", "#f0ad4e", "#8a8a8a"]
+                                    }
+                              },
+                              series: [{
+                                    type: 'pie',
+                                    name: 'Team Performance',
+                                    data: [
+                                        ['Good',   {{ worst_team_god }}],
+                                        ['Bad',    {{ worst_team_bad }}],
+                                        ['Okay',   {{ worst_team_med }}],
+					{% if worst_team_god == 0 and worst_team_bad == 0 and worst_team_med == 0 %}
+                                        ['No Ratings', 1],
+                                        {% endif %}
+
+                                    ]
+                                }]
+                 });
+        }
+	
+	 function makeBestUserGraph() {
+                        $('#best_user_chart').highcharts({
+                                 chart: {
+                                    plotBackgroundColor: null,
+                                    plotBorderWidth: null,
+                                    plotShadow: false
+                                },
+                                title: {
+                                        text:''
+                                },
+                                credits: {
+                                        enabled: false
+                                },
+                                exporting: {
+                                        enabled: false
+                                },
+                                tooltip: {
+                                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                                },
+                                plotOptions: {
+                                    pie: {
+                                        allowPointSelect: true,
+                                        cursor: 'pointer',
+                                        dataLabels: {
+                                            enabled: true,
+                                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                                style: {
+                                                     color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                                    }
+                                          },
+                                        colors: ["#5cb85c",  "#d9534f", "#f0ad4e", "#8a8a8a"]
+                                    }
+                              },
+                              series: [{
+                                    type: 'pie',
+                                    name: 'User Performance',
+                                    data: [
+                                        ['Good',   {{ best_user_god }}],
+                                        ['Bad',    {{ best_user_bad }}],
+                                        ['Okay',   {{ best_user_med }}],
+					{% if best_user_god == 0 and best_user_bad == 0 and best_user_med == 0 %}
+                                        ['No Ratings', 1],
+                                        {% endif %}
+
+                                    ]
+                                }]
+                 });
+        }
+
+	 function makeWorstUserGraph() {
+                        $('#worst_user_chart').highcharts({
+                                 chart: {
+                                    plotBackgroundColor: null,
+                                    plotBorderWidth: null,
+                                    plotShadow: false
+                                },
+                                title: {
+                                        text:''
+                                },
+                                credits: {
+                                        enabled: false
+                                },
+                                exporting: {
+                                        enabled: false
+                                },
+                                tooltip: {
+                                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                                },
+                                plotOptions: {
+                                    pie: {
+                                        allowPointSelect: true,
+                                        cursor: 'pointer',
+                                        dataLabels: {
+                                            enabled: true,
+                                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                                style: {
+                                                     color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                                    }
+                                          },
+                                        colors: ["#5cb85c",  "#d9534f", "#f0ad4e", "#8a8a8a"]
+                                    }
+                              },
+                              series: [{
+                                    type: 'pie',
+                                    name: 'User Performance',
+                                    data: [
+                                        ['Good',   {{ worst_user_god }}],
+                                        ['Bad',    {{ worst_user_bad }}],
+                                        ['Okay',   {{ worst_user_med }}],
+					{% if worst_user_god == 0 and worst_user_bad == 0 and worst_user_med == 0 %}
+					['No Ratings', 1],
+					{% endif %}
+                                    ]
+                                }]
+                 });
+        }
+
+	</script>
+  </head>
+
+  <body>
+<script type="text/javascript" src="{{ url_for('static',filename='js/highcharts.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/modules/exporting.js') }}"></script>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">howedoin</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+                {% if not session['username'] %}
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+                {% else %}
+            <li><a href="/logout">Logout</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+                {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+	{% include 'errors.html' %}
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="/dashboard">Overview</a></li>
+            <li><a href="/dashboard/rating">Ratings</a></li>
+            <li><a href="/dashboard/team">Teams</a></li>
+            <li><a href="/dashboard/users">Users</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="/dashboard/account">Account</a></li>
+            <li><a href="/dashboard/me">My Ratings</a></li>
+            <li><a href="/dashboard/link">My Link</a></li>
+            <li><a href="/dashboard/settings">Settings</a></li>
+            <li><a href="/dashboard/help">Help</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">{% block page_title %}Dashboard - Overview{% endblock %}</h1>
+	{% block content %}
+	<div class="progress">
+	{% if percentGod + percentMed + percentBad == 0 %}
+	<div class="progress-bar process-bar-success" style="width: 100%">
+		No Ratings
+	</div>
+	{% endif %}
+  <div class="progress-bar progress-bar-success" style="width: {{ percentGod }}%">
+        {{ percentGod }}% Positive
+  </div>
+  <div class="progress-bar progress-bar-warning" style="width: {{ percentMed }}%">
+        {{ percentMed }}% Neutral
+</div>
+  <div class="progress-bar progress-bar-danger" style="width: {{ percentBad }}%">
+        {{ percentBad }}% Negative
+</div>
+</div>
+<div class="well" style="text-align:center">
+<h2>Overall Stats</h2>
+{{ num_ratings }} total ratings.<br/>
+{{ percentGod }}% rated us as good.<br/>
+{{ percentMed }}% rated us as okay.<br/>
+{{ percentBad }}% rated us as bad.<br/>
+</div>
+	<h2>Team Statistics</h2>
+	<div class="row">
+		<div class="col-md-6">
+		<div class="panel panel-default panel-body">
+			<h3>Best Team</h3>
+			<strong>{{ best_team_name }}</strong><br>
+			<strong>Good:</strong> {{ best_team_god }}<br/>	
+			<strong>Okay:</strong> {{ best_team_med }}<br/>
+			<strong>Bad:</strong> {{ best_team_bad }}<br/>
+			<div id="best_team_chart"></div>
+		</div>
+		</div>
+		<div class="col-md-6">
+		<div class="panel panel-default panel-body">
+			<h3>Worst Team</h3>
+                        <strong>{{ worst_team_name }}</strong><br/>
+                        <strong>Good:</strong> {{ worst_team_god }}<br/>
+                        <strong>Okay:</strong> {{ worst_team_med }}<br/>
+                        <strong>Bad:</strong> {{ worst_team_bad }}<br/>
+			<div id="worst_team_chart"></div>
+		</div>
+		</div>
+	</div>
+	<h2>User Statistics</h2>
+	<div class="row">
+		<div class="col-md-6">
+			<div class="panel panel-default panel-body">
+                        <h3>Best User</h3>
+                        <strong>{{ best_user_name }}</strong><br/>
+                        <strong>Good:</strong> {{ best_user_god }}<br/>
+                        <strong>Okay:</strong> {{ best_user_med }}<br/>
+                        <strong>Bad:</strong> {{ best_user_bad }}<br/>
+			<div id="best_user_chart"></div>
+			</div>
+                </div>
+                <div class="col-md-6">
+			<div class="panel panel-default panel-body">
+                        <h3>Worst User</h3>
+                        <strong>{{ worst_user_name }}</strong><br/>
+                        <strong>Good:</strong> {{ worst_user_god }}<br/>
+                        <strong>Okay:</strong> {{ worst_user_med }}<br/>
+                        <strong>Bad:</strong> {{ worst_user_bad }}<br/>
+			<div id="worst_user_chart"></div>
+			</div>
+                </div>
+	</div>
+	{% endblock %}
+	</div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/docs.min.js') }}"></script>
+  </body>
+</html>
+

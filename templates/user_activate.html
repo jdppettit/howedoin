@@ -1,0 +1,15 @@
+{% extends 'index.html' %}
+{% block title %}
+howedoin - Activate New User
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+	<h2>Activate New User</h2>
+	<form action="/user/activate/{{ activation_string }}/form" method="post">
+		<input type="email" name="email" class="form-control" placeholder="Email"/><br/>
+		<input type="password" name="password" class="form-control" placeholder="Password"/><br/>
+		<input type="password" name="password_again" class="form-control" placeholder="Repeat Password"/><br/>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Activate User</button>
+	</form>
+</div>
+{% endblock %}

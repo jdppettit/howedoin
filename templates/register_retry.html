@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+{% block title %}
+howedoin - Register
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+	<h2>Create User</h2>
+	<form action="/register/retry" method="post">
+		<input type="text" name="username" class="form-control" placeholder="Username"/><br/>
+		<input type="password" name="password" class="form-control" placeholder="Password"/><br/>
+		<input type="password" name="password_again" class="form-control" placeholder="Repeat Password"/><br/>
+		<input type="hidden" value="{{ account_id }}"/>
+		<br/>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign Up</button>
+	</form>
+</div>
+{% endblock %}
