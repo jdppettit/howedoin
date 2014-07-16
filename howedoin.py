@@ -75,7 +75,7 @@ class User(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	account_id = db.Column(db.Integer)
 	name = db.Column(db.String(35))
-	username = db.Column(db.String(35))
+	username = db.Column(db.String(35), unique=True)
 	password = db.Column(db.String(50))
 	email = db.Column(db.String(40))
 	teams = db.Column(db.String(50))
@@ -332,6 +332,7 @@ def updateRating(team_id, item_id, username, score, rating_id):
 			if rating:
 				if request.form['comment']:
 					rating.comment = request.form['comment']
+					rating.score = request.form['score']
 					db.session.commit()
 					return render_template('index.html', message="Rating successfully added.")
 				else:
@@ -525,7 +526,7 @@ def dashboardAccount():
 def dashboardMe():
 	try:
 		if session['user_id']:
-			yourRatings = Rating.query.filter_by(id=session['user_id']).first()
+			yourRatings = Rating.query.filter_by(user_id=session['user_id']).all()
 			return render_template("dashboard_me.html", ratings=yourRatings)
 		else:
 			return redirect('/dashboard')
@@ -818,8 +819,11 @@ def login():
 	if request.method == "POST":
 		if request.form['password'] and request.form['username']:
 			hashedPassword = hashPassword(request.form['password'])
-			you = User.query.filter_by(username=request.form['username'], password=hashedPassword).first()
-			account = Account.query.filter_by(id=you.account_id).first()
+			try:
+				you = User.query.filter_by(username=request.form['username'], password=hashedPassword).first()
+				account = Account.query.filter_by(id=you.account_id).first()
+			except:
+				return render_template('login.html', error="Invalid credentials, please try again.")
 			if you:
 				session['username'] = you.username
 				session['name'] = you.name
@@ -856,6 +860,37 @@ def logout():
 		return render_template('index.html', message="Successfully logged out.")
 	except Exception, e:
 		return render_template('index.html')
+
+@app.route('/register/retry', methods=['GET','POST'])
+def registerRetry():
+	if request.method == "GET":
+		return render_template("register_retry.html")
+	elif request.method == "POST":
+		if request.form['username'] and request.form['password'] and request.form['password_again']:
+			if request.form['password'] == request.form['password_again']:
+				password = hashPassword(request.form['password'])
+				newUser = User(session['account_id'], session['name'], request.form['username'], password, session['email'], teams="")
+				try:
+					db.session.add(newUser)
+				except:
+					return render_template('/register/retry', error="That username already exists, try another!", account_id=session['account_id'])
+				
+				db.session.commit()
+
+                                you = User.query.filter_by(username=request.form['username'], password=password, email=session['email']).first()
+                                session['username'] = request.form['username']
+                                session['user_id'] = you.id
+                                session['teams'] = you.teams
+
+                                if billing_plan == 1:
+                                        return render_template('dashboard.html', message="Account registered.")
+                                else:
+                                        return render_template('complete_payment.html', billing_plan=billing_plan)		
+			else:
+                                return render_template('register.html', error="The passwords did not match, please try again.")
+                else:
+                        return render_template('register.html', error="Please fill out the entire form.")
+	
 
 @app.route('/register/<plan_name>', methods=['GET','POST'])
 @app.route('/register', methods=['GET','POST'])
@@ -898,8 +933,13 @@ def register(plan_name="0"):
 				newAccount = Account(possibleID, request.form['company_name'], billing_plan, "2999-12-31 23:59:59", is_active, max_users)
 				newUser = User(possibleID, request.form['name'], request.form['username'], password, request.form['email'], teams="")
 				db.session.add(newAccount)
-				db.session.add(newUser)
-				db.session.commit()
+
+				try:
+					db.session.add(newUser)
+					db.session.commit()
+				except:
+					return render_template('register.html', error="That username already exists, try another!", company_name=request.form['company_name'], name=request.form['name'], username=request.form['username'], email=request.form['email'], billing_plan=billing_plan, retry=True)
+
 				
 				you = User.query.filter_by(username=request.form['username'], password=password, email=request.form['email']).first()
 				session['username'] = request.form['username']
@@ -912,8 +952,8 @@ def register(plan_name="0"):
 				session['is_current'] = is_active
 				session['plan'] = billing_plan
 				
-				if billing_plan == 0:
-					return render_template('dashboard.html', message="Account registered.")
+				if billing_plan == 1:
+					return redirect('/dashboard')
 				else:
 					return render_template('complete_payment.html', billing_plan=billing_plan)
 					

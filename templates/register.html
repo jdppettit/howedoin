@@ -6,6 +6,36 @@ howedoin - Register
 <div class="jumbotron">
 	<h2>Register for Howedoin!</h2>
 	<form action="/register" method="post">
+	{% if retry %}
+		<input type="text" name="company_name" class="form-control" placeholder="Company Name" value="{{ company_name }}"/><br/>
+                <input type="text" name="name" class="form-control" placeholder="Contact Name" value="{{ name }}"/><br/>
+                <input type="text" name="username" class="form-control" placeholder="Username" value="{{ username }}"/><br/>
+                <input type="email" name="email" class="form-control" placeholder="Email" value="{{ email }}"/><br/>
+                <input type="password" name="password" class="form-control" placeholder="Password"/><br/>
+                <input type="password" name="password_again" class="form-control" placeholder="Repeat Password"/><br/>
+                <select name="billing_plan" class="form-control">
+                        {% if billing_plan == 1 %}
+                        <option value="free" selected>Free</option>
+                        {% else %}
+                        <option value="free">Free</option>
+                        {% endif %}
+                        {% if billing_plan == 2 %}
+                        <option value="small_business" selected>Small Business ($10.00)</option>
+                        {% else %}
+                        <option value="small_business">Small Business ($10.00)</option>
+                        {% endif %}
+                        {% if billing_plan == 3 %}
+                        <option value="large_business" selected>Large Business ($15.00)</option>
+                        {% else %}
+                        <option value="large_business">Large Business ($15.00)</option>
+                        {% endif %}
+                        {% if billing_plan == 4 %}
+                        <option value="enterprise" selected>Enterprise ($100.00)</option>
+                        {% else %}
+                        <option value="enterprise">Enterprise ($100.00)</option>
+                        {% endif %}
+                </select>
+	{% else %}
 		<input type="text" name="company_name" class="form-control" placeholder="Company Name"/><br/>
 		<input type="text" name="name" class="form-control" placeholder="Contact Name"/><br/>
 		<input type="text" name="username" class="form-control" placeholder="Username"/><br/>
@@ -34,6 +64,7 @@ howedoin - Register
 			<option value="enterprise">Enterprise ($100.00)</option>
 			{% endif %}
 		</select>
+	{% endif %}
 		<br/>
 		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign Up</button>
 	</form>
