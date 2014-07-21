@@ -80,6 +80,7 @@ class User(db.Model):
         self.password_reset_link = password_reset_link
         self.avatar = avatar
 
-
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', debug=True)
 
 
