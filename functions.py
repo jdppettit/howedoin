@@ -1,5 +1,6 @@
 import md5
 from datetime import *
+from credentials import *
 
 # INPUT: team id, user id, account id (all ints), item (string)
 # OUTPUT: a hash that represents a token for rating auth
@@ -34,7 +35,7 @@ def makeIdentityHash(ip):
     try:
         user_hash = md5.new()
         user_hash.update(ip)
-        user_hash.update(datetime.datetime.now())
+        user_hash.update(USER_SALT)
         return user_hash.hexdigest()
     except Exception, e:
         error_log(e, "ERROR")
