@@ -18,22 +18,30 @@ def nonTokenLogic(db, request, team_id, user_id, score, item_id=0):
     identity = makeIdentityHash(ip)
     check_id = checkIdentity(identity, db)
     if not check_id:
+        # If the id is not something we've seen before
         identity = makeIdentity(identity, db)
         check_cookie = checkCookie(request, identity)
         if not check_cookie:
             # If the cookie is not present
-            print "foo"
+            return render_template("rating.html", team_id=team_id, user_id=user_id, score=score, item_id=item_id,
+            duplicate=0)
         elif check_cookie:
             # Cookie is present
-            print "foo"
+            return render_template("rating.html", team_id=team_id, user_id=user_id, score=score, item_id=item_id,
+            duplicate=1)
         else:
             abort(404)
     elif check_id:
+        # If the id is something we've seen before
         check_cookie = checkCookie(request, identity)
         if not check_cookie:
-            print "foo"
+            # Cookie not present
+            return render_template("rating.html", team_id=team_id, user_id=user_id, score=score, item_id=item_id,
+            duplicate=0)
         elif check_cookie:
-            print "foo"
+            # Cookie present
+            return render_template("rating.html", team_id=team_id, user_id=user_id, score=score, item_id=item_id,
+            duplicate=1)
         else:
             abort(404)
     else:
@@ -41,8 +49,12 @@ def nonTokenLogic(db, request, team_id, user_id, score, item_id=0):
 
 def tokenLogic(db, request, token, team_id, user_id, score, item_id=0):
     # invalidate token
+    oldToken = Token.query.filter_by(token=token).first()
+    db.session.remove(oldToken)
     # make the new rating
-    print "foo"
+    newRating = Rating()
+    db.session.commit()
+    return render_template("rating_complete.html")
     
 
 @ratings.route('/rate/team/<team_id>/item/<item_id>/user/<user_id>/score/<score>', methods=['POST', 'GET'])
@@ -59,14 +71,15 @@ def rate(team_id, user_id, score):
                     if tokenStatus:
                         # Token is valid
                         # Make the rating
-                        return render_template("rating.html", token=token)
+                        return render_template("rating.html", token=token, team_id=team_id, item_id=item_id,
+                        user_id=user_id, score=score)
                     else:
                         # Token invalid
                         # Tell them it is invalid
                         return render_template("invalid.html", message=0)
                 else:
                     # Proceed with normal logic
-                    nonTokenLogic(db, request, team_id, user_id, )
+                    nonTokenLogic(db, request, team_id, user_id, item_id)
             elif team_id and user_id and score:
                 if token:
                     tokenStatus = validateToken(token)
@@ -74,13 +87,14 @@ def rate(team_id, user_id, score):
                     if tokenStatus:
                         # Token is valid
                         # make the rating
-                        return render_template("rating.html", token=token)
+                        return render_template("rating.html", token=token, team_id=team_id,
+                        user_id=user_id, score=score)
                     else:
                         # Token is invalid
                         # Tell them it is invalid
                         return render_template("invalid.html", message=0)
                 else:
-                    nonTokenLogic(db, request)
+                    nonTokenLogic(db, request, team_id, user_id, score)
             else:
                 # If all of the required information was not provided error out
                 return render_template("invalid.html", message=1)
@@ -89,6 +103,9 @@ def rate(team_id, user_id, score):
             if request.form['type'] == "token":
                 tokenLogic()
             else:
+                newRating = Rating()
+                db.session.add(newRating)
+                db.session.commit()
                 return render_template("rating_complete.html")
         else:
             return abort(400)
