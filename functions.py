@@ -17,21 +17,57 @@ def makeToken(team_id, user_id, account_id, item, db):
         db.session.commit()
         return True
     except Exception, e:
-        error_log(e)
+        error_log(e, "ERROR")
         return False
 
-def makeIdentity(ip, db):
+def makeIdentity(user_hash, db):
+    try:
+        newIdentity = Rater(user_hash)
+        db.session.add(newIdentity)
+        db.session.commit()
+        return True
+    except Exception, e:
+        error_log(e, "ERROR")
+        return False
+
+def makeIdentityHash(ip):
     try:
         user_hash = md5.new()
         user_hash.update(ip)
         user_hash.update(datetime.datetime.now())
-        newIdentity = Rater(user_hash)
-        db.session.add(newIdentity)
-        db.session.commit()
         return user_hash.hexdigest()
     except Exception, e:
-        error_log(e)
-        return False
-
-
+        error_log(e, "ERROR")
+        return 0
     
+def checkIdentity(user_hash, db):
+    try:
+        identity = Rater.query.filter_by(user_hash=user_hash).all()
+        if identity:
+            return True
+        else:
+            return False
+    except Exception, e:
+        error_log(e, "ERROR")
+        return 0
+
+def checkCookie(request, user_hash):
+    try:
+        if request.cookies.get('howedoin_%s' % user_hash):
+            return True
+        else:
+            return False
+    except Exception, e:
+        error_log(e, "ERROR")
+        return 0
+
+def error_log(error, level):
+    try:
+        error_log = open('howedoin.log', 'w+')
+        date = datetime.datetime.now()
+        error_string = "[%s] [%s] - %s" % (str(date), level, error)
+        error_log.write(error_string)
+        error_log.close()
+    except:
+        pass
+

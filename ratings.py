@@ -17,6 +17,7 @@ ratings = Blueprint('ratings', __name__, template_folder='templates')
 def rate(team_id, user_id, score):
     try:
         ip = request.remote_addr
+        identity = makeIdentityHash(ip)
         check_id = checkIdentity(ip, db)
         if not check_id:
             # If the identity is not already in the db
