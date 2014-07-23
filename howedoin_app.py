@@ -11,9 +11,15 @@ import random
 import string
 import datetime
 
+import logging
+from logging.handlers import RotatingFileHandler
+
 from dateutil.relativedelta import relativedelta
 
+import ratings
+
 app = Flask(__name__)
+app.register_blueprint(ratings)
 connectionString = "mysql://%s:%s@%s:3306/%s" % (USERNAME, PASSWORD, HOSTNAME, DATABASE)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = connectionString
@@ -97,7 +103,8 @@ class Rating(db.Model):
     rater_name = db.Column(db.String(50))
     rater_id = db.Column(db.Integer)
 
-    def __init__(self, account_id, user_id, score, username, rater_email="", rater_name="", rater_id="", comment="", hidden=0, date=datetime.datetime.now())
+    def __init__(self, account_id, user_id, score, username, rater_email="", rater_name="", rater_id="", comment="",
+    hidden=0, date=datetime.datetime.now()):
         self.account_id = account_id
         self.user_id = user_id
         self.score = score
@@ -191,4 +198,7 @@ db.create_all()
 db.session.commit()
 
 if __name__ == '__main__':
+    handler = RotatingFileHandler('howedoin.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
     app.run(host='0.0.0.0', debug=True)
