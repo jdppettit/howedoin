@@ -67,7 +67,7 @@ def rate(team_id, user_id, score):
             if team_id and item_id and user_id and score:
                 if token:
                     # Check token validity
-                    tokenStatus = validateToken(token)
+                    tokenStatus = validateToken(token, db)
                     if tokenStatus:
                         # Token is valid
                         # Make the rating
@@ -82,7 +82,7 @@ def rate(team_id, user_id, score):
                     nonTokenLogic(db, request, team_id, user_id, item_id)
             elif team_id and user_id and score:
                 if token:
-                    tokenStatus = validateToken(token)
+                    tokenStatus = validateToken(token, db)
                     # Check token validity
                     if tokenStatus:
                         # Token is valid

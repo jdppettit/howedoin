@@ -62,6 +62,17 @@ def checkCookie(request, user_hash):
         error_log(e, "ERROR")
         return 0
 
+def validateToken(token, db):
+    try:
+        checkedToken = Token.query.filter_by(token=token).first()
+        if checkedToken:
+            return True
+        else:
+            return False
+    except Exception, e:
+        error_log(e, "ERROR")
+        return 0
+
 def error_log(error, level):
     try:
         error_log = open('howedoin.log', 'w+')
