@@ -13,44 +13,85 @@ from logging.handlers import RotatingFileHandler
 
 ratings = Blueprint('ratings', __name__, template_folder='templates')
 
-@ratings.route('/rate/team/<team_id>/item/<item_id>/user/<user_id>/score/<score>')
-@ratings.route('/rate/team/<team_id>/item/<item_id>/user/<user_id>/score/<score>/token/<token>')
-@ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>')
-@ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>/token/<token>')
-@ratings.route('/rate/user/<user_id>/score/<score>')
-@ratings.route('/rate/user/<user_id>/score/<score>/token/<token>')
+def nonTokenLogic(db, request, team_id, user_id, score, item_id=0):
+    ip = request.remote_addr
+    identity = makeIdentityHash(ip)
+    check_id = checkIdentity(identity, db)
+    if not check_id:
+        identity = makeIdentity(identity, db)
+        check_cookie = checkCookie(request, identity)
+        if not check_cookie:
+            # If the cookie is not present
+            print "foo"
+        elif check_cookie:
+            # Cookie is present
+            print "foo"
+        else:
+            abort(404)
+    elif check_id:
+        check_cookie = checkCookie(request, identity)
+        if not check_cookie:
+            print "foo"
+        elif check_cookie:
+            print "foo"
+        else:
+            abort(404)
+    else:
+        abort(404)
+
+def tokenLogic(db, request, token, team_id, user_id, score, item_id=0):
+    # invalidate token
+    # make the new rating
+    print "foo"
+    
+
+@ratings.route('/rate/team/<team_id>/item/<item_id>/user/<user_id>/score/<score>', methods=['POST', 'GET'])
+@ratings.route('/rate/team/<team_id>/item/<item_id>/user/<user_id>/score/<score>/token/<token>', methods=['POST', 'GET'])
+@ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>', methods=['POST', 'GET'])
+@ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>/token/<token>', methods=['POST', 'GET'])
 def rate(team_id, user_id, score):
     try:
-        ip = request.remote_addr
-        identity = makeIdentityHash(ip)
-        check_id = checkIdentity(identity, db)
-        if not check_id:
-            # If the identity is not already in the db
-            identity = makeIdentity(identity, db)
-            check_cookie = checkCookie(request, identity)
-            if not check_cookie:
-                # If the cookie is not present
-                print "foo"
-            elif check_cookie:
-                # If the cookie is present
-                print "foo"
+        if request.method == "GET":
+            if team_id and item_id and user_id and score:
+                if token:
+                    # Check token validity
+                    tokenStatus = validateToken(token)
+                    if tokenStatus:
+                        # Token is valid
+                        # Make the rating
+                        return render_template("rating.html", token=token)
+                    else:
+                        # Token invalid
+                        # Tell them it is invalid
+                        return render_template("invalid.html", message=0)
+                else:
+                    # Proceed with normal logic
+                    nonTokenLogic(db, request, team_id, user_id, )
+            elif team_id and user_id and score:
+                if token:
+                    tokenStatus = validateToken(token)
+                    # Check token validity
+                    if tokenStatus:
+                        # Token is valid
+                        # make the rating
+                        return render_template("rating.html", token=token)
+                    else:
+                        # Token is invalid
+                        # Tell them it is invalid
+                        return render_template("invalid.html", message=0)
+                else:
+                    nonTokenLogic(db, request)
             else:
-                abort(500)
-        elif check_id:
-            # If the identity is in the database
-            check_cookie = checkCookie(request, identity)
-            if not check_cookie:
-                # If the cookie is not present
-                print "foo"
-            elif check_cookie:
-                # If the cookie is present
-                print "foo"
+                # If all of the required information was not provided error out
+                return render_template("invalid.html", message=1)
+        elif request.method == "POST":
+            # Handle the form data
+            if request.form['type'] == "token":
+                tokenLogic()
             else:
-                abort(500)
+                return render_template("rating_complete.html")
         else:
-            # If it returns 0 or anything else weird 
-            abort(500)
-
+            return abort(400)
     except Exception, e:
         app.logger.error(e)
         abort(404)
