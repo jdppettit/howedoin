@@ -18,27 +18,34 @@ def rate(team_id, user_id, score):
     try:
         ip = request.remote_addr
         identity = makeIdentityHash(ip)
-        check_id = checkIdentity(ip, db)
+        check_id = checkIdentity(identity, db)
         if not check_id:
             # If the identity is not already in the db
             identity = makeIdentity(ip, db)
-            check_cookie = checkCookie(request)
+            check_cookie = checkCookie(request, identity)
             if not check_cookie:
                 # If the cookie is not present
                 print "foo"
-            else:
+            elif check_cookie:
                 # If the cookie is present
                 print "foo"
+            else:
+                abort(500)
 
-        else:
+        elif check_id:
             # If the identity is in the database
-            check_cookie = checkCookie(request)
+            check_cookie = checkCookie(request, identity)
             if not check_cookie:
                 # If the cookie is not present
                 print "foo"
-            else:
+            elif check_cookie:
                 # If the cookie is present
                 print "foo"
+            else:
+                abort(500)
+        else:
+            # If it returns 0 or anything else weird 
+            abort(500)
 
     except Exception, e:
         app.logger.error(e)
