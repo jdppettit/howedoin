@@ -93,8 +93,11 @@ class Rating(db.Model):
     hidden = db.Column(db.Integer)
     followup = db.Column(db.Text)
     followup_user = db.Column(db.String(35))
+    rater_email = db.Column(db.String(50))
+    rater_name = db.Column(db.String(50))
+    rater_id = db.Column(db.Integer)
 
-    def __init__(self, account_id, user_id, score, username, comment="", hidden=0, date=datetime.datetime.now())
+    def __init__(self, account_id, user_id, score, username, rater_email="", rater_name="", rater_id="", comment="", hidden=0, date=datetime.datetime.now())
         self.account_id = account_id
         self.user_id = user_id
         self.score = score
@@ -102,6 +105,9 @@ class Rating(db.Model):
         self.comment = comment
         self.hidden = hidden
         self.date = date
+        self.rater_email = rater_email
+        self.rater_name = rater_name
+        self.rater_id = rater_id
 
 class Team(db.Model):
     __tablename__ = "team"
@@ -155,6 +161,31 @@ class Package(db.Model):
         self.annual_cost = annual_cost
         self.biennial_cost = biennial_cost
         self.cost_per_additional_user = cost_per_additional_user
+
+class Rater(db.Model):
+    __tablename__ = "rater"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_hash = db.Column(db.String(50))
+    reap = db.Column(db.Date)
+
+    def __init__(self, user_hash, reap=datetime.datetime.now() + relativedelta(weeks=1)):
+        self.user_hash = user_hash
+        self.reap = reap
+
+class Token(db.Model):
+    __tablename__ = "token"
+
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
+    expire = db.Column(db.Date)
+
+    def __init__(self, account_id, user_id, token, expire = datetime.datetime.now() + relativedelta(weeks=1)):
+        self.account_id = account_id
+        self.user_id = user_id
+        self.token = token
+        self.expire = expire
 
 db.create_all()
 db.session.commit()
