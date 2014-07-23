@@ -13,7 +13,12 @@ from logging.handlers import RotatingFileHandler
 
 ratings = Blueprint('ratings', __name__, template_folder='templates')
 
+@ratings.route('/rate/team/<team_id>/item/<item_id>/user/<user_id>/score/<score>')
+@ratings.route('/rate/team/<team_id>/item/<item_id>/user/<user_id>/score/<score>/token/<token>')
 @ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>')
+@ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>/token/<token>')
+@ratings.route('/rate/user/<user_id>/score/<score>')
+@ratings.route('/rate/user/<user_id>/score/<score>/token/<token>')
 def rate(team_id, user_id, score):
     try:
         ip = request.remote_addr
@@ -21,7 +26,7 @@ def rate(team_id, user_id, score):
         check_id = checkIdentity(identity, db)
         if not check_id:
             # If the identity is not already in the db
-            identity = makeIdentity(ip, db)
+            identity = makeIdentity(identity, db)
             check_cookie = checkCookie(request, identity)
             if not check_cookie:
                 # If the cookie is not present
@@ -31,7 +36,6 @@ def rate(team_id, user_id, score):
                 print "foo"
             else:
                 abort(500)
-
         elif check_id:
             # If the identity is in the database
             check_cookie = checkCookie(request, identity)
