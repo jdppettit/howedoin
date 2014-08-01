@@ -19,7 +19,7 @@ from dateutil.relativedelta import relativedelta
 import ratings
 
 app = Flask(__name__)
-app.register_blueprint(ratings)
+#app.register_blueprint(ratings)
 connectionString = "mysql://%s:%s@%s:3306/%s" % (USERNAME, PASSWORD, HOSTNAME, DATABASE)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = connectionString
@@ -196,6 +196,14 @@ class Token(db.Model):
 
 db.create_all()
 db.session.commit()
+
+@app.route('/')
+def index():
+    return render_template("index.html")
+
+@app.route('/rating')
+def rating():
+    return render_template("rating.html")
 
 if __name__ == '__main__':
     handler = RotatingFileHandler('howedoin.log', maxBytes=10000, backupCount=1)

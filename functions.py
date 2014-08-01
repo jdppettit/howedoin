@@ -73,6 +73,39 @@ def validateToken(token, db):
         error_log(e, "ERROR")
         return 0
 
+def validateTeam(team_id, db):
+    try:
+        checkedTeam = Team.query.filter_by(id=team_id).first()
+        if checkedTeam:
+            return True
+        else:
+            return False
+    except Exception, e:
+        error_log(e, "ERROR")
+        return 0
+
+def validateUser(user_id, db):
+    try:
+        checkedUser = User.query.filter_by(id=user_id).first()
+        if checkedUser:
+            return True
+        else:
+            return False
+    except Exception, e:
+        error_log(e, "ERROR")
+        return 0
+
+def validateUserMembership(user_id, team_id, db):
+    try:
+        checkMembership = Membership.query.filter_by(user_id=user_id, team_id=team_id).first()
+        if checkMembership:
+            return True
+        else:
+            return False
+    except Exception, e:
+        error_log(e, "ERROR")
+        return 0
+
 def error_log(error, level):
     try:
         error_log = open('howedoin.log', 'w+')
