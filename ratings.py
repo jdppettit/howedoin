@@ -63,8 +63,11 @@ def tokenLogic(db, request, token, team_id, user_id, score, item_id=0):
 @ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>/token/<token>', methods=['POST', 'GET'])
 def rate(team_id, user_id, score):
     try:
+        userValidate = validateUser(user_id, db)
+        teamValidate = validateTeam(team_id, db)
+        userMembershipValidate = validateUserMembership(user_id, team_id, db)
         if request.method == "GET":
-            if team_id and item_id and user_id and score:
+            if team_id and item_id and user_id and score and userValidate and teamValidate and userMembershipValidate:
                 if token:
                     # Check token validity
                     tokenStatus = validateToken(token, db)
@@ -80,7 +83,7 @@ def rate(team_id, user_id, score):
                 else:
                     # Proceed with normal logic
                     nonTokenLogic(db, request, team_id, user_id, item_id)
-            elif team_id and user_id and score:
+            elif team_id and user_id and score and userValidate and teamValidate and userMembershipValidate:
                 if token:
                     tokenStatus = validateToken(token, db)
                     # Check token validity
@@ -94,6 +97,7 @@ def rate(team_id, user_id, score):
                         # Tell them it is invalid
                         return render_template("invalid.html", message=0)
                 else:
+                    # If there is no token
                     nonTokenLogic(db, request, team_id, user_id, score)
             else:
                 # If all of the required information was not provided error out
