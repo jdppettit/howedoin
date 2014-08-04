@@ -28,24 +28,87 @@
 
     <!-- Custom styles for this template -->
     <link href="static/css/carousel.css" rel="stylesheet">
-  </head>
+    <link href="static/css/rating.css" rel="stylesheet">
+</head>
 <!-- NAVBAR
 ================================================== -->
   <body>
     <div class="container">
-    <div class="row clearfix">
-    <div class="col-md-12 column">
-<div class="panel panel-primary">
-<div class="panel-heading">
-<h3 class="panel-title">Leave your feedback</h3>
-</div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Leave your feedback</h3>
+            </div>
+            <div class="panel-body">
+            <div class="container">
+        <!-- Text input-->
+        <form class="form-horizontal" method="post" action="/rating">
+<fieldset>
+
+<!-- Form Name -->
 
 <!-- Multiple Radios (inline) -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="score">How did we do?</label>
+  <div class="col-md-4"> 
+    <label class="radio-inline" for="score-0">
+      <input type="radio" name="score" id="score-0" value="1" checked="checked">
+      Good
+    </label> 
+    <label class="radio-inline" for="score-1">
+      <input type="radio" name="score" id="score-1" value="2">
+      Okay
+    </label> 
+    <label class="radio-inline" for="score-2">
+      <input type="radio" name="score" id="score-2" value="3">
+      Bad
+    </label>
+  </div>
+</div>
 
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="name">Your Name</label>  
+  <div class="col-md-4">
+  <input id="name" name="name" type="text" placeholder="Optional" class="form-control input-md">
+    
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="email">Your Email</label>  
+  <div class="col-md-4">
+  <input id="email" name="email" type="text" placeholder="Optional" class="form-control input-md">
+    
+  </div>
+</div>
+
+<!-- Textarea -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="comment">Comments?</label>
+  <div class="col-md-4">                     
+    <textarea class="form-control" id="comment" name="comment"></textarea>
+  </div>
+</div>
+
+<!-- Button -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="submit"></label>
+  <div class="col-md-4">
+    <button id="submit" name="submit" class="btn btn-success">Submit Rating</button>
+  </div>
+</div>
+
+</fieldset>
+</form>
+
+
+
+        </div>
+        </div>
+        </div><!-- panel !-->
     </div>
-    </div>
-    </div>
-    <!-- Bootstrap core JavaScript
+<!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
