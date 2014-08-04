@@ -205,6 +205,10 @@ def index():
 def rating():
     return render_template("rating.html")
 
+@app.route('/register')
+def register():
+    return render_template("register.html")
+
 if __name__ == '__main__':
     handler = RotatingFileHandler('howedoin.log', maxBytes=10000, backupCount=1)
     handler.setLevel(logging.INFO)
