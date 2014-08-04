@@ -1,5 +1,6 @@
+@app.route('/login/<plan_name>', methods=['POST','GET'])
 @app.route('/login', methods=['POST','GET'])
-def login():
+def login(plan_name="free"):
     try:
         if request.method == "POST":
             if request.form['username'] and request.form['password']:
@@ -21,9 +22,9 @@ def login():
                 if session['logged_in']:
                     return render_template("dashboard.html")
                 else:
-                    return render_template("login.html")
+                    return render_template("login.html", plan_name=plan_name)
             except:
                 # If the session variable doesn't exist (not logged in)
-                return render_template("login.html")
+                return render_template("login.html", plan_name=plan_name)
     except:
         abort(404)
