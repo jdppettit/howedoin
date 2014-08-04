@@ -34,7 +34,7 @@
   <body>
     <div class="navbar-wrapper">
       <div class="container">
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -47,11 +47,11 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="/plans">Plans</a></li>
+                <li><a href="/plans">Plans</a></li>
                 <li><a href="/help">Help</a></li>
-                <li><a href="/register">Sign up</a></li>
+                <li><a href="/register">Register</a></li>
             </ul>
-          <form class="navbar-form navbar-right" role="form">
+          <form class="navbar-form navbar-right" role="form" method="post" action="/login">
             <div class="form-group">
               <input type="text" placeholder="Username" class="form-control">
             </div>
@@ -128,7 +128,7 @@
       <!-- Three columns of text below the carousel -->
       <div class="row">
         <div class="col-lg-4">
-          <img class="img-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" style="width: 140px; height: 140px;">
+          <img class="img-circle" src="static/images/powerfulmetrics.png" alt="Generic placeholder image" style="width: 140px; height: 140px;">
           <h2>Powerful metrics</h2>
           <p>Howedoin provides powerful reports and graphs that will help you identify where your team does well, and
           where it can use a little improvement. We also offer individual employee ratings and a leaderboard to spark
@@ -159,8 +159,9 @@
 
       <div class="row featurette">
         <div class="col-md-7">
-          <h2 class="featurette-heading">First featurette heading. <span class="text-muted">It'll blow your mind.</span></h2>
-          <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+          <h2 class="featurette-heading">Simple setup, <span class="text-muted">CMS support in mind.</span></h2>
+          <p class="lead">We support lots of things like thing one, thing two, thing three and thing four. If you have a
+          custom CMS, we make that easy too! Just paste a link and you're set.</p>
         </div>
         <div class="col-md-5">
           <img class="featurette-image img-responsive" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
@@ -174,7 +175,8 @@
           <img class="featurette-image img-responsive" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
         </div>
         <div class="col-md-7">
-          <h2 class="featurette-heading">Oh yeah, it's that good. <span class="text-muted">See for yourself.</span></h2>
+          <h2 class="featurette-heading">Foster friendly competition, <span class="text-muted">at your customer's
+          benefit.</span></h2>
           <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
         </div>
       </div>
@@ -183,7 +185,7 @@
 
       <div class="row featurette">
         <div class="col-md-7">
-          <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span></h2>
+          <h2 class="featurette-heading">Affordable and powerful,  <span class="text-muted">indespensable.</span></h2>
           <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
         </div>
         <div class="col-md-5">
@@ -192,7 +194,77 @@
       </div>
 
       <hr class="featurette-divider">
+        
+      <div class="container">
 
+<div class="row">
+<h2 style="margin-top:0px; margin-bottom:50px;" class="featurette-heading">Affordable plans for <span class="text-muted">everybody.</span></h2>
+<div class="col-md-4">
+  <div class="panel panel-info">
+     <div class="panel-heading"><h3 class="text-center">Free</h3></div>
+         <div class="panel-body text-center">
+            <p class="lead" style="font-size:40px"><strong>100% Free</strong></p>
+        </div>
+                       <ul class="list-group list-group-flush text-center">
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Personal use</li>
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> 1 Team</li>
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> 3 Users</li>
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> No additional users</li>
+                        </ul>
+    <div class="panel-footer">
+        <a class="btn btn-lg btn-block btn-info"
+        href="/register/free">Register</a>
+    </div>
+ </div>
+
+  </div>
+   <div class="col-md-4">
+  <div class="panel panel-info">
+     <div class="panel-heading"><h3 class="text-center">Business</h3></div>
+         <div class="panel-body text-center">
+            <p class="lead" style="font-size:40px"><strong>$10 / month</strong></p>
+        </div>
+                       <ul class="list-group list-group-flush text-center">
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Small business use</li>
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> 3 Teams</li>
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> 5 Users</li>
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Additional users $3.00 /
+                            month</li>
+
+                        </ul>
+    <div class="panel-footer">
+        <a class="btn btn-lg btn-block btn-info"
+        href="/register/business">Buy Now</a>
+    </div>
+ </div>
+
+  </div>
+   <div class="col-md-4">
+  <div class="panel panel-primary">
+    <div class="panel-heading"><h3 class="text-center">Enterprise</h3></div>
+         <div class="panel-body text-center">
+            <p class="lead" style="font-size:40px"><strong>$25 / month</strong></p>
+        </div>
+                       <ul class="list-group list-group-flush text-center">
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Enterprise use</li>
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Unlimited Teams</li>
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> 25 Users</li>
+                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Additional users $2.50 /
+                            month</li
+                            >
+
+                        </ul>
+    <div class="panel-footer">
+        <a class="btn btn-lg btn-block btn-primary"
+        href="/register/enterprise">Buy Now</a>
+    </div>
+ </div>
+
+  </div>
+  </div>
+</div>
+
+    <hr class="featurette-divider">
       <!-- /END THE FEATURETTES -->
 
 

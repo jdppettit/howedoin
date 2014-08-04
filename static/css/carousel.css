@@ -7,6 +7,69 @@ body {
   color: #5a5a5a;
 }
 
+.navbar-fixed-top {
+    border-width: 0 0 0;
+}
+
+.navbar-default {
+    background-color: #f5f5f5;
+    border-color: #00a3f0;
+}
+.navbar-default .navbar-brand {
+    color: #000000;
+}
+.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+    color: #036ad1;
+}
+.navbar-default .navbar-text {
+    color: #000000;
+}
+.navbar-default .navbar-nav > li > a {
+    color: #000000;
+}
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+    color: #036ad1;
+}
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+    color: #036ad1;
+    background-color: #00a3f0;
+}
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+    color: #036ad1;
+    background-color: #00a3f0;
+}
+.navbar-default .navbar-toggle {
+    border-color: #00a3f0;
+}
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+    background-color: #00a3f0;
+}
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: #000000;
+}
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+    border-color: #000000;
+}
+.navbar-default .navbar-link {
+    color: #000000;
+}
+.navbar-default .navbar-link:hover {
+    color: #036ad1;
+}
+
+@media (max-width: 767px) {
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        color: #000000;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+        color: #036ad1;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+        color: #036ad1;
+        background-color: #00a3f0;
+    }
+}
 
 
 /* CUSTOMIZE THE NAVBAR
@@ -121,9 +184,6 @@ body {
   }
 
   /* The navbar becomes detached from the top, so we round the corners */
-  .navbar-wrapper .navbar {
-    border-radius: 4px;
-  }
 
   /* Bump up size of carousel content */
   .carousel-caption p {
@@ -142,3 +202,4 @@ body {
     margin-top: 120px;
   }
 }
+
