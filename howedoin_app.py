@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 from flask import *
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
@@ -16,10 +18,15 @@ from logging.handlers import RotatingFileHandler
 
 from dateutil.relativedelta import relativedelta
 
-import ratings
+from ratings import ratings
+from login import login
+
+print(type(login))
+print(repr(login))
 
 app = Flask(__name__)
-#app.register_blueprint(ratings)
+app.register_blueprint(ratings)
+app.register_blueprint(login)
 connectionString = "mysql://%s:%s@%s:3306/%s" % (USERNAME, PASSWORD, HOSTNAME, DATABASE)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = connectionString

@@ -1,6 +1,10 @@
-@app.route('/login/<plan_name>', methods=['POST','GET'])
-@app.route('/login', methods=['POST','GET'])
-def login(plan_name="free"):
+from flask import *
+
+login = Blueprint('login', __name__, template_folder='templates')
+
+@login.route('/login/<plan_name>', methods=['POST','GET'])
+@login.route('/login', methods=['POST','GET'])
+def loginEndpoint(plan_name="free"):
     try:
         if request.method == "POST":
             if request.form['username'] and request.form['password']:
