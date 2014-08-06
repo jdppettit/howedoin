@@ -1,7 +1,13 @@
+from __future__ import absolute_import
+
 from flask import *
 from flask import request
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
+
 from password import *
+
+from models import Account, User
 
 import random
 import sys
@@ -126,9 +132,9 @@ def registerEndpoint():
                         # if company name us it
                         if request.form['password'] == request.form['passwordconfirm']:
                             accountID = makeAccountID()
-                            goodThru = datetime.datetime.now() + relativedelta(days=1)
+                            goodThru = datetime.now() + relativedelta(days=1)
                             maxUsers = getMaxUsers(request.form['plan'])
-                            newAccount = Account(accoundID, request.form['company_name'], request.form['plan'],
+                            newAccount = Account(accountID, request.form['company_name'], request.form['plan'],
                             goodThru, 0, maxUsers)
 
                             encryptedPassword = hashPassword(request.form['password'])
@@ -155,7 +161,7 @@ def registerEndpoint():
                         # if not use empty string
                         if request.form['password'] == request.form['passwordconfirm']:
                             accountID = makeAccountID()
-                            goodThru = datetime.datetime.now() + relativedelta(days=1)
+                            goodThru = datetime.now() + relativedelta(days=1)
                             maxUsers = getMaxUsers(request.form['plan'])
                             newAccount = Account(accoundID, "", request.form['plan'],
                             goodThru, 0, maxUsers)
