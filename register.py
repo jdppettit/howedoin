@@ -1,6 +1,11 @@
 from flask import *
+from flask import request
 from dateutil.relativedelta import relativedelta
 from password import *
+
+import random
+import sys
+import traceback
 
 register = Blueprint('register', __name__, template_folder='templates')
 
@@ -37,7 +42,23 @@ def getUserID(record, db):
     db.session.refresh(record)
     return record.id
 
-@register.route('/register', methods=['POST','GET'])
+def getMaxUsers(plan):
+    if plan == 0:
+        return 3
+    elif plan == 1:
+        return 5
+    elif plan == 2:
+        return 10
+
+def doBilling(plan):
+    if plan == 0:
+        return render_template("dashboard.html")
+    elif plan == 1:
+        return render_template("billing.html", plan=plan, cost=10)
+    elif plan == 2:
+        return render_template("billing.html", plan=plan, cost=25)
+
+@register.route('/register', methods=['GET','POST'])
 def registerEndpoint():
     try:
         if request.method == "GET":
@@ -59,8 +80,7 @@ def registerEndpoint():
                         if request.form['password'] == request.form['passwordconfirm']:
                             # if the passwords match proceed
                             accountID = makeAccountID()
-                            newAccount = Account(accountID, request.form['company_name'], request.form['plan'], "2999-12-31
-                            23:59:59", 1, 3)
+                            newAccount = Account(accountID, request.form['company_name'], request.form['plan'], "2999-12-31 23:59:59", 1, 3)
 
                             encryptedPassword = hashPassword(request.form['password'])
                             usernameCheck = checkUsername(request.form['username'])
@@ -85,7 +105,7 @@ def registerEndpoint():
                             accountID = makeAccountID()
                             newAccount = Account(accountID, "", request.form['plan'], "2999-12-31 23:59:59", 1, 3)
 
-                            encryptedPAssword = hashPassword(request.form['password'])
+                            encryptedPassword = hashPassword(request.form['password'])
                             usernameCheck = checkUsername(request.form['username'])
                             if usernameCheck:
                                 newUser = User(accountID, request.form['name'], request.form['username'], encryptedPassword, request.form['email'], 1)
@@ -104,14 +124,69 @@ def registerEndpoint():
                     # do billing, paidthru should be one month from now
                     if request.form['company_name']:
                         # if company name us it
-                        print "test"
+                        if request.form['password'] == request.form['passwordconfirm']:
+                            accountID = makeAccountID()
+                            goodThru = datetime.datetime.now() + relativedelta(days=1)
+                            maxUsers = getMaxUsers(request.form['plan'])
+                            newAccount = Account(accoundID, request.form['company_name'], request.form['plan'],
+                            goodThru, 0, maxUsers)
+
+                            encryptedPassword = hashPassword(request.form['password'])
+                            usernameCheck = checkUsername(request.form['username'])
+                            if usernameCheck:
+                                newUser = User(accountID, reuqest.form['name'], request.form['username'],
+                                encryptedPassword, request.form['email'], 0)
+                                db.session.add(newAccount)
+                                db.session.add(newUser)
+                                db.session.commit()
+                                user_id = getUserID(newUser, db)
+                                doLogin(request.form['username'], request.form['name'], user_id, account_id,
+                                request.form['email'])
+                                doBilling(request.form['plan'])
+                            else:
+                                return render_template("register.html", company_name=request.form['company_name'],
+                                username=request.form['username'], name=request.form['name'], plan=request.form['plan'],
+                                email=request.form['email'], error="Sorry, that username is taken. Can you pick another?")
+                        else:
+                            return render_template("register.html", company_name=request.form['company_name'],
+                            username=request.form['username'], name=request.form['name'], plan=request.form['plan'],
+                            email=request.form['email'], error="The passwords you entered didn't match, please try again, thanks!")
                     else:
-                        print "test"
                         # if not use empty string
+                        if request.form['password'] == request.form['passwordconfirm']:
+                            accountID = makeAccountID()
+                            goodThru = datetime.datetime.now() + relativedelta(days=1)
+                            maxUsers = getMaxUsers(request.form['plan'])
+                            newAccount = Account(accoundID, "", request.form['plan'],
+                            goodThru, 0, maxUsers)
+
+                            encryptedPassword = hashPassword(request.form['password'])
+                            usernameCheck = checkUsername(request.form['username'])
+                            if usernameCheck:
+                                newUser = User(accountID, reuqest.form['name'], request.form['username'],
+                                encryptedPassword, request.form['email'], 0)
+                                db.session.add(newAccount)
+                                db.session.add(newUser)
+                                db.session.commit()
+                                user_id = getUserID(newUser, db)
+                                doLogin(request.form['username'], request.form['name'], user_id, account_id,
+                                request.form['email'])
+                                doBilling(request.form['plan'])
+                            else:
+                                return render_template("register.html", company_name=request.form['company_name'],
+                                username=request.form['username'], name=request.form['name'], plan=request.form['plan'],
+                                email=request.form['email'], error="Sorry, that username is taken. Can you pick another?")
+                        else:
+                            return render_template("register.html", company_name=request.form['company_name'],
+                            username=request.form['username'], name=request.form['name'], plan=request.form['plan'],
+                            email=request.form['email'], error="The passwords you entered didn't match, please try again, thanks!")
+ 
             else:
                 return render_template("register.html", error="Please fill out all of the required fields.")
             # do all the registration stuff
             # if not on free plan, pass to billing
             # if on free plan, redirect to dashboard
-    except:
+    except Exception, e:
+        print e
+        traceback.print_exc(file=sys.stdout)
         abort(404)

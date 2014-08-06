@@ -2,9 +2,8 @@ from flask import *
 
 login = Blueprint('login', __name__, template_folder='templates')
 
-@login.route('/login/<plan_name>', methods=['POST','GET'])
 @login.route('/login', methods=['POST','GET'])
-def loginEndpoint(plan_name="free"):
+def loginEndpoint():
     try:
         if request.method == "POST":
             if request.form['username'] and request.form['password']:
@@ -26,9 +25,9 @@ def loginEndpoint(plan_name="free"):
                 if session['logged_in']:
                     return render_template("dashboard.html")
                 else:
-                    return render_template("login.html", plan_name=plan_name)
+                    return render_template("login.html")
             except:
                 # If the session variable doesn't exist (not logged in)
-                return render_template("login.html", plan_name=plan_name)
+                return render_template("login.html")
     except:
         abort(404)
