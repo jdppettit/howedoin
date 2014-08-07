@@ -47,19 +47,19 @@ def getUserID(record, db):
     return record.id
 
 def getMaxUsers(plan):
-    if plan == 0:
+    if plan == "0":
         return 3
-    elif plan == 1:
+    elif plan == "1":
         return 5
-    elif plan == 2:
+    elif plan == "2":
         return 10
 
 def doBilling(plan):
-    if plan == 0:
+    if plan == "0":
         return render_template("dashboard.html")
-    elif plan == 1:
+    elif plan == "1":
         return render_template("billing.html", plan=plan, cost=10)
-    elif plan == 2:
+    elif plan == "2":
         return render_template("billing.html", plan=plan, cost=25)
 
 @register.route('/register', methods=['GET','POST'])
@@ -73,7 +73,7 @@ def registerEndpoint():
             return render_template("register.html")
     elif request.method == "POST":
         if request.form['username'] and request.form['name'] and request.form['email'] and request.form['password'] and request.form['passwordconfirm'] and request.form['plan']:
-            if request.form['plan'] == 0:
+            if request.form['plan'] == "0":
                 # if plan is free, don't do billing, paidthru is forever
                 if request.form['company_name']:
                     # if company_name is there, use it
@@ -87,15 +87,11 @@ def registerEndpoint():
                         if usernameCheck:
                             # If this returns true, username is unique, proceed
                             newUser = User(accountID, request.form['name'], request.form['username'], encryptedPassword, request.form['email'], 1)
-                            print "got here 5"
                             db.session.add(newAccount)
-                            print "got here 0"
                             db.session.add(newUser)
                             db.session.commit()
-                            print "got here 1"
                             user_id = getUserID(newUser, db)
                             doLogin(request.form['username'], request.form['name'], user_id, accountID, request.form['email'])
-                            print "got here"
                             return render_template("dashboard.html")
                         else:
                             # if false, make them pick a new username
