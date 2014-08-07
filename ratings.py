@@ -62,57 +62,54 @@ def tokenLogic(db, request, token, team_id, user_id, score, item_id=0):
 @ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>', methods=['POST', 'GET'])
 @ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>/token/<token>', methods=['POST', 'GET'])
 def rate(team_id, user_id, score):
-    try:
-        userValidate = validateUser(user_id, db)
-        teamValidate = validateTeam(team_id, db)
-        userMembershipValidate = validateUserMembership(user_id, team_id, db)
-        if request.method == "GET":
-            if team_id and item_id and user_id and score and userValidate and teamValidate and userMembershipValidate:
-                if token:
-                    # Check token validity
-                    tokenStatus = validateToken(token, db)
-                    if tokenStatus:
-                        # Token is valid
-                        # Make the rating
-                        return render_template("rating.html", token=token, team_id=team_id, item_id=item_id,
-                        user_id=user_id, score=score)
-                    else:
-                        # Token invalid
-                        # Tell them it is invalid
-                        return render_template("invalid.html", message=0)
+
+    userValidate = validateUser(user_id, db)
+    teamValidate = validateTeam(team_id, db)
+    userMembershipValidate = validateUserMembership(user_id, team_id, db)
+    if request.method == "GET":
+        if team_id and item_id and user_id and score and userValidate and teamValidate and userMembershipValidate:
+            if token:
+                # Check token validity
+                tokenStatus = validateToken(token, db)
+                if tokenStatus:
+                    # Token is valid
+                    # Make the rating
+                    return render_template("rating.html", token=token, team_id=team_id, item_id=item_id,
+                    user_id=user_id, score=score)
                 else:
-                    # Proceed with normal logic
-                    nonTokenLogic(db, request, team_id, user_id, item_id)
-            elif team_id and user_id and score and userValidate and teamValidate and userMembershipValidate:
-                if token:
-                    tokenStatus = validateToken(token, db)
-                    # Check token validity
-                    if tokenStatus:
-                        # Token is valid
-                        # make the rating
-                        return render_template("rating.html", token=token, team_id=team_id,
-                        user_id=user_id, score=score)
-                    else:
-                        # Token is invalid
-                        # Tell them it is invalid
-                        return render_template("invalid.html", message=0)
+                    # Token invalid
+                    # Tell them it is invalid
+                    return render_template("invalid.html", message=0)
+            else:
+                # Proceed with normal logic
+                nonTokenLogic(db, request, team_id, user_id, item_id)
+        elif team_id and user_id and score and userValidate and teamValidate and userMembershipValidate:
+            if token:
+                tokenStatus = validateToken(token, db)
+                # Check token validity
+                if tokenStatus:
+                    # Token is valid
+                    # make the rating
+                    return render_template("rating.html", token=token, team_id=team_id,
+                    user_id=user_id, score=score)
                 else:
-                    # If there is no token
-                    nonTokenLogic(db, request, team_id, user_id, score)
+                    # Token is invalid
+                    # Tell them it is invalid
+                    return render_template("invalid.html", message=0)
             else:
-                # If all of the required information was not provided error out
-                return render_template("invalid.html", message=1)
-        elif request.method == "POST":
-            # Handle the form data
-            if request.form['type'] == "token":
-                tokenLogic()
-            else:
-                newRating = Rating()
-                db.session.add(newRating)
-                db.session.commit()
-                return render_template("rating_complete.html")
+                # If there is no token
+                nonTokenLogic(db, request, team_id, user_id, score)
         else:
-            return abort(400)
-    except Exception, e:
-        app.logger.error(e)
-        abort(404)
+            # If all of the required information was not provided error out
+            return render_template("invalid.html", message=1)
+    elif request.method == "POST":
+        # Handle the form data
+        if request.form['type'] == "token":
+            tokenLogic()
+        else:
+            newRating = Rating()
+            db.session.add(newRating)
+            db.session.commit()
+            return render_template("rating_complete.html")
+    else:
+        return abort(400)
