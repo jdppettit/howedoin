@@ -161,3 +161,4 @@ class Token(db.Model):
         self.user_id = user_id
         self.token = token
         self.expire = expire
+

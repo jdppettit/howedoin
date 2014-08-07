@@ -7,7 +7,7 @@ from datetime import datetime
 
 from password import *
 
-from models import Account, User
+from models import Account, User, db
 
 import random
 import sys
@@ -79,7 +79,7 @@ def registerEndpoint():
                 return render_template("register.html")
         elif request.method == "POST":
             if request.form['username'] and request.form['name'] and request.form['email'] and request.form['password'] and request.form['passwordconfirm'] and request.form['plan']:
-                if request.form['plan'] == 1:
+                if request.form['plan'] == 0:
                     # if plan is free, don't do billing, paidthru is forever
                     if request.form['company_name']:
                         # if company_name is there, use it
@@ -93,11 +93,15 @@ def registerEndpoint():
                             if usernameCheck:
                                 # If this returns true, username is unique, proceed
                                 newUser = User(accountID, request.form['name'], request.form['username'], encryptedPassword, request.form['email'], 1)
+                                print "got here 5"
                                 db.session.add(newAccount)
+                                print "got here 0"
                                 db.session.add(newUser)
                                 db.session.commit()
+                                print "got here 1"
                                 user_id = getUserID(newUser, db)
-                                doLogin(request.form['username'], request.form['name'], user_id, account_id, request.form['email'])
+                                doLogin(request.form['username'], request.form['name'], user_id, accountID, request.form['email'])
+                                print "got here"
                                 return render_template("dashboard.html")
                             else:
                                 # if false, make them pick a new username
@@ -119,7 +123,7 @@ def registerEndpoint():
                                 db.session.add(newUser)
                                 db.session.commit()
                                 user_id = getUserID(newUser, db)
-                                doLogin(request.form['username'], request.form['name'], user_id, account_id, request.form['email'])
+                                doLogin(request.form['username'], request.form['name'], user_id, accountID, request.form['email'])
                                 return render_template("dashboard.html")
                             else:
                                 return render_template("register.html", company_name=request.form['company_name'], username=request.form['username'], name=request.form['name'], plan=request.form['plan'], email=request.form['email'], error="Sorry, that username is taken. Can you pick another?")
@@ -140,13 +144,13 @@ def registerEndpoint():
                             encryptedPassword = hashPassword(request.form['password'])
                             usernameCheck = checkUsername(request.form['username'])
                             if usernameCheck:
-                                newUser = User(accountID, reuqest.form['name'], request.form['username'],
+                                newUser = User(accountID, request.form['name'], request.form['username'],
                                 encryptedPassword, request.form['email'], 0)
                                 db.session.add(newAccount)
                                 db.session.add(newUser)
                                 db.session.commit()
                                 user_id = getUserID(newUser, db)
-                                doLogin(request.form['username'], request.form['name'], user_id, account_id,
+                                doLogin(request.form['username'], request.form['name'], user_id, accountID,
                                 request.form['email'])
                                 doBilling(request.form['plan'])
                             else:
@@ -175,7 +179,7 @@ def registerEndpoint():
                                 db.session.add(newUser)
                                 db.session.commit()
                                 user_id = getUserID(newUser, db)
-                                doLogin(request.form['username'], request.form['name'], user_id, account_id,
+                                doLogin(request.form['username'], request.form['name'], user_id, accountID,
                                 request.form['email'])
                                 doBilling(request.form['plan'])
                             else:

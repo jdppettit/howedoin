@@ -26,9 +26,10 @@ app = Flask(__name__)
 
 db.init_app(app)
 
-with app.app_context():
-    db.create_all()
-    db.session.commit()
+#with app.app_context():
+#    db.create_all()
+#    db.session.commit()
+#    print db.Model.metadata.tables
 
 app.register_blueprint(ratings)
 app.register_blueprint(login)
@@ -48,6 +49,11 @@ app.config.update(
 )
 
 mail = Mail(app)
+
+with app.app_context():
+    db.create_all()
+    db.session.commit()
+
 
 @app.route('/')
 def index():
