@@ -1,6 +1,6 @@
 from flask import *
 from models import db, Account
-from dateutils.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta
 from datetime import datetime
 
 import stripe

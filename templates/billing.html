@@ -75,7 +75,8 @@
                             data-amount="{{ cost }}00"
                             data-name="Howedoin"
                             data-description="{% if plan == 1 %}Howedoin - Business Plan ($10.00 / monthly){% elif plan == 2 %}Howedoin - Enterprise Plan ($25.00 / monthly){% endif %}"
-                            data-image="/128x128.png">
+                            data-image="/128x128.png"
+                            data-email={{ email }}>
                       </script>
                       <input type="hidden" name="plan" value="{{ plan }}"/>
                       <input type="hidden" name="cost" value="{{ cost }}"/>

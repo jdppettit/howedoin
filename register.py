@@ -54,13 +54,15 @@ def getMaxUsers(plan):
     elif plan == "2":
         return 10
 
-def doBilling(plan, company_name, account_id):
+def doBilling(plan, company_name, account_id, email):
     if plan == "0":
         return render_template("dashboard.html")
     elif plan == "1":
-        return render_template("billing.html", plan=int(plan), cost=10, account_id=account_id, company_name=company_name)
+        return render_template("billing.html", plan=int(plan), cost=10, account_id=account_id,
+        company_name=company_name, email=email)
     elif plan == "2":
-        return render_template("billing.html", plan=int(plan), cost=25, account_id=account_id, company_name=company_name)
+        return render_template("billing.html", plan=int(plan), cost=25, account_id=account_id,
+        company_name=company_name, email=email)
 
 @register.route('/register', methods=['GET','POST'])
 def registerEndpoint():
@@ -142,7 +144,8 @@ def registerEndpoint():
                             user_id = getUserID(newUser, db)
                             doLogin(request.form['username'], request.form['name'], user_id, accountID,
                             request.form['email'])
-                            return doBilling(request.form['plan'], request.form['company_name'], accountID)
+                            return doBilling(request.form['plan'], request.form['company_name'], accountID,
+                            request.form['email'])
                         else:
                             return render_template("register.html", company_name=request.form['company_name'],
                             username=request.form['username'], name=request.form['name'], plan=request.form['plan'],
@@ -171,7 +174,8 @@ def registerEndpoint():
                             user_id = getUserID(newUser, db)
                             doLogin(request.form['username'], request.form['name'], user_id, accountID,
                             request.form['email'])
-                            return doBilling(request.form['plan'], request.form['company_name'], accountID)
+                            return doBilling(request.form['plan'], request.form['company_name'], accountID,
+                            request.form['email'])
                         else:
                             return render_template("register.html", company_name=request.form['company_name'],
                             username=request.form['username'], name=request.form['name'], plan=request.form['plan'],
