@@ -1,6 +1,7 @@
 import md5
 from datetime import *
 from credentials import *
+from flask import *
 
 # INPUT: team id, user id, account id (all ints), item (string)
 # OUTPUT: a hash that represents a token for rating auth
@@ -70,6 +71,20 @@ def validateUserMembership(user_id, team_id, db):
         return True
     else:
         return False
+
+def doLogout():
+    session.pop('username', None)
+    session.pop('name', None)
+    session.pop('user_id', None)
+    session.pop('email', None)
+    session.pop('account_id', None)
+
+def doLogin(user):
+    session['username'] = user.username
+    session['name'] = user.name
+    session['user_id'] = user.id
+    session['email'] = user.email
+    session['account_id'] = user.account_id
 
 def error_log(error, level):
     

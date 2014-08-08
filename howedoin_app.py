@@ -19,6 +19,8 @@ from logging.handlers import RotatingFileHandler
 from ratings import ratings
 from login import login
 from register import register
+from logout import logout
+from dashboard import dashboard
 
 from models import db
 
@@ -34,6 +36,8 @@ db.init_app(app)
 app.register_blueprint(ratings)
 app.register_blueprint(login)
 app.register_blueprint(register)
+app.register_blueprint(logout)
+app.register_blueprint(dashboard)
 
 connectionString = "mysql://%s:%s@%s:3306/%s" % (USERNAME, PASSWORD, HOSTNAME, DATABASE)
 
