@@ -37,95 +37,52 @@
     <div class="container">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <h3 class="panel-title">Register</h3>
+                <h3 class="panel-title">Payment</h3>
             </div>
             <div class="panel-body">
                 <div class="container">
-                    <form class="form-horizontal" method="post" action="register">
-<fieldset>
-
-<!-- Form Name -->
-
-<!-- Text input-->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="company_name">Company Name</label>  
-  <div class="col-md-6">
-  <input id="company_name" name="company_name" type="text" placeholder="Optional" class="form-control input-md">
-  <span class="help-block">Your company's name</span>  
-  </div>
-</div>
-<hr>
-<!-- Text input-->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="name">Your Name</label>  
-  <div class="col-md-6">
-  <input id="name" name="name" type="text" placeholder="Required" class="form-control input-md" required="">
-  <span class="help-block">Your first and last name</span>  
-  </div>
-</div>
-
-<!-- Text input-->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="email">Your Email</label>  
-  <div class="col-md-6">
-  <input id="email" name="email" type="text" placeholder="Required" class="form-control input-md" required="">
-    
-  </div>
-</div>
-
-<!-- Text input-->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="username">Your username</label>  
-  <div class="col-md-6">
-  <input id="username" name="username" type="text" placeholder="Required" class="form-control input-md" required="">
-    
-  </div>
-</div>
-
-<!-- Password input-->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="password">Your Password</label>
-  <div class="col-md-5">
-    <input id="password" name="password" type="password" placeholder="Required" class="form-control input-md" required="">
-    
-  </div>
-</div>
-
-<!-- Password input-->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="passwordconfirm">Confirm Password</label>
-  <div class="col-md-5">
-    <input id="passwordconfirm" name="passwordconfirm" type="password" placeholder="Required" class="form-control input-md" required="">
-    
-  </div>
-</div>
-<hr>
-<!-- Select Basic -->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="plan">Plan</label>
-  <div class="col-md-6">
-    <select id="plan" name="plan" class="form-control">
-      <option value="0">Free</option>
-      <option value="1">Business ($10.00 / month)</option>
-      <option value="2">Enterprise ($25.00 / month)</option>
-    </select>
-    <span class="help-block"><a href="/plans">View plans</a></span>
-  </div>
-</div>
-
-<!-- Button (Double) -->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="submit"></label>
-  <div class="col-md-8">
-    <button id="submit" name="submit" class="btn btn-success">Complete Registration</button>
-    <button id="cancel" name="cancel" class="btn btn-danger">Cancel</button>
-  </div>
-</div>
-
-</fieldset>
-</form>
-
+                    <h3>Plan</h3>
+                    <p><a href="change_plan.html">Change Plan</a></p>
+                    <table class="table">
+                        <tr>
+                            <td>Plan</td><td>{% if plan == 1 %}Business{% elif plan == 2 %}Enterprise{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td>Cost</td><td>{% if plan == 1 %}$10.00 / month{% elif plan == 2 %}$25.00 / month{% endif
+                            %}</td>
+                        </tr>
+                            <td>Teams</td><td>{% if plan == 1 %}3{% elif plan == 2 %}Unlimited{% endif %}</td>
+                        <tr>
+                            <td>Users</td><td>{% if plan == 1 %}5{% elif plan == 2 %}25{% endif %}</td>
+                        <tr/>
+                    </table>
+                    <h3>Invoice</h3>
+                    <table class="table">
+                        <tr>
+                            <td>Company Name</td><td>{{ company_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Plan</td><td>{% if plan == 1 %}Business{% elif plan == 2 %}Enterprise{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td>Total</td><td>${{ cost }}.00</td>
+                        </tr>
+                    </table>
+                   <form action="/checkout" method="POST">
+                      <script
+                            src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                            data-key="pk_test_WVA6OKKxmhXMypNiAWfF1f68"
+                            data-amount="{{ cost }}00"
+                            data-name="Howedoin"
+                            data-description="{% if plan == 1 %}Howedoin - Business Plan ($10.00 / monthly){% elif plan == 2 %}Howedoin - Enterprise Plan ($25.00 / monthly){% endif %}"
+                            data-image="/128x128.png">
+                      </script>
+                      <input type="hidden" name="plan" value="{{ plan }}"/>
+                      <input type="hidden" name="cost" value="{{ cost }}"/>
+                      <input type="hidden" name="account_id" value="{{ account_id }}"/>
+                    </form> 
                 </div>
+
             </div><!-- panel body !-->
         </div><!-- panel !-->
     </div><!-- container !-->

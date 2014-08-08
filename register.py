@@ -54,13 +54,13 @@ def getMaxUsers(plan):
     elif plan == "2":
         return 10
 
-def doBilling(plan):
+def doBilling(plan, company_name, account_id):
     if plan == "0":
         return render_template("dashboard.html")
     elif plan == "1":
-        return render_template("billing.html", plan=plan, cost=10)
+        return render_template("billing.html", plan=int(plan), cost=10, account_id=account_id, company_name=company_name)
     elif plan == "2":
-        return render_template("billing.html", plan=plan, cost=25)
+        return render_template("billing.html", plan=int(plan), cost=25, account_id=account_id, company_name=company_name)
 
 @register.route('/register', methods=['GET','POST'])
 def registerEndpoint():
@@ -142,7 +142,7 @@ def registerEndpoint():
                             user_id = getUserID(newUser, db)
                             doLogin(request.form['username'], request.form['name'], user_id, accountID,
                             request.form['email'])
-                            doBilling(request.form['plan'])
+                            return doBilling(request.form['plan'], request.form['company_name'], accountID)
                         else:
                             return render_template("register.html", company_name=request.form['company_name'],
                             username=request.form['username'], name=request.form['name'], plan=request.form['plan'],
@@ -171,7 +171,7 @@ def registerEndpoint():
                             user_id = getUserID(newUser, db)
                             doLogin(request.form['username'], request.form['name'], user_id, accountID,
                             request.form['email'])
-                            doBilling(request.form['plan'])
+                            return doBilling(request.form['plan'], request.form['company_name'], accountID)
                         else:
                             return render_template("register.html", company_name=request.form['company_name'],
                             username=request.form['username'], name=request.form['name'], plan=request.form['plan'],
