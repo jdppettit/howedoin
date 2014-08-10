@@ -168,21 +168,19 @@ class Token(db.Model):
         self.expire = expire
 
 class Payment(db.Model):
-    __tablename__ = "billing"
+    __tablename__ = "payment"
 
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer)
-    invoice_id = db.ColumN(db.Integer)
-    type = db.Column(db.String(25))
+    invoice_id = db.Column(db.Integer)
     credit = db.Column(db.Float)
     debit = db.Column(db.Float)
     transaction_id = db.Column(db.String(30))
     date = db.Column(db.DateTime)
 
-    def __init__(self, account_id, invoice_id, type, credit, debit, transaction_id, date):
+    def __init__(self, account_id, invoice_id, credit, debit, transaction_id, date):
         self.account_id = account_id
         self.invoice_id = invoice_id
-        self.type = type
         self.credit = credit
         self.debit = debit
         self.transaction_id = transaction_id
@@ -191,7 +189,7 @@ class Payment(db.Model):
 class Invoice(db.Model):
     __tablename__ = "invoice"
 
-    id = db.Column(db.integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer)
     total = db.Column(db.Float)
     paid = db.Column(db.Integer)
@@ -203,15 +201,15 @@ class Invoice(db.Model):
         self.paid = paid
         self.payment_id = payment_id
 
-class InvoiceItems(db.Model):
-    __tablename__ = "invoice_items"
+class InvoiceItem(db.Model):
+    __tablename__ = "invoice_item"
 
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer)
     invoice_id = db.Column(db.Integer)
     credit = db.Column(db.Float)
     debit = db.Column(db.Float)
-    item = db.Column(db.String)
+    item = db.Column(db.String(25))
 
     def __init__(self, account_id, invoice_id, item, credit=0.00, debit=0.00):
         self.account_id = account_id
