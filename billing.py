@@ -1,5 +1,5 @@
 from flask import *
-from models import db, Account, Billing
+from models import db, Account, Invoice, InvoiceItem, Payments
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 
@@ -34,16 +34,19 @@ def checkout():
                 plan = "business"
             elif request.form['plan'] == "2":
                 plan = "enterprise"
-
+            
             customer = stripe.Customer.create(
                 card=token,
-                plan=plan,
                 email=session['email'],
                 metadata={'account_id' : request.form['account_id']}
             )
 
-            account = Account.query.filter_by(id=request.form['account_id']).first()
+            customer_id = customer['id']
+
             account.stripe_customer = customer['id']
+            
+            newInvoice = Invoice()
+
             db.session.commit()
 
             return render_template("done.html")
