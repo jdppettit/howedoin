@@ -63,20 +63,56 @@ def hooks():
     
     reqType = req['type']
     customerID = req['customer']
-    
+    transaction_id = req['id']
+    transaction_date = datetime.now()
     customerObj = Customer(stripe_customer=customerID).first()
 
     if reqType == "customer.created":
-        print "cust cre"
-        newBilling = Billing("customer_created", 
+        newBilling = Billing(customerObj.id, "customer_created", 0, transaction_id, transaction_date)
+
+        db.session.add(newBilling)
+        db.session.commit()
+
+        resp.status_code=200
+        return resp
     elif reqType == "customer.subscription.created":
-        print "custmer sub created"
+        newBilling = Billing(customerObj.id, "customer_sub_created", 0, transaction_id, transaction_date)
+    
+        db.session.add(newBilling)
+        db.session.commit()
+
+        resp.status_code=200
+        return resp
     elif reqType == "invoice.created":
-        print "invoice created"
+        amount = req['amount']
+        amount = amount / 100
+        newBilling = Billing(customerObj.id, "invoice_created", amount, transaction_id, transaction_date)
+
+        db.session.add(newBilling)
+        db.session.commit()
+
+        resp.status_code=200
+        return resp
     elif reqType == "charge.succeeded":
-        print "update paid thru here"
+        amount = req['amount']
+        amount = amount / 100
+        newBilling = Billing(customerObj.id, "charge_succeeded", amount, transaction_id, transaction_date)
+
+        db.session.add(newBilling)
+        db.session.commit()
+
+        resp.status_code=200
+        return resp
     elif reqType == "invoice.payment_succeeded":
-        print "payment succeded"
+        amount = req['amount']
+        amount = amount / 100
+        newBilling = Billing(customerObj.id, "payment_succeeded", amount, transaction_id, transaction_date)
+    
+        db.session.add(newBilling)
+        db.session.commit()
+
+        resp.status_code=200
+        return resp
     else:
         response.status_code=402
         return response
