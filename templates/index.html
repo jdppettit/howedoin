@@ -62,9 +62,10 @@
             <button type="submit" class="btn btn-success">Sign in</button>
           </form>
           {% else %}
-          <div class="navbar-right">
-          <a href="/logout">Logout</a>
-          </div>
+          <ul class="nav navbar-nav navbar-right">
+          <li style="padding-top:15px;">Welcome back {{ session['name'] }}!</li>
+          <li><a href="/logout">Logout</a></li>
+          </ul>
             {% endif %}
         </div><!--/.navbar-collapse -->
       </div>
