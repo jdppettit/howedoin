@@ -162,3 +162,19 @@ class Token(db.Model):
         self.token = token
         self.expire = expire
 
+class Billing(db.Model):
+    __tablename__ = "billing"
+
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(db.Integer)
+    type = db.Column(db.String(25))
+    total = db.Column(db.Integer)
+    transaction_id = db.Column(db.String(30))
+    date = db.Column(db.DateTime)
+
+    def __init__(self, account_id, type, total, transaction_id, date):
+        self.account_id = account_id
+        self.type = type
+        self.total = total
+        self.transaction_id = transaction_id
+        self.date = date
