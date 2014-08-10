@@ -17,8 +17,11 @@ class Account(db.Model):
     stripe_customer = db.Column(db.String(20))
     max_users = db.Column(db.Integer)
     date = db.Column(db.Date)
+    needs_billing = db.Column(db.Integer)
+    total_monthly_bill = db.Column(db.Float)
 
-    def __init__(self, id, company_name, plan_id, paid_thru, is_current, max_users, date=datetime.now()):
+    def __init__(self, id, company_name, plan_id, paid_thru, is_current, max_users, date=datetime.now(),
+    needs_billing=0, total_monthly_bill=0.00):
         self.id = id
         self.company_name = company_name
         self.plan_id = plan_id
@@ -26,6 +29,8 @@ class Account(db.Model):
         self.is_current = is_current
         self.max_users = max_users
         self.date = date
+        self.needs_billing = needs_billing
+        self.total_monthly_bill = total_monthly_bill
 
 class User(db.Model):
     __tablename__ = "user"
@@ -168,13 +173,15 @@ class Billing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer)
     type = db.Column(db.String(25))
-    total = db.Column(db.Integer)
+    credit = db.Column(db.Float)
+    debit = db.Column(db.Float)
     transaction_id = db.Column(db.String(30))
     date = db.Column(db.DateTime)
 
-    def __init__(self, account_id, type, total, transaction_id, date):
+    def __init__(self, account_id, type, credit, debit, transaction_id, date):
         self.account_id = account_id
         self.type = type
-        self.total = total
+        self.credit = credit
+        self.debit = debit
         self.transaction_id = transaction_id
         self.date = date

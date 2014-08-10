@@ -15,6 +15,13 @@ def updatePaidThru(account):
     account.paid_thru = newExpiry
     db.session.commit()
 
+def checkExistingBilling(id):
+    check = Billing.query.filter_by(transaction_id=id).first()
+    if check:
+        return True
+    else:
+        return False
+
 @billing.route('/billing/checkout', methods=['POST'])
 @billing.route('/checkout', methods=['POST'])
 def checkout():
@@ -46,9 +53,18 @@ def checkout():
     else:
         abort(404)
 
-@billing.route('/billing/cancel')
+@billing.route('/billing/cancel', methods=['POST','GET'])
 def cancelBilling():
-    print "this cancels billing"
+    if request.method == "GET":
+        return render_template("billing_cancel.html")
+    elif request.method == "POST":
+        if session['account_id']:
+            # this needs to pass the subscription ID back
+            you = Account.query.filter_by(id=session['account_id']).first()
+            customer = stripe.Customer.retrieve(you.stripe_customer)
+        else:
+            return render_template("login.html", error="You must be logged in to do this.")
+        return render_template("billing_canceled.html")
 
 @billing.route('/billing/edit', methods=['POST','GET'])
 def editBilling():
@@ -62,57 +78,89 @@ def hooks():
     req = request.get_json()
     
     reqType = req['type']
-    customerID = req['customer']
+    customerID = req['data']['object']['customer']
     transaction_id = req['id']
     transaction_date = datetime.now()
-    customerObj = Customer(stripe_customer=customerID).first()
+    customerObj = Account.query.filter_by(stripe_customer=customerID).first()
+    
+    resp = make_response()
 
     if reqType == "customer.created":
-        newBilling = Billing(customerObj.id, "customer_created", 0, transaction_id, transaction_date)
+        reply = checkExistingBilling(transaction_id)
+        if reply:
+            # done
+            resp.status_code=200
+            return resp
+        else:
+            newBilling = Billing(customerObj.id, "customer_created", 0, transaction_id, transaction_date)
 
-        db.session.add(newBilling)
-        db.session.commit()
-
-        resp.status_code=200
-        return resp
+            db.session.add(newBilling)
+            db.session.commit()
+    
+            resp.status_code=200
+            return resp
     elif reqType == "customer.subscription.created":
-        newBilling = Billing(customerObj.id, "customer_sub_created", 0, transaction_id, transaction_date)
+        reply = checkExistingBilling(transaction_id)
+        if reply:
+            # done
+            resp.status_code=200
+            return resp
+        else:
+            newBilling = Billing(customerObj.id, "customer_sub_created", 0, transaction_id, transaction_date)
     
-        db.session.add(newBilling)
-        db.session.commit()
+            db.session.add(newBilling)
+            db.session.commit()
 
-        resp.status_code=200
-        return resp
+            resp.status_code=200
+            return resp
     elif reqType == "invoice.created":
-        amount = req['amount']
-        amount = amount / 100
-        newBilling = Billing(customerObj.id, "invoice_created", amount, transaction_id, transaction_date)
+        reply = checkExistingBilling(transaction_id)
+        if reply:
+            # done
+            resp.status_code=200
+            return resp
+        else:
+            amount = req['data']['object']['total']
+            amount = amount / 100
+            newBilling = Billing(customerObj.id, "invoice_created", amount, transaction_id, transaction_date)
 
-        db.session.add(newBilling)
-        db.session.commit()
+            db.session.add(newBilling)
+            db.session.commit()
 
-        resp.status_code=200
-        return resp
+            resp.status_code=200
+            return resp
     elif reqType == "charge.succeeded":
-        amount = req['amount']
-        amount = amount / 100
-        newBilling = Billing(customerObj.id, "charge_succeeded", amount, transaction_id, transaction_date)
+        reply = checkExistingBilling(transaction_id)
+        if reply:
+            # done
+            resp.status_code=200
+            return resp
+        else:
+            amount = req['data']['object']['amount']
+            amount = amount / 100
+            newBilling = Billing(customerObj.id, "charge_succeeded", amount, transaction_id, transaction_date)
 
-        db.session.add(newBilling)
-        db.session.commit()
+            db.session.add(newBilling)
+            db.session.commit()
 
-        resp.status_code=200
-        return resp
+            resp.status_code=200
+            return resp
     elif reqType == "invoice.payment_succeeded":
-        amount = req['amount']
-        amount = amount / 100
-        newBilling = Billing(customerObj.id, "payment_succeeded", amount, transaction_id, transaction_date)
+        reply = checkExistingBilling(transaction_id)
+        if reply:
+            # done
+            resp.status_code=200
+            return resp
+        else:
+            amount = req['data']['object']['total']
+            amount = amount / 100
+            newBilling = Billing(customerObj.id, "payment_succeeded", amount, transaction_id, transaction_date)
     
-        db.session.add(newBilling)
-        db.session.commit()
+            db.session.add(newBilling)
+            db.session.commit()
 
-        resp.status_code=200
-        return resp
+            resp.status_code=200
+            return resp
     else:
         response.status_code=402
         return response
