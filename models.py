@@ -218,6 +218,23 @@ class InvoiceItem(db.Model):
         self.credit = credit
         self.debit = debit
 
-    
+class Subscription(db.Model):
+    __tablename__ = "subscription"
+
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(db.Integer)
+    plan = db.Column(db.Integer)
+    cost_per_add = db.Column(db.Float)
+    extra_users = db.Column(db.Integer)
+    start_date = db.Column(db.DateTime)
+    paid_thru = db.Column(db.DateTime)
+
+    def __init__(self, account_id, plan, cost_per_add, extra_users, start_date, paid_thru):
+        self.account_id = account_id
+        self.plan = plan
+        self.cost_per_add = cost_per_add
+        self.extra_users = extra_users
+        self.start_date = start_date
+        self.paid_thru = paid_thru
 
 
