@@ -41,3 +41,9 @@ code {
 .panel {
     margin-top:25px;
 }
+
+.navbar-wrapper .container {
+    margin-right:0px;
+    margin-left:0px;
+    width:100%;
+}

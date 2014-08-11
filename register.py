@@ -68,7 +68,7 @@ def doBilling(plan, company_name, account_id, email):
 def registerEndpoint():
     if request.method == "GET":
         try:
-            if session['logged_in']:
+            if session['username']:
                 return render_template("dashboard.html", error="You are already registered and logged in.")
         except KeyError:
             # if session vars not found (not logged in)

@@ -7,6 +7,16 @@ body {
   padding-top: 50px;
 }
 
+.side-head {
+    padding-left:10px;
+}
+
+.navbar-wrapper .container {
+    margin-right:0px;
+    margin-left:0px;
+    width:100%;
+}
+
 
 /*
  * Global add-ons
