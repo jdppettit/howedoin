@@ -1,0 +1,86 @@
+<!DCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>howedoin - how is your team doing</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../static/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../static/js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Custom styles for this template -->
+    <link href="../static/css/dashboard.css" rel="stylesheet">
+  </head>
+<!-- NAVBAR
+================================================== -->
+  <body>
+    {% include 'navbar.html' %}
+    {% include 'error.html' %}
+
+ <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="side-head"><strong>You</strong></li>
+            <li><a href="/dashboard">Overview</a></li>
+            <li><a href="/dashboard/you">Your Ratings</a></li>
+            <li><a href="/dashboard/leaderboard">Leaderboard</a></li>
+            <li><a href="/dashboard/profile">Profile</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li class="side-head"><strong>Teams</strong>
+            <li class="active"><a href="/dashboard/team">View Teams</a></li>
+            <li><a href="/dashboard/team/create">Create Team</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li class="side-head"><strong>Users</strong>
+            <li><a href="/dashboard/user">View Users</a></li>
+            <li><a href="/dashboard/user/create">Create User</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li class="side-head"><strong>Account</strong>
+            <li><a href="/dashboard/account">Settings</a></li>
+            <li><a href="/dashboard/account/billing">Billing</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h2 class="page-header">Teams</h1>
+          <table class="table">
+            <tr>
+                <th>Team Name</th>
+                <th>Team Leader</th>
+                <th>Actions</th>
+            </tr>
+            {% for team in teams %}
+            <tr>
+                <td><a href="/dashboard/team/{{ team.id }}">{{ team.team_name }}</a></td>
+                <td><a href="/dashboard/user/edit/{{ team.team_leader_id }}">{{ team.team_leader_name }}</a></td>
+                <td><a href="/dashboard/team/{{ team.id }}" class="btn btn-info btn-xs">Edit</a>&nbsp;<a
+                href="/dashboard/team/user/add" class="btn btn-info btn-xs">Add User</a>&nbsp;<a
+                href="/dashboard/team/delete/{{ team.id }}" class="btn btn-danger btn-xs">Delete</a></td>
+            </tr>
+            {% endfor %}
+            </table>
+            <a href="/dashboard/team/create" class="btn btn-success">Create New Team</a>
+        </div>
+      </div>
+    </div>
+ <script src="static/js/bootstrap.min.js"></script>

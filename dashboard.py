@@ -1,16 +1,7 @@
 from flask import *
+from functions import *
 
 dashboard = Blueprint('dashboard', __name__, template_folder='templates')
-
-def checkLogin():
-    try:
-        if session['username']:
-            return True
-    except:
-        return False
-
-def notLoggedIn():
-    return render_template("login.html", error="You must be logged in to do that.")
 
 @dashboard.route('/dashboard')
 def dashboardEndpoint():

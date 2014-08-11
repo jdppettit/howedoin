@@ -22,6 +22,7 @@ from register import register
 from logout import logout
 from dashboard import dashboard
 from billing import billing
+from team import team
 
 from models import db
 
@@ -40,6 +41,7 @@ app.register_blueprint(register)
 app.register_blueprint(logout)
 app.register_blueprint(dashboard)
 app.register_blueprint(billing)
+app.register_blueprint(team)
 
 connectionString = "mysql://%s:%s@%s:3306/%s" % (USERNAME, PASSWORD, HOSTNAME, DATABASE)
 
