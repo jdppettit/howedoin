@@ -1,5 +1,5 @@
 from flask import *
-from models import db, Account, Invoice, InvoiceItem, Payment
+from models import db, Account, Invoice, InvoiceItem, Payment, Subscription
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 
@@ -33,6 +33,39 @@ def makePayment(account_id, invoice_id, credit, debit, transaction_id, date=date
     invoice = Invoice.query.filter_by(id=invoice_id).first()
     invoice.paid = 1
     db.session.add(newPayment)
+    db.session.commit()
+    return 1
+
+def getTotal(plan_id, extra_users):
+    plan_id = int(plan_id)
+    extra_users = int(extra_users)
+
+    if plan_id == 1:
+        total = 0.00
+        total = total + 10.00
+        userCost = 0.00
+        userCost = 3.00 * extra_users
+        total = total + userCost
+        return total
+    elif plan_id == 2:
+        total = 0.00
+        total = total + 10.00
+        userCost = 0.00
+        userCost = 2.50 * extra_users
+        total = total + userCost
+        return total
+ 
+
+def makeSubscription(account_id, plan, extra_users):
+    plan = int(plan)
+    cost_per_add = 0.00
+    if plan == 1:
+        cost_per_add = 3.00
+    elif plan == 2:
+        cost_per_add = 2.50
+    newSubscription = Subscription(account_id, plan, cost_per_add, extra_users, datetime.now(), datetime.now() +
+    relativedelta(months=1), getTotal(plan, extra_users))
+    db.session.add(newSubscription)
     db.session.commit()
     return 1
 
@@ -84,6 +117,7 @@ def checkout():
                 return render_template("failed.html")
             
             updatePaidThru(account)
+            makeSubscription(account_id, request.form['plan'], 0)
             makePayment(account_id, invoice_id, cost, 0.00, charge['id'])
             return render_template("done.html")
         else:

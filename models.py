@@ -19,8 +19,9 @@ class Account(db.Model):
     date = db.Column(db.Date)
     needs_billing = db.Column(db.Integer)
     total_monthly_bill = db.Column(db.Float)
+    subscription_id = db.Column(db.Integer)
 
-    def __init__(self, id, company_name, plan_id, paid_thru, is_current, max_users, date=datetime.now(),
+    def __init__(self, id, company_name, plan_id, paid_thru, is_current, max_users, subscription_id=0, date=datetime.now(),
     needs_billing=0, total_monthly_bill=0.00):
         self.id = id
         self.company_name = company_name
@@ -31,6 +32,7 @@ class Account(db.Model):
         self.date = date
         self.needs_billing = needs_billing
         self.total_monthly_bill = total_monthly_bill
+        self.subscription_id = subscription_id
 
 class User(db.Model):
     __tablename__ = "user"
@@ -228,13 +230,15 @@ class Subscription(db.Model):
     extra_users = db.Column(db.Integer)
     start_date = db.Column(db.DateTime)
     paid_thru = db.Column(db.DateTime)
+    total_monthly = db.Column(db.Float)
 
-    def __init__(self, account_id, plan, cost_per_add, extra_users, start_date, paid_thru):
+    def __init__(self, account_id, plan, cost_per_add, extra_users, start_date, paid_thru, total_monthly):
         self.account_id = account_id
         self.plan = plan
         self.cost_per_add = cost_per_add
         self.extra_users = extra_users
         self.start_date = start_date
         self.paid_thru = paid_thru
+        self.total_monthly = total_monthly
 
 
