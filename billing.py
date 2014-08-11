@@ -15,6 +15,18 @@ def updatePaidThru(account):
     account.paid_thru = newExpiry
     db.session.commit()
 
+def updateSubscriptionID(account_id, subscription_id):
+    account = Account.query.filter_by(id=account_id).first()
+    account.subscription_id = subscription_id
+    db.session.commit()
+    return 1
+
+def updateIsCurrent(account_id):
+    account = Account.query.filter_by(id=account_id).first()
+    account.is_current = 1
+    db.session.commit()
+    return 1
+
 def makeInvoice(account_id, cost, is_paid, payment_id=0):
     newInvoice = Invoice(account_id, cost, is_paid, payment_id)
     db.session.add(newInvoice)
@@ -55,7 +67,6 @@ def getTotal(plan_id, extra_users):
         total = total + userCost
         return total
  
-
 def makeSubscription(account_id, plan, extra_users):
     plan = int(plan)
     cost_per_add = 0.00
@@ -67,7 +78,8 @@ def makeSubscription(account_id, plan, extra_users):
     relativedelta(months=1), getTotal(plan, extra_users))
     db.session.add(newSubscription)
     db.session.commit()
-    return 1
+    db.session.refresh(newSubscription)
+    return newSubscription.id
 
 def getCost(plan_id):
     plan_id = int(plan_id)
@@ -75,6 +87,11 @@ def getCost(plan_id):
         return 10.00
     elif plan_id == 2:
         return 25.00
+
+def cancelSubscription(account_id):
+    subscription = Subscription.query.filter_by(account_id=account_id).first()
+    subscription.cancelled = 1
+    db.session.commit()
 
 @billing.route('/billing/checkout', methods=['POST'])
 @billing.route('/checkout', methods=['POST'])
@@ -117,7 +134,9 @@ def checkout():
                 return render_template("failed.html")
             
             updatePaidThru(account)
-            makeSubscription(account_id, request.form['plan'], 0)
+            subscription_id = makeSubscription(account_id, request.form['plan'], 0)
+            updateSubscriptionID(account_id, subscription_id)
+            updateIsCurrent(account_id)
             makePayment(account_id, invoice_id, cost, 0.00, charge['id'])
             return render_template("done.html")
         else:
@@ -130,13 +149,13 @@ def cancelBilling():
     if request.method == "GET":
         return render_template("billing_cancel.html")
     elif request.method == "POST":
-        if session['account_id']:
+        if session['account_id'] and request.form['confirm']:
             # this needs to pass the subscription ID back
             you = Account.query.filter_by(id=session['account_id']).first()
-            customer = stripe.Customer.retrieve(you.stripe_customer)
+            cancelSubscription(you.id)
+            return render_template("billing_cancelled.html")
         else:
             return render_template("login.html", error="You must be logged in to do this.")
-        return render_template("billing_canceled.html")
 
 @billing.route('/billing/edit', methods=['POST','GET'])
 def editBilling():

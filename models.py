@@ -231,6 +231,7 @@ class Subscription(db.Model):
     start_date = db.Column(db.DateTime)
     paid_thru = db.Column(db.DateTime)
     total_monthly = db.Column(db.Float)
+    cancelled = db.Column(db.Integer)
 
     def __init__(self, account_id, plan, cost_per_add, extra_users, start_date, paid_thru, total_monthly):
         self.account_id = account_id

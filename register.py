@@ -160,13 +160,13 @@ def registerEndpoint():
                         accountID = makeAccountID()
                         goodThru = datetime.now() + relativedelta(days=1)
                         maxUsers = getMaxUsers(request.form['plan'])
-                        newAccount = Account(accoundID, "", request.form['plan'],
+                        newAccount = Account(accountID, "", request.form['plan'],
                         goodThru, 0, maxUsers)
 
                         encryptedPassword = hashPassword(request.form['password'])
                         usernameCheck = checkUsername(request.form['username'])
                         if usernameCheck:
-                            newUser = User(accountID, reuqest.form['name'], request.form['username'],
+                            newUser = User(accountID, request.form['name'], request.form['username'],
                             encryptedPassword, request.form['email'], 0)
                             db.session.add(newAccount)
                             db.session.add(newUser)
