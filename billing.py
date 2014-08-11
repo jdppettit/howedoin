@@ -88,6 +88,16 @@ def getCost(plan_id):
     elif plan_id == 2:
         return 25.00
 
+def getProrationUsers(account_id, users_added):
+    subscription = Subscription.query.filter_by(account_id=account_id).first()
+    now = datetime.now()
+    diff = subscription.paid_thru - now
+    diff_days = diff.days
+
+    daily_cost = subscription.cost_per_add / 30
+    prorated_cost = daily_cost * diff_days * users_added
+    return prorated_cost
+
 def cancelSubscription(account_id):
     subscription = Subscription.query.filter_by(account_id=account_id).first()
     subscription.cancelled = 1
@@ -156,6 +166,14 @@ def cancelBilling():
             return render_template("billing_cancelled.html")
         else:
             return render_template("login.html", error="You must be logged in to do this.")
+
+@billing.route('/billing/addusers', methods=['POST','GET'])
+def addUsers():
+    if request.method == "GET":
+        return render_template("billing_add_users.html")
+    elif request.method == "POST":
+        cost = getProrationUsers(session['account_id'], int(request.form['users_to_add']))
+        return render_template("done.html", error="Cost would be %s" % str(cost))
 
 @billing.route('/billing/edit', methods=['POST','GET'])
 def editBilling():
