@@ -89,6 +89,7 @@ def getCost(plan_id):
         return 25.00
 
 def getProrationUsers(account_id, users_added):
+    print account_id
     subscription = Subscription.query.filter_by(account_id=account_id).first()
     now = datetime.now()
     diff = subscription.paid_thru - now
@@ -102,6 +103,36 @@ def cancelSubscription(account_id):
     subscription = Subscription.query.filter_by(account_id=account_id).first()
     subscription.cancelled = 1
     db.session.commit()
+
+def makeCharge(stripe_customer, cost, description):
+    try:
+        cost = cost * 100
+        cost = int(cost)
+        charge = stripe.Charge.create(
+            amount = cost,
+            currency = "usd",
+            customer = stripe_customer,
+            description = description)
+        return True
+    except stripe.CardError, e:
+        return False
+
+def getStripeCustomer(account_id):
+    account = Account.query.filter_by(id=account_id).first()
+    return account.stripe_customer
+
+def updateSubscription(account_id, cost, max_users):
+    subscription = Subscription.query.filter_by(account_id=account_id).first()
+    subscription.total_monthly = subscription.total_monthly + cost
+    subscription.extra_users = subscription.extra_users + int(max_users)
+    db.session.commit()
+    return 1
+
+def updateAccountMaxUsers(account_id, max_users):
+    account = Account.query.filter_by(id=account_id).first()
+    account.max_users = int(account.max_users) + int(max_users)
+    db.session.commit()
+    return 1
 
 @billing.route('/billing/checkout', methods=['POST'])
 @billing.route('/checkout', methods=['POST'])
@@ -172,8 +203,29 @@ def addUsers():
     if request.method == "GET":
         return render_template("billing_add_users.html")
     elif request.method == "POST":
+        # Get prorated amount
         cost = getProrationUsers(session['account_id'], int(request.form['users_to_add']))
-        return render_template("done.html", error="Cost would be %s" % str(cost))
+
+        # Make invoice
+        invoice_id = makeInvoice(session['account_id'], cost, 0)
+
+        # Make line item
+        makeInvoiceLineItem(session['account_id'], invoice_id, "Additional %s User(s)" %
+        str(request.form['users_to_add']), debit=cost)
+        
+        # Get stripe customer
+        stripe_customer = getStripeCustomer(session['account_id'])
+
+        # Make charge
+        result = makeCharge(stripe_customer, cost, "Additional %s User(s)" % str(request.form['users_to_add']))
+
+        if result:
+            # proceed, card accepted
+            updateSubscription(session['account_id'], cost, request.form['users_to_add'])
+            updateAccountMaxUsers(session['account_id'], request.form['users_to_add'])
+            return render_template("done.html", message="Complete.")
+        else:
+            return render_template("done.html", error="Your card was declined.")
 
 @billing.route('/billing/edit', methods=['POST','GET'])
 def editBilling():
