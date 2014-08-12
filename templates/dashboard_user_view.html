@@ -52,59 +52,32 @@
           </ul>
           <ul class="nav nav-sidebar">
             <li class="side-head"><strong>Users</strong>
-            <li><a href="/dashboard/user">View Users</a></li>
+            <li class="active"><a href="/dashboard/user">View Users</a></li>
             <li><a href="/dashboard/user/create">Create User</a></li>
           </ul>
           <ul class="nav nav-sidebar">
             <li class="side-head"><strong>Account</strong>
             <li><a href="/dashboard/account">Settings</a></li>
-            <li class="active"><a href="/dashboard/account/billing">Billing</a></li>
+            <li><a href="/dashboard/account/billing">Billing</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h2 class="page-header">Billing</h1>
-            <table class="table">
-                <tr>
-                    <td>Billing Plan</td>
-                    <td>{{ plan }}</td>
-                </tr>
-                <tr>
-                    <td>Monthly Cost</td>
-                    <td>{{ monthly_cost }}</td>
-                </tr>
-                <tr>
-                    <td>Account Balance</td>
-                    <td>{{ account_balance }}</td>
-                </tr>
-                <tr>
-                    <td>Current / Maximum Users</td>
-                    <td>{{ current_users }} / {{ max_users}} <a href="/billing/addusers">Add More</a></td>
-                </tr>
-                <tr>
-                    <td>Paid Through</td>
-                    <td>{{ paid_thru }}</td>
-                </tr>
-                <tr>
-                    <td>Account Standing</td>
-                    <td>{{ account_standing }}</td>
-                </tr>
+          <h2 class="page-header">Users</h1>
+          <table class="table">
+            <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td><a href="/dashboard/user/{{ user.id }}">{{ user.name }}</a></td>
+                <td>{{ user.username }}</td>
+                <td>Action</td>
+            </tr>
+            {% endfor %}
             </table>
-            <br/>
-            <h3>Invoices</h3>
-            <table class="table">
-                <tr>
-                    <th>#</th>
-                    <th>Total</th>
-                    <th>Paid</th>
-                </tr>
-                {% for invoice in invoices %}
-                <tr>
-                    <td><a href="/billing/invoice/{{ invoice.id }}">{{ invoice.id }}</a></td>
-                    <td>$ {{ invoice.total }}</td>
-                    <td>{% if invoice.paid == 1 %}Yes{% else %}No{%endif%}</td>
-                </tr>
-                {% endfor %}
-                </table>
+            <a href="/dashboard/user/create" class="btn btn-success">Create New User</a>
         </div>
       </div>
     </div>

@@ -53,58 +53,62 @@
           <ul class="nav nav-sidebar">
             <li class="side-head"><strong>Users</strong>
             <li><a href="/dashboard/user">View Users</a></li>
-            <li><a href="/dashboard/user/create">Create User</a></li>
+            <li class="active"><a href="/dashboard/user/create">Create User</a></li>
           </ul>
           <ul class="nav nav-sidebar">
             <li class="side-head"><strong>Account</strong>
             <li><a href="/dashboard/account">Settings</a></li>
-            <li class="active"><a href="/dashboard/account/billing">Billing</a></li>
+            <li><a href="/dashboard/account/billing">Billing</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h2 class="page-header">Billing</h1>
-            <table class="table">
-                <tr>
-                    <td>Billing Plan</td>
-                    <td>{{ plan }}</td>
-                </tr>
-                <tr>
-                    <td>Monthly Cost</td>
-                    <td>{{ monthly_cost }}</td>
-                </tr>
-                <tr>
-                    <td>Account Balance</td>
-                    <td>{{ account_balance }}</td>
-                </tr>
-                <tr>
-                    <td>Current / Maximum Users</td>
-                    <td>{{ current_users }} / {{ max_users}} <a href="/billing/addusers">Add More</a></td>
-                </tr>
-                <tr>
-                    <td>Paid Through</td>
-                    <td>{{ paid_thru }}</td>
-                </tr>
-                <tr>
-                    <td>Account Standing</td>
-                    <td>{{ account_standing }}</td>
-                </tr>
-            </table>
-            <br/>
-            <h3>Invoices</h3>
-            <table class="table">
-                <tr>
-                    <th>#</th>
-                    <th>Total</th>
-                    <th>Paid</th>
-                </tr>
-                {% for invoice in invoices %}
-                <tr>
-                    <td><a href="/billing/invoice/{{ invoice.id }}">{{ invoice.id }}</a></td>
-                    <td>$ {{ invoice.total }}</td>
-                    <td>{% if invoice.paid == 1 %}Yes{% else %}No{%endif%}</td>
-                </tr>
-                {% endfor %}
-                </table>
+          <h2 class="page-header">Create New User</h1>
+       <form class="form-horizontal" method="post" action="/dashboard/user/create">
+<fieldset>
+
+<!-- Form Name -->
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="name">Name</label>  
+  <div class="col-md-4">
+  <input id="name" name="name" type="text" placeholder="Required" class="form-control input-md" required="">
+  <span class="help-block">The person's real name</span>  
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="email">Email</label>  
+  <div class="col-md-4">
+  <input id="email" name="email" type="text" placeholder="Required" class="form-control input-md" required="">
+    
+  </div>
+</div>
+
+<!-- Select Multiple -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="teams">Teams</label>
+  <div class="col-md-4">
+    <select id="teams" name="teams" class="form-control" multiple="multiple">
+        {% for team in teams %}
+        <option value="{{ team.id }}" name="{{ team.team_name }}">{{ team.team_name }}</option>
+        {% endfor %}
+    </select>
+  </div>
+</div>
+
+<!-- Button -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="submit"></label>
+  <div class="col-md-4">
+    <button id="submit" name="submit" class="btn btn-success">Create User</button>
+  </div>
+</div>
+
+</fieldset>
+</form>
+ 
         </div>
       </div>
     </div>

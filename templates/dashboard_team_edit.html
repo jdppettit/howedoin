@@ -110,14 +110,15 @@
                 <th>Name</th>
                 <th>Actions</th>
             </tr>
-        {% for user in users %}
+        {% for member in members %}
             <tr>
-                <td>{{ user.username }}</td>
-                <td>{{ user.name }}</td>
+                <td>{{ member.username }}</td>
+                <td>{{ member.name }}</td>
                 <td>Actions</td>
             </tr>
         {% endfor %}
         </table>
+        <a href="/dashboard/team/user/add" class="btn btn-success">Add User to Team</a>
         </div>
       </div>
     </div>
