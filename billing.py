@@ -113,7 +113,7 @@ def makeCharge(stripe_customer, cost, description):
             currency = "usd",
             customer = stripe_customer,
             description = description)
-        return True
+        return True, charge
     except stripe.CardError, e:
         return False
 
@@ -217,10 +217,11 @@ def addUsers():
         stripe_customer = getStripeCustomer(session['account_id'])
 
         # Make charge
-        result = makeCharge(stripe_customer, cost, "Additional %s User(s)" % str(request.form['users_to_add']))
+        result, charge = makeCharge(stripe_customer, cost, "Additional %s User(s)" % str(request.form['users_to_add']))
 
         if result:
             # proceed, card accepted
+            makePayment(session['account_id'], invoice_id, cost, 0, charge['id'])
             updateSubscription(session['account_id'], cost, request.form['users_to_add'])
             updateAccountMaxUsers(session['account_id'], request.form['users_to_add'])
             return render_template("done.html", message="Complete.")
