@@ -25,6 +25,7 @@ from billing import billing
 from team import team
 from account import account
 from user import user
+from email_manager import mail
 
 from models import db
 
@@ -60,7 +61,7 @@ app.config.update(
     MAIL_PASSWORD=EMAIL_PASSWORD
 )
 
-mail = Mail(app)
+mail.init_app(app)
 
 with app.app_context():
     db.create_all()
@@ -74,6 +75,10 @@ def index():
 @app.route('/rating')
 def rating():
     return render_template("rating.html")
+
+@app.route('/email/newuser')
+def newuser():
+    return render_template("email_create_new_user.html")
 
 if __name__ == '__main__':
     handler = RotatingFileHandler('howedoin.log', maxBytes=10000, backupCount=1)
