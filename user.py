@@ -44,16 +44,12 @@ def createUser():
             teams = getAllTeams(session['account_id'])
             return render_template("dashboard_user_create.html", teams=teams)
         elif request.method == "POST":
-            if request.form['name'] and request.form['email']:
-                return "Poop"
-                user_id = makeUser(session['account_id'], request.form['name'], request.form['username'], request.form['email'], 0, getActivationURL(10))
-                # do the db stuff
-                
-                # get the activation token
-
-                # write the activation token to the db
-
-                # send the email
+            if request.form['name'] and request.form['email'] and request.form['username']:
+                activation_code = getActivationURL(10)
+                user_id = makeUser(session['account_id'], request.form['name'], request.form['username'],
+                request.form['email'], 0, activation_code)
+                sendCreateNewUser(request.form['email'], activation_code, session['account_id'], user_id)
+                return render_template("dashboard_user_view.html", message="Activation email sent to this user.")
             else:
                 return render_template("dashboard_user_create.html", error="All fields must be completed.")
     else:
