@@ -31,6 +31,11 @@ def addLeaderMembership(account_id, id, team_id):
     db.session.add(newMembership)
     db.session.commit()
 
+def addMembership(account_id, user_id, team_id):
+    newMembership = Membership(account_id, user_id, team_id, is_admin=0)
+    db.session.add(newMembership)
+    db.session.commit()
+
 def getTeamID(team):
     db.session.refresh(team)
     return team.id
@@ -79,15 +84,51 @@ def teamCreate():
     else:
         return notLoggedIn()
 
-@team.route('/dashboard/team/delete/<team_id>')
-@team.route('/team/delete/<team_id>')
+@team.route('/dashboard/team/delete/<team_id>', methods=['POST','GET'])
+@team.route('/team/delete/<team_id>', methods=['POST','GET'])
 def teamDelete(team_id):
-    return render_template("dashboard_team_delete.html")
+    res = checkLogin()
+    if res:
+        if request.method == "GET":
+            return render_template('dashboard_team_delete.html', team_id=team_id)
+        elif request.method == "POST":
+            team = Team.query.filter_by(id=team_id).first()
+            members = Membership.query.filter_by(team_id=team_id, account_id=session['account_id']).all()
 
-@team.route('/dashboard/team/user/add/<user_id>')
-@team.route('/team/user/add/<user_id>')
-def teamAddUser(user_id):
-    return render_template("dashboard_team_user_add.html")
+            for member in members:
+                db.session.delete(member)
+            db.session.delete(team)
+            db.session.commit()
+            return redirect('/dashboard/team')
+    else:
+        return notLoggedIn()
+
+@team.route('/dashboard/team/<team_id>/user/add/<user_id>', methods=['POST','GET'])
+@team.route('/team/<team_id>/user/add/<user_id>', methods=['POST','GET'])
+def teamAddSpecificUser(team_id, user_id):
+    res = checkLogin()
+    if res:
+        team = Team.query.filter_by(id=team_id).first()
+        user = User.query.filter_by(id=user_id).first()
+        addMembership(session['account_id'], user.id, team.id)
+        return redirect('/dashboard/team/%s' % str(team.id))
+    else:
+        return notLoggedIn()
+
+@team.route('/dashboard/team/<team_id>/user/add', methods=['GET'])
+def teamAddUser(team_id):
+    res = checkLogin()
+    if res:
+        if team_id:
+            team = Team.query.filter_by(id=team_id).first()
+            users = getAllUsers(session['account_id'])
+            return render_template("dashboard_team_add_user.html", team=team, users=users)
+        else:
+            team = Team.query.filter_by(id=team_id).first()
+            return render_template('/dashboard/team/%s' % str(team_id), team=team)
+    else:
+        return notLoggedIn()
+    
 
 @team.route('/dashboard/team/user/delete/<user_id>')
 @team.route('/team/user/delete/<user_id>')
