@@ -94,10 +94,11 @@ def getProrationUsers(account_id, users_added):
     now = datetime.now()
     diff = subscription.paid_thru - now
     diff_days = diff.days
-
+    
+    monthly_cost = subscription.cost_per_add * users_added
     daily_cost = subscription.cost_per_add / 30
     prorated_cost = daily_cost * diff_days * users_added
-    return prorated_cost
+    return prorated_cost, monthly_cost
 
 def cancelSubscription(account_id):
     subscription = Subscription.query.filter_by(account_id=account_id).first()
@@ -204,7 +205,7 @@ def addUsers():
         return render_template("billing_add_users.html")
     elif request.method == "POST":
         # Get prorated amount
-        cost = getProrationUsers(session['account_id'], int(request.form['users_to_add']))
+        cost, monthly_cost = getProrationUsers(session['account_id'], int(request.form['users_to_add']))
 
         # Make invoice
         invoice_id = makeInvoice(session['account_id'], cost, 0)
@@ -222,7 +223,7 @@ def addUsers():
         if result:
             # proceed, card accepted
             makePayment(session['account_id'], invoice_id, cost, 0, charge['id'])
-            updateSubscription(session['account_id'], cost, request.form['users_to_add'])
+            updateSubscription(session['account_id'], monthly_cost, request.form['users_to_add'])
             updateAccountMaxUsers(session['account_id'], request.form['users_to_add'])
             return render_template("done.html", message="Complete.")
         else:
