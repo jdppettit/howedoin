@@ -130,10 +130,23 @@ def teamAddUser(team_id):
         return notLoggedIn()
     
 
-@team.route('/dashboard/team/user/delete/<user_id>')
-@team.route('/team/user/delete/<user_id>')
-def teamDeleteUser(user_id):
-    return render_template("dashboard_team_user_delete.html")
+@team.route('/dashboard/team/<team_id>/user/delete/<user_id>', methods=['POST','GET'])
+@team.route('/team/<team_id>/user/delete/<user_id>', methods=['POST','GET'])
+def teamDeleteUser(user_id, team_id):
+    res = checkLogin()
+    if res:
+        if team_id and user_id:
+            if request.method == "GET":
+                return render_template('dashboard_team_user_delete.html', user_id=user_id, team_id=team_id)
+            elif request.method == "POST":
+                membership = Membership.query.filter_by(account_id=session['account_id'], user_id=user_id, team_id=team_id).first()
+                db.session.delete(membership)
+                db.session.commit()
+                return redirect('/dashboard/team/%s' % str(team_id))
+        else:
+            return redirect('/dashboard/team/%s' % str(team_id))
+    else:
+        return notLoggedIn()
 
 @team.route('/dashboard/team/user/edit/<user_id>')
 @team.route('/team/user/edit/<user_id>')

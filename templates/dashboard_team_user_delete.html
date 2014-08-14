@@ -62,63 +62,12 @@
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h2 class="page-header">Edit {{ team.team_name }}</h1>
-            <form class="form-horizontal" method="post" action="/dashboard/team/edit/{{ team.id }}">
-<fieldset>
-
-<!-- Form Name -->
-
-<!-- Text input-->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="name">Team Name</label>  
-  <div class="col-md-4">
-  <input id="name" name="name" type="text" placeholder="Required" class="form-control input-md" required="" value="{{
-  team.team_name}}">
-    
-  </div>
-</div>
-
-<!-- Select Basic -->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="leader">Team Leader</label>
-  <div class="col-md-4">
-    <select id="leader" name="leader" class="form-control">
-    {% for user in users %}
-        {% if team.team_leader_id == user.id %}
-        <option selected="selected" value="{{ user.id }}">{{ user.name }}</option>
-        {% else %}
-        <option value="{{ user.id }}">{{ user.name }}</option>
-        {% endif %}
-    {% endfor %}
-    </select>
-  </div>
-</div>
-
-<!-- Button -->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="submit"></label>
-  <div class="col-md-4">
-    <button id="submit" name="submit" class="btn btn-success">Create Team</button>
-  </div>
-</div>
-
-</fieldset>
+          <h2 class="page-header">Remove User?</h2>
+            <form class="form-horizontal" method="post" action="/dashboard/team/{{ team_id }}/user/delete/{{ user_id }}">
+            <p><strong>Are you sure?</strong></p>
+            <button id="submit" name="submit" class="btn btn-danger">Remove User</button><a href="/dashboard/team/{{
+            team_id }}">Nevermind</a>
 </form>
-        <table class="table">
-            <tr>
-                <th>User</th>
-                <th>Name</th>
-                <th>Actions</th>
-            </tr>
-        {% for member in members %}
-            <tr>
-                <td>{{ member.username }}</td>
-                <td>{{ member.name }}</td>
-                <td><a class="btn btn-danger btn-xs" href="/dashboard/team/{{ team.id }}/user/delete/{{ member.id }}">Remove</a></td>
-            </tr>
-        {% endfor %}
-        </table>
-        <a href="/dashboard/team/{{ team.id }}/user/add" class="btn btn-success">Add User to Team</a>
         </div>
       </div>
     </div>
