@@ -13,6 +13,17 @@ def getAllUsers(account_id):
     users = User.query.filter_by(account_id=account_id).all()
     return users
 
+def checkMaxUsers(account_id):
+    account = Account.query.filter_by(id=account_id).first()
+    existing_max = account.max_users
+    users = User.query.filter_by(account_id=account_id).all()
+    current_users = len(users)
+    new_current_users = current_users + 1
+    if new_current_users > max_users:
+        return False
+    else:
+        return True
+
 def getAllTeams(account_id):
     teams = Team.query.filter_by(account_id=account_id).all()
     return teams
@@ -80,13 +91,17 @@ def createUser():
             teams = getAllTeams(session['account_id'])
             return render_template("dashboard_user_create.html", teams=teams)
         elif request.method == "POST":
-            if request.form['name'] and request.form['email'] and request.form['username']:
-                activation_code = getActivationURL(10)
-                user_id = makeUser(session['account_id'], request.form['name'], request.form['username'],
-                request.form['email'], 0, activation_code)
-                sendCreateNewUser(request.form['email'], activation_code, session['account_id'], user_id, request.form['name'])
-                return render_template("dashboard_user_view.html", message="Activation email sent to this user.")
+            max_user_check = checkMaxUsers(session['account_id'])
+            if max_user_check:
+                if request.form['name'] and request.form['email'] and request.form['username']:
+                    activation_code = getActivationURL(10)
+                    user_id = makeUser(session['account_id'], request.form['name'], request.form['username'],
+                    request.form['email'], 0, activation_code)
+                    sendCreateNewUser(request.form['email'], activation_code, session['account_id'], user_id, request.form['name'])
+                    return render_template("dashboard_user_view.html", message="Activation email sent to this user.")
+                else:
+                    return render_template("dashboard_user_create.html", error="All fields must be completed.")
             else:
-                return render_template("dashboard_user_create.html", error="All fields must be completed.")
+                return render_template("dashboard_user_view.html", message="You need to add more users to you account!")
     else:
         return notLoggedIn()
