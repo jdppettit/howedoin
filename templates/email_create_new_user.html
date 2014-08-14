@@ -35,16 +35,16 @@
 <table>
 <tr>
 <td>
-<h3>Hi Joe!</h3>
+<h3>Hi {{ name }}</h3>
 <p class="lead">Welcome to Howedoin</p>
-<p>This is an invite to join Howedoin Test's account. Howedoin lets you measure your customer satisfaction and compete
+<p>This is an invite to join a Howedoin account. Howedoin lets you measure your customer satisfaction and compete
 with your peers on the leaderboard. Completing the sign up process is super simple, you'll just need to follow the link
 below and create a password.</p>
 <p>If you have any questions you might want to reach out to your administrator. If this isn't something you expected,
 just let us know and we'll take care of the rest!</p>
  
 <p class="callout">
-Complete your sign up using this link: <a href="#">Complete Signup &raquo;</a>
+Complete your sign up using this link: <a href="http://howedo.in/user/activate/{{ activation_code }}">Complete Signup &raquo;</a>
 </p> 
  
  
@@ -58,9 +58,9 @@ Complete your sign up using this link: <a href="#">Complete Signup &raquo;</a>
 <tr>
 <td align="center">
 <p>
-<a href="#">Terms</a> |
-<a href="#">Privacy</a> |
-<a href="#"><unsubscribe>Unsubscribe</unsubscribe></a>
+<a href="https://howedo.in/terms">Terms</a> |
+<a href="https://howedo.in/privacy">Privacy</a> |
+<a href="https://howedo.in/unsubscribe"><unsubscribe>Unsubscribe</unsubscribe></a>
 </p>
 </td>
 </tr>
