@@ -2,6 +2,7 @@ import md5
 from datetime import *
 from credentials import *
 from flask import *
+from models import *
 
 # INPUT: team id, user id, account id (all ints), item (string)
 # OUTPUT: a hash that represents a token for rating auth
@@ -32,7 +33,8 @@ def makeIdentity(user_hash, db):
     newIdentity = Rater(user_hash)
     db.session.add(newIdentity)
     db.session.commit()
-    return True
+    db.session.refresh(newIdentity)
+    return True, newIdentity.id
 
 def makeIdentityHash(ip):
     user_hash = md5.new()
@@ -43,7 +45,7 @@ def makeIdentityHash(ip):
 def checkIdentity(user_hash, db):
     identity = Rater.query.filter_by(user_hash=user_hash).all()
     if identity:
-        return True
+        return True, identity.id
     else:
         return False
 

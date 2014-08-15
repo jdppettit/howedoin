@@ -114,7 +114,9 @@
             <tr>
                 <td>{{ member.username }}</td>
                 <td>{{ member.name }}</td>
-                <td><a class="btn btn-danger btn-xs" href="/dashboard/team/{{ team.id }}/user/delete/{{ member.id }}">Remove</a></td>
+                <td><a class="btn btn-danger btn-xs" href="/dashboard/team/{{ team.id }}/user/delete/{{ member.id}}">Remove</a>&nbsp;
+                <a class="btn btn-primary btn-xs" href="/dashboard/team/{{ team.id }}/user/promote/{{ member.id }}">Make
+                Admin</td>
             </tr>
         {% endfor %}
         </table>
