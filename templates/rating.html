@@ -11,14 +11,14 @@
     <title>howedoin - how is your team doing</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="static/js/ie-emulation-modes-warning.js"></script>
+    <script src="{{ url_for('static', filename='js/ie-emulation-modes-warning.js') }}"></script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="static/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="{{ url_for('static', filename='js/ie10-viewport-bug-workaround.js') }}"></script>
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -27,8 +27,8 @@
     <![endif]-->
 
     <!-- Custom styles for this template -->
-    <link href="static/css/carousel.css" rel="stylesheet">
-    <link href="static/css/rating.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/carousel.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/rating.css') }}" rel="stylesheet">
 </head>
 <!-- NAVBAR
 ================================================== -->
@@ -41,7 +41,11 @@
             <div class="panel-body">
             <div class="container">
         <!-- Text input-->
-        <form class="form-horizontal" method="post" action="/rating">
+        {% if item_id == 0 %}
+        <form class="form-horizontal" method="post" action="/rate/team/{{ team_id }}/user/{{ user_id }}/score/{{ score }}">
+        {% else %}
+        <form class="form-horizontal" method="post" action="/rate/team/{{ team_id }}/item/{{ item_id }}/user/{{ user_id }}/score/{{ score }}">
+        {% endif %}
 <fieldset>
 
 <!-- Form Name -->
@@ -49,6 +53,7 @@
 <!-- Multiple Radios (inline) -->
 <div class="form-group">
   <label class="col-md-4 control-label" for="score">How did we do?</label>
+  t
   <div class="col-md-4"> 
     <label class="radio-inline" for="score-0">
       <input type="radio" name="score" id="score-0" value="1" checked="checked">
@@ -98,7 +103,9 @@
     <button id="submit" name="submit" class="btn btn-success">Submit Rating</button>
   </div>
 </div>
-
+<input type="hidden" name="rater_id" value="{{ rater_id }}"/>
+<input type="hidden" name="team_id" value="{{ team_di }}"/>
+<input type="hidden" name="duplicate" value="{{ duplicate }}"/>
 </fieldset>
 </form>
 

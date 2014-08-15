@@ -43,7 +43,7 @@ def makeIdentityHash(ip):
     return user_hash.hexdigest()
 
 def checkIdentity(user_hash, db):
-    identity = Rater.query.filter_by(user_hash=user_hash).all()
+    identity = Rater.query.filter_by(user_hash=user_hash).first()
     if identity:
         return True, identity.id
     else:
@@ -62,24 +62,24 @@ def validateToken(token, db):
     else:
         return False
 
-def validateTeam(team_id, db):
+def validateTeam(team_id):
     checkedTeam = Team.query.filter_by(id=team_id).first()
     if checkedTeam:
         return True
     else:
         return False
 
-def validateUser(user_id, db):
+def validateUser(user_id):
     checkedUser = User.query.filter_by(id=user_id).first()
     if checkedUser:
         return True
     else:
         return False
 
-def validateUserMembership(user_id, team_id, db):
-
-    checkMembership = Membership.query.filter_by(user_id=user_id, team_id=team_id).first()
+def validateUserMembership(user_id, team_id):
+    checkMembership = Membership.query.filter_by(user_id=user_id).filter_by(team_id=team_id).first()
     if checkMembership:
+        print checkMembership
         return True
     else:
         return False
