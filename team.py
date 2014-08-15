@@ -148,12 +148,15 @@ def teamDeleteUser(user_id, team_id):
     else:
         return notLoggedIn()
 
-@team.route('/dashboard/team/user/edit/<user_id>')
-@team.route('/team/user/edit/<user_id>')
-def teamUserEdit(team_id):
-    return render_template("dashboard_team_user_edit.html")
-
-#@team.route('/getmembers')
-#def getMembers():
-#    resp = getMemberList(2, session['account_id'])
-#    print resp
+@team.route('/dashboard/team/<team_id>/user/promote/<user_id>')
+def teamPromoteUser(user_id, team_id):
+    res = checkLogin()
+    if res:
+        if team_id and user_id:
+            user = User.query.filter_by(id=user_id).first()
+            addLeaderMembership(session['account_id'], user.id, team_id)
+            return redirect('/dashboard/team/%s' % str(team_id))
+        else:
+            return redirect('/dashboard/team/%s' % str(team_id))
+    else:
+        return notLoggedIn()
