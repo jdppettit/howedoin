@@ -27,8 +27,6 @@ from account import account
 from user import user
 from email_manager import mail
 
-from do_billing import *
-
 from models import db
 
 app = Flask(__name__)
@@ -81,11 +79,6 @@ def rating():
 @app.route('/email/newuser')
 def newuser():
     return render_template("email_create_new_user.html")
-
-@app.route('/admin/billing/dobilling')
-def doBilling():
-    doBilling()
-    return "Doing it."
 
 if __name__ == '__main__':
     handler = RotatingFileHandler('howedoin.log', maxBytes=10000, backupCount=1)
