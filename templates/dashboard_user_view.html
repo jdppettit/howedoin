@@ -73,7 +73,7 @@
             <tr>
                 <td><a href="/dashboard/user/{{ user.id }}">{{ user.name }}</a></td>
                 <td>{{ user.username }}</td>
-                <td>Action</td>
+                <td><a href="/dashboard/user/delete/{{ user.id }}" class="btn btn-danger btn-xs">Delete</a></td>
             </tr>
             {% endfor %}
             </table>

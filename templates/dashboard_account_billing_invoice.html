@@ -11,14 +11,14 @@
     <title>howedoin - how is your team doing</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="../../static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../static/js/ie-emulation-modes-warning.js"></script>
+    <script src="{{ url_for('static', filename='js/ie-emulation-modes-warning.js') }}"></script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../static/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="{{ url_for('static', filename='js/ie10-viewport-bug-workaround.js') }}"></script>
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
     <![endif]-->
 
     <!-- Custom styles for this template -->
-    <link href="../../static/css/dashboard.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
   </head>
 <!-- NAVBAR
 ================================================== -->
@@ -62,48 +62,25 @@
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h2 class="page-header">Billing</h1>
+          <h2 class="page-header">Invoice #{{ invoice.id }}</h1>
             <table class="table">
                 <tr>
-                    <td>Billing Plan</td>
-                    <td>{{ plan }}</td>
+                    <th>Descrption</th>
+                    <th>Credit</th>
+                    <th>Debit</th>
                 </tr>
+                {% for line in invoice_lines %}
                 <tr>
-                    <td>Monthly Cost</td>
-                    <td>{{ monthly_cost }}</td>
-                </tr>
-                <tr>
-                    <td>Account Balance</td>
-                    <td>{{ account_balance }}</td>
-                </tr>
-                <tr>
-                    <td>Current / Maximum Users</td>
-                    <td>{{ current_users }} / {{ max_users}} <a href="/billing/addusers">Add More</a></td>
-                </tr>
-                <tr>
-                    <td>Paid Through</td>
-                    <td>{{ paid_thru }}</td>
-                </tr>
-                <tr>
-                    <td>Account Standing</td>
-                    <td>{{ account_standing }}</td>
-                </tr>
-            </table>
-            <br/>
-            <h3>Invoices</h3>
-            <table class="table">
-                <tr>
-                    <th>#</th>
-                    <th>Total</th>
-                    <th>Paid</th>
-                </tr>
-                {% for invoice in invoices %}
-                <tr>
-                    <td><a href="/dashboard/billing/invoice/{{ invoice.id }}">{{ invoice.id }}</a></td>
-                    <td>$ {{ invoice.total }}</td>
-                    <td>{% if invoice.paid == 1 %}Yes{% else %}No{%endif%}</td>
+                    <td>{{ line.item }}</td>
+                    <td>{% if line.credit > 0 %}(${{ line.credit }}){% else %}$0.00{% endif %}</td>
+                    <td>{% if line.debit > 0 %}${{ line.debit }}{% else %}$0.00{% endif %}
                 </tr>
                 {% endfor %}
+                <tr/>
+                    <td></td>
+                    <td><strong>Total:</strong></td>
+                    <td>${{ invoice.total }}</td>
+                </tr>
                 </table>
         </div>
       </div>

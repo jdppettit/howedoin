@@ -2,6 +2,7 @@ from flask import *
 from models import db, Account, Invoice, InvoiceItem, Payment, Subscription
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from functions import *
 
 import stripe
 import pprint
@@ -298,3 +299,13 @@ def editBilling():
 def adminDoBilling():
     doBilling()
     return "Done."
+
+@billing.route('/dashboard/billing/invoice/<invoice_id>')
+def getInvoice(invoice_id):
+    res = checkLogin()
+    if res:
+        invoice = Invoice.query.filter_by(id=invoice_id).first()
+        invoice_lines = InvoiceItem.query.filter_by(invoice_id=invoice.id).all()
+        return render_template("dashboard_account_billing_invoice.html", invoice=invoice, invoice_lines=invoice_lines)
+    else:
+        return notLoggedIn()
