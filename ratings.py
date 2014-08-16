@@ -23,6 +23,7 @@ def nonTokenLogic(db, request, team_id, user_id, score, item_id=0):
         check_cookie = checkCookie(request, identity)
         if not check_cookie:
             # If the cookie is not present
+            # need to make the cookie
             return render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
             duplicate=0)
         elif check_cookie:
@@ -36,6 +37,7 @@ def nonTokenLogic(db, request, team_id, user_id, score, item_id=0):
         check_cookie = checkCookie(request, identity)
         if not check_cookie:
             # Cookie not present
+            # need to make the cookie
             return render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
             duplicate=0)
         elif check_cookie:
@@ -108,6 +110,7 @@ def rate(team_id, user_id, score):
         rater_name = ""
         rater_id = request.form['rater_id']
         score = int(request.form['score'])
+        print "The score is %i" % score
         comment = ""
         if 'comment' in request.args:
             comment = request.form['comment']
@@ -118,7 +121,7 @@ def rate(team_id, user_id, score):
 
         user = User.query.filter_by(id=user_id).first()
         newRating = Rating(user.account_id, user.id, team_id, score, user.username, rater_email=rater_email,
-        rater_name=rater_name, rater_id=rater_id, comment=comment)
+        rater_name=rater_name, rater_id=rater_id, comment=comment, duplicate=request.form['duplicate'])
         db.session.add(newRating)
         db.session.commit()
         return render_template("rating_complete.html")
