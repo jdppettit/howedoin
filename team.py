@@ -31,6 +31,16 @@ def addLeaderMembership(account_id, id, team_id):
     db.session.add(newMembership)
     db.session.commit()
 
+def removeAdminMembership(account_id, id, team_id):
+    membership = Membership.query.filter_by(account_id=account_id, user_id=id).first()
+    membership.is_admin = 0
+    db.session.commit()
+
+def addAdminMembership(account_id, id, team_id):
+    membership = Membership.query.filter_by(account_id=account_id, user_id=id).first()
+    membership.is_admin = 1
+    db.session.commit()
+
 def addMembership(account_id, user_id, team_id):
     newMembership = Membership(account_id, user_id, team_id, is_admin=0)
     db.session.add(newMembership)
@@ -52,8 +62,6 @@ def specificTeam(team_id):
             team = Team.query.filter_by(id=team_id).first()
             members = getMemberList(team.id)
             membership = Membership.query.filter_by(account_id=session['account_id']).filter_by(team_id=team_id).all()
-            for m in membership:
-                print m.id
             return render_template("dashboard_team_edit.html", team=team, users=users, members=members,
             membership=membership)
         elif request.method == "POST":
@@ -158,9 +166,23 @@ def teamPromoteUser(user_id, team_id):
     if res:
         if team_id and user_id:
             user = User.query.filter_by(id=user_id).first()
-            addLeaderMembership(session['account_id'], user.id, team_id)
+            addAdminMembership(session['account_id'], user.id, team_id)
             return redirect('/dashboard/team/%s' % str(team_id))
         else:
             return redirect('/dashboard/team/%s' % str(team_id))
     else:
         return notLoggedIn()
+
+@team.route('/dashboard/team/<team_id>/user/demote/<user_id>')
+def teamDemoteUser(user_id, team_id):
+    res = checkLogin()
+    if res:
+        if team_id and user_id:
+            user = User.query.filter_by(id=user_id).first()
+            removeAdminMembership(session['account_id'], user.id, team_id)
+            return redirect('/dashboard/team/%s' % str(team_id))
+        else:
+            return redirect('/dashboard/team/%s' % str(team_id))
+    else:
+        return notLoggedIn()
+

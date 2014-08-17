@@ -128,6 +128,11 @@ def deleteUser(user_id):
 
             for member in membership:
                 db.session.delete(member)
+            
+            ratings = Rating.query.filter_by(user_id=user_id).filter_by(account_id=session['account_id']).all()
+
+            for rating in ratings:
+                db.session.delete(rating)
 
             db.session.delete(user)
             db.session.commit()
