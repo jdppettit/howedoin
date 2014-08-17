@@ -36,31 +36,7 @@
     {% include 'error.html' %}
 
  <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="side-head"><strong>You</strong></li>
-            <li><a href="/dashboard">Overview</a></li>
-            <li><a href="/dashboard/you">Your Ratings</a></li>
-            <li><a href="/dashboard/leaderboard">Leaderboard</a></li>
-            <li><a href="/dashboard/profile">Profile</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li class="side-head"><strong>Teams</strong>
-            <li><a href="/dashboard/team">View Teams</a></li>
-            <li class="active"><a href="/dashboard/team/create">Create Team</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li class="side-head"><strong>Users</strong>
-            <li><a href="/dashboard/user">View Users</a></li>
-            <li><a href="/dashboard/user/create">Create User</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li class="side-head"><strong>Account</strong>
-            <li><a href="/dashboard/account">Settings</a></li>
-            <li><a href="/dashboard/account/billing">Billing</a></li>
-          </ul>
-        </div>
+        {% include 'sidebar.html' %}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h2 class="page-header">Create New Team</h1>
             <form class="form-horizontal" method="post" action="/dashboard/team/create">
