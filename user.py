@@ -19,7 +19,7 @@ def checkMaxUsers(account_id):
     users = User.query.filter_by(account_id=account_id).all()
     current_users = len(users)
     new_current_users = current_users + 1
-    if new_current_users > max_users:
+    if new_current_users > existing_max:
         return False
     else:
         return True
@@ -53,12 +53,37 @@ def updateActivatedUser(password, token):
     db.session.commit()
     return user
 
+def addMembership(account_id, user_id, team_id):
+    newMembership = Membership(account_id, user_id, team_id, is_admin=0)
+    db.session.add(newMembership)
+    db.session.commit()
+
 @user.route('/dashboard/user/')
 def viewUsers():
     resp = checkLogin()
     if resp:
         allUsers = getAllUsers(session['account_id'])
         return render_template("dashboard_user_view.html", users=allUsers)
+    else:
+        return notLoggedIn()
+
+@user.route('/dashboard/user/<user_id>', methods=['POST','GET'])
+def editUser(user_id):
+    res = checkLogin()
+    if res:
+        if request.method == "GET":
+            user = User.query.filter_by(id=user_id).first()
+            teams = Team.query.filter_by(account_id=session['account_id']).all()
+            membership = Membership.query.filter_by(account_id=session['account_id']).all()
+            iterable = 0
+            if len(membership) > 1:
+                iterable = 1
+            else:
+                iterable = 0
+            return render_template("dashboard_user_edit.html", user=user, teams=teams, membership=membership,
+            iterable=iterable)
+        elif request.method == "POST":
+            return redirect('/dashboard/user')
     else:
         return notLoggedIn()
 
@@ -83,6 +108,25 @@ def activateUser(token):
     else:
         return render_template("index.html")
 
+@user.route('/dashboard/user/delete/<user_id>', methods=['POST','GET'])
+def deleteUser(user_id):
+    res = checkLogin()
+    if res:
+        if request.method == "GET":
+            return render_template("dashboard_user_delete.html", user_id=user_id)
+        elif request.method == "POST":
+            user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
+            membership = Membership.query.filter_by(user_id=user_id).filter_by(account_id=session['account_id']).all()
+
+            for member in membership:
+                db.session.delete(member)
+
+            db.session.delete(user)
+            db.session.commit()
+            return redirect('/dashboard/user')
+    else:
+        return notLoggedIn()
+
 @user.route('/dashboard/user/create', methods=['POST','GET'])
 def createUser():
     resp = checkLogin()
@@ -97,8 +141,14 @@ def createUser():
                     activation_code = getActivationURL(10)
                     user_id = makeUser(session['account_id'], request.form['name'], request.form['username'],
                     request.form['email'], 0, activation_code)
+                    if request.form.has_key('teams'):
+                        selected_teams = request.form.getlist('teams')
+                        for team in selected_teams:
+                            addMembership(session['account_id'], user_id, team)
                     sendCreateNewUser(request.form['email'], activation_code, session['account_id'], user_id, request.form['name'])
-                    return render_template("dashboard_user_view.html", message="Activation email sent to this user.")
+                    users = getAllUsers(session['account_id'])
+                    return render_template("dashboard_user_view.html", message="Activation email sent to this user.",
+                    users=users)
                 else:
                     return render_template("dashboard_user_create.html", error="All fields must be completed.")
             else:
