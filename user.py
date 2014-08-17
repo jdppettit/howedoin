@@ -83,6 +83,14 @@ def editUser(user_id):
             return render_template("dashboard_user_edit.html", user=user, teams=teams, membership=membership,
             iterable=iterable)
         elif request.method == "POST":
+            user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
+            if request.form.has_key('username'):
+                user.username = request.form['username']
+            if request.form.has_key('email'):
+                user.email = request.form['email']
+            if request.form.has_key('name'):
+                user.name = request.form['name']
+            db.session.commit()
             return redirect('/dashboard/user')
     else:
         return notLoggedIn()
