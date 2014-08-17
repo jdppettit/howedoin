@@ -51,7 +51,11 @@ def specificTeam(team_id):
             users = getAllUsers(session['account_id'])
             team = Team.query.filter_by(id=team_id).first()
             members = getMemberList(team.id)
-            return render_template("dashboard_team_edit.html", team=team, users=users, members=members)
+            membership = Membership.query.filter_by(account_id=session['account_id']).filter_by(team_id=team_id).all()
+            for m in membership:
+                print m.id
+            return render_template("dashboard_team_edit.html", team=team, users=users, members=members,
+            membership=membership)
         elif request.method == "POST":
             # update the stuff
             team = Team.query.filter_by(id=team_id).first()

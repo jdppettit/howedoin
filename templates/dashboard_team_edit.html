@@ -87,12 +87,27 @@
                 <th>Actions</th>
             </tr>
         {% for member in members %}
-            <tr>
+        {% set printed = 0 %}
+        {% for m in membership %}
+            {% if member.id == m.user_id and m.is_admin == 1 %}
+            <tr style="background-color: #e5e5e5">
+                <td>{{ member.username }}</td>
+                <td>{{ member.name }}</td>
+                <td><a class="btn btn-danger btn-xs" href="/dashboard/team/{{ team.id }}/user/delete/{{ member.id}}">Remove</a>&nbsp;
+                <a class="btn btn-primary btn-xs" href="/dashboard/team/{{ team.id }}/user/demote/{{ member.id }}">Remove
+                Admin</td>
+                {% set printed = 1 %}
+            {% else %}
+                {% if loop.last and printed != 1 %}
+             <tr>
                 <td>{{ member.username }}</td>
                 <td>{{ member.name }}</td>
                 <td><a class="btn btn-danger btn-xs" href="/dashboard/team/{{ team.id }}/user/delete/{{ member.id}}">Remove</a>&nbsp;
                 <a class="btn btn-primary btn-xs" href="/dashboard/team/{{ team.id }}/user/promote/{{ member.id }}">Make
                 Admin</td>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
             </tr>
         {% endfor %}
         </table>
