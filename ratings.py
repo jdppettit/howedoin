@@ -8,39 +8,49 @@ from password import *
 
 from functions import *
 
+from pprint import *
 import logging
 from logging.handlers import RotatingFileHandler
 
 ratings = Blueprint('ratings', __name__, template_folder='templates')
 
-def nonTokenLogic(db, request, team_id, user_id, score, item_id=0):
+def nonTokenLogic(db, request, team_id, user_id, score=0, item_id=0):
     ip = request.remote_addr
     identity = makeIdentityHash(ip)
     check_id, rater_id = checkIdentity(identity, db)
     if not check_id:
         # If the id is not something we've seen before
+        print "Couldn't find that ID"
         identity, rater_id = makeIdentity(identity, db)
         check_cookie = checkCookie(request, identity)
-        if not check_cookie:
+        if check_cookie == False:
             # If the cookie is not present
             # need to make the cookie
-            return render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
-            duplicate=0)
-        elif check_cookie:
+            resp = make_response(render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
+            duplicate=0))
+            resp.set_cookie("howedoin_%s" % identity)
+            return resp
+        elif check_cookie == True:
             # Cookie is present
             return render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
             duplicate=1)
         else:
             abort(404)
     elif check_id:
+        print "Found that ID"
         # If the id is something we've seen before
         check_cookie = checkCookie(request, identity)
-        if not check_cookie:
+        print "check cookie is %s" % str(check_cookie)
+        if check_cookie == False:
+            print "Proceeding with no cookie endpoint"
             # Cookie not present
             # need to make the cookie
-            return render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
-            duplicate=0)
-        elif check_cookie:
+            resp = make_response(render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
+            duplicate=0))
+            resp.set_cookie("howedoin_%s" % identity)
+            return resp
+        elif check_cookie == True:
+            print "Print proceed with cookie endpoint"
             # Cookie present
             return render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
             duplicate=1)
@@ -58,6 +68,41 @@ def tokenLogic(db, request, token, team_id, user_id, score, item_id=0):
     db.session.commit()
     return render_template("rating_complete.html")
     
+@ratings.route('/rate/team/<team_id>/user/<user_id>', methods=['POST', 'GET'])
+def rateNoScoreNoItem(team_id, user_id):
+    userValidate = validateUser(user_id)
+    teamValdiate = validateTeam(team_id)
+    userMembershipValidate = validateTeam(team_id)
+    if request.method == "GET":
+        return nonTokenLogic(db, request, team_id, user_id)
+    elif request.method == "POST":
+        print "Request args below"
+        print "-----------------"
+        pprint(vars(request.args))
+        print "-----------------"
+        rater_email = ""
+        rater_name = ""
+        rater_id = request.form['rater_id']
+        score = int(request.form['score'])
+        print "The score is %i" % score
+        comment = ""
+        if request.args.has_key('comment'):
+            comment = request.form['comment']
+            print comment
+        if 'email' in request.args:
+            rater_email = request.form['email']
+            print rater_email
+        if 'name' in request.args:
+            rater_name = request.form['name']
+            print rater_name
+
+        user = User.query.filter_by(id=user_id).first()
+        newRating = Rating(user.account_id, user.id, team_id, score, user.username, rater_email=rater_email,
+        rater_name=rater_name, rater_id=rater_id, comment=comment, duplicate=request.form['duplicate'])
+        db.session.add(newRating)
+        db.session.commit()
+        return render_template("rating_complete.html")
+
 
 @ratings.route('/rate/team/<team_id>/item/<item_id>/user/<user_id>/score/<score>', methods=['POST', 'GET'])
 @ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>', methods=['POST', 'GET'])
@@ -83,7 +128,7 @@ def rate(team_id, user_id, score):
                             return render_template("invalid.html", message=0)
                 except:
                     # Proceed with normal logic
-                    return nonTokenLogic(db, request, team_id, user_id, item_id)
+                    return nonTokenLogic(db, request, team_id, user_id, score=score, item_id=item_id)
         except:
             if team_id and user_id and score and userValidate and teamValidate and userMembershipValidate:
                 try:
@@ -110,18 +155,17 @@ def rate(team_id, user_id, score):
         rater_name = ""
         rater_id = request.form['rater_id']
         score = int(request.form['score'])
-        print "The score is %i" % score
         comment = ""
-        if 'comment' in request.args:
+        if request.form.has_key('comment'):
             comment = request.form['comment']
-        if 'email' in request.args:
+        if request.form.has_key('email'):
             rater_email = request.form['email']
-        if 'name' in request.args:
+        if request.form.has_key('name'):
             rater_name = request.form['name']
 
         user = User.query.filter_by(id=user_id).first()
         newRating = Rating(user.account_id, user.id, team_id, score, user.username, rater_email=rater_email,
-        rater_name=rater_name, rater_id=rater_id, comment=comment, duplicate=request.form['duplicate'])
+        rater_name=rater_name, rater_id=rater_id, comment=comment, duplicate=int(request.form['duplicate']))
         db.session.add(newRating)
         db.session.commit()
         return render_template("rating_complete.html")

@@ -70,7 +70,7 @@ class Rating(db.Model):
     score = db.Column(db.Integer)
     comment = db.Column(db.Text)
     username = db.Column(db.String(35))
-    date = db.Column(db.Date)
+    date = db.Column(db.DateTime)
     hidden = db.Column(db.Integer)
     followup = db.Column(db.Text)
     followup_user = db.Column(db.String(35))
@@ -93,6 +93,7 @@ class Rating(db.Model):
         self.rater_name = rater_name
         self.rater_id = rater_id
         self.team_id = team_id
+        self.duplicate = duplicate
 
 class Team(db.Model):
     __tablename__ = "team"

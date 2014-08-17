@@ -50,7 +50,9 @@ def checkIdentity(user_hash, db):
         return False
 
 def checkCookie(request, user_hash):
-    if request.cookies.get('howedoin_%s' % user_hash):
+    print "User hash is: %s" % str(user_hash)
+    check_string = 'howedoin_%s' % str(user_hash)
+    if check_string in request.cookies:
         return True
     else:
         return False
@@ -72,8 +74,10 @@ def validateTeam(team_id):
 def validateUser(user_id):
     checkedUser = User.query.filter_by(id=user_id).first()
     if checkedUser:
+        print "I found the cookie"
         return True
     else:
+        print "Nope, no cookie here"
         return False
 
 def validateUserMembership(user_id, team_id):

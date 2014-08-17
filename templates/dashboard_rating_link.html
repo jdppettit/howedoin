@@ -1,0 +1,71 @@
+<!DCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>howedoin - how is your team doing</title>
+
+    {% include 'head.html' %}
+    {% include 'dashboard_css.html' %}
+  </head>
+<!-- NAVBAR
+================================================== -->
+  <body>
+    {% include 'navbar.html' %}
+    {% include 'error.html' %}
+
+ <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="side-head"><strong>You</strong></li>
+            <li class="active"><a href="/dashboard">Overview</a></li>
+            <li><a href="/dashboard/you">Your Ratings</a></li>
+            <li><a href="/dashboard/link">Your Rating Link</a></li>
+            <li><a href="/dashboard/leaderboard">Leaderboard</a></li>
+            <li><a href="/dashboard/profile">Profile</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li class="side-head"><strong>Teams</strong>
+            <li><a href="/dashboard/team">View Teams</a></li>
+            <li><a href="/dashboard/team/create">Create Team</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li class="side-head"><strong>Users</strong>
+            <li><a href="/dashboard/user">View Users</a></li>
+            <li><a href="/dashboard/user/create">Create User</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li class="side-head"><strong>Account</strong>
+            <li><a href="/dashboard/account">Settings</a></li>
+            <li><a href="/dashboard/account/billing">Billing</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">Your Rating Link</h1>
+            <p>You can use these links to attach to an email, send to a customer, or really anything you need. The link
+            will take your customer to a Howedoin rating form to evaluate your service!</p>
+            <table class="table">
+            <tr>
+                <th>Team</th>
+                <th>Link</th>
+            </tr>
+            {% for team in teams %}
+            <tr>
+                <td>{{ team.team_name }}</td>
+                <td><a href="https://howedo.in/rate/team/{{ team.id }}/user/{{ user.id
+                }}">https://howedo.in/rate/team/{{ team.id }}/user/{{ user.id }}</a></td>
+            </tr>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+</body>
+</html>
