@@ -12,9 +12,11 @@ def getTotal(account_id):
     for invoice in invoices:
         invoiceTotal += invoice.total
     for payment in payments:
-        paymentTotal += payment.debit
-        paymentTotal -= payment.credit
+        paymentTotal -= payment.debit
+        paymentTotal += payment.credit
     account_balance = invoiceTotal - paymentTotal
+    print "InvoiceTotal is %s" % str(invoiceTotal)
+    print "PaymentTOtal is %s" % str(paymentTotal)
     return account_balance
 
 def getCurrentUsers(account_id):
