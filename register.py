@@ -93,6 +93,7 @@ def registerEndpoint():
                             db.session.add(newUser)
                             db.session.commit()
                             user_id = getUserID(newUser, db)
+                            makeAdmin(user.id, user.account_id)
                             doLogin(request.form['username'], request.form['name'], user_id, accountID, request.form['email'])
                             return render_template("dashboard.html")
                         else:

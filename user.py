@@ -206,6 +206,11 @@ def deleteUser(user_id):
 
             for rating in ratings:
                 db.session.delete(rating)
+            
+            permissions = Permission.query.filter_by(user_id=user_id).filter_by(account_id=session['account_id']).all()
+
+            for permission in permissions:
+                db.session.delete(permission)
 
             db.session.delete(user)
             db.session.commit()
