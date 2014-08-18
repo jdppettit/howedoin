@@ -3,6 +3,8 @@ from models import db, User, Account, Team
 from functions import *
 from email_manager import *
 from password import *
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 import string
 import random
@@ -20,6 +22,20 @@ def checkMaxUsers(account_id):
     current_users = len(users)
     new_current_users = current_users + 1
     if new_current_users > existing_max:
+        return False
+    else:
+        return True
+
+def checkExistingActivation(activation):
+    check = User.query.filter_by(activation_link=activation).first()
+    if check:
+        return False
+    else:
+        return True
+
+def checkExistingReset(activation)
+    check = User.query.filter_by(password_reset_link=activation).first()
+    if check:
         return False
     else:
         return True
@@ -63,7 +79,18 @@ def forgot():
     if request.method == "GET":
         return render_template("forgot.html")
     elif request.method == "POST":
-        return render_template("login.html", message="Password changed successfully.")
+        if request.form.has_key('username') and request.form.has_key('email'):
+            user = User.query.filter_by(username=request.form['username']).filter_by(email=request.form['email']).first()
+            resetLink = getActivationURL(10)
+            while not checkExistingReset(resetLink):
+                resetLink = getActivationURL(10)
+            try:
+                user.password_reset_link = resetLink
+                user.password_reset_expire = datetime.now() + relativedelta(days=1)
+                db.session.commit()
+            except:
+                pass
+            return render_template("forgot.html", message="If an account matched those credentials you should get an email momentarily.")
 
 @user.route('/dashboard/user/')
 def viewUsers():
@@ -159,6 +186,8 @@ def createUser():
             if max_user_check:
                 if request.form['name'] and request.form['email'] and request.form['username']:
                     activation_code = getActivationURL(10)
+                    while not checkExistingActivation(activation_code):
+                        activation_code = getActivationURL(10)
                     user_id = makeUser(session['account_id'], request.form['name'], request.form['username'],
                     request.form['email'], 0, activation_code)
                     if request.form.has_key('teams'):

@@ -12,11 +12,11 @@ class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     company_name = db.Column(db.String(25))
     plan_id = db.Column(db.Integer)
-    paid_thru = db.Column(db.Date)
+    paid_thru = db.Column(db.DateTime)
     is_current = db.Column(db.Integer)
     stripe_customer = db.Column(db.String(20))
     max_users = db.Column(db.Integer)
-    date = db.Column(db.Date)
+    date = db.Column(db.DateTime)
     needs_billing = db.Column(db.Integer)
     total_monthly_bill = db.Column(db.Float)
     subscription_id = db.Column(db.Integer)
@@ -47,6 +47,7 @@ class User(db.Model):
     activation_link = db.Column(db.String(10))
     password_reset_link = db.Column(db.String(25))
     avatar = db.Column(db.String(50))
+    password_reset_expire = db.Column(db.DateTime)
 
     def __init__(self, account_id, name, username, password, email, active, activation_link="", password_reset_link="",
     avatar = ""):
@@ -153,7 +154,7 @@ class Rater(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_hash = db.Column(db.String(50))
-    reap = db.Column(db.Date)
+    reap = db.Column(db.DateTime)
 
     def __init__(self, user_hash, reap=datetime.now() + relativedelta(weeks=1)):
         self.user_hash = user_hash
@@ -165,7 +166,7 @@ class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer)
-    expire = db.Column(db.Date)
+    expire = db.Column(db.DateTime)
 
     def __init__(self, account_id, user_id, token, expire = datetime.now() + relativedelta(weeks=1)):
         self.account_id = account_id
