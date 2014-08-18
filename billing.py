@@ -62,7 +62,7 @@ def getTotal(plan_id, extra_users):
         return total
     elif plan_id == 2:
         total = 0.00
-        total = total + 10.00
+        total = total + 25.00
         userCost = 0.00
         userCost = 2.50 * extra_users
         total = total + userCost
