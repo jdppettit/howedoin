@@ -20,36 +20,45 @@
     <div class="container">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h3 class="panel-title">Sign in</h3>
+                <h3 class="panel-title">Reset Password</h3>
             </div>
             <div class="panel-body">
                 <div class="container">
-<form class="form-horizontal" method="post" action="/login">
+<form class="form-horizontal" method="post" action="/forgot/{{ token }}">
 <fieldset>
-
-<!-- Form Name -->
-
-<!-- Prepended text-->
+<!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="username"></label>
-  <div class="col-md-5">
-    <div class="input-group">
-      <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-      <input {% if username %}value="{{ username }}" {% endif %}id="username" name="username" class="form-control" placeholder="Username" type="text" required="">
-    </div>
+  <label class="col-md-4 control-label" for="username">Username</label>  
+  <div class="col-md-4">
+  <input id="username" name="username" type="text" placeholder="Required" class="form-control input-md" required="">
     
   </div>
 </div>
 
-<!-- Prepended text-->
+<!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="password"></label>
-  <div class="col-md-5">
-    <div class="input-group">
-      <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
-      <input id="password" name="password" class="form-control" placeholder="Password" type="password" required="">
-    </div>
-    <p class="help-block"><a href="/forgot">Forgot password?</a></p>
+  <label class="col-md-4 control-label" for="email">Email</label>  
+  <div class="col-md-4">
+  <input id="email" name="email" type="text" placeholder="Required" class="form-control input-md" required="">
+    
+  </div>
+</div>
+
+<!-- Password input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="password">New Password</label>
+  <div class="col-md-4">
+    <input id="password" name="password" type="password" placeholder="Required" class="form-control input-md" required="">
+    
+  </div>
+</div>
+
+<!-- Password input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="passwordconfirm">Confirm Password</label>
+  <div class="col-md-4">
+    <input id="passwordconfirm" name="passwordconfirm" type="password" placeholder="Required" class="form-control input-md" required="">
+    
   </div>
 </div>
 
@@ -57,12 +66,14 @@
 <div class="form-group">
   <label class="col-md-4 control-label" for="submit"></label>
   <div class="col-md-4">
-    <button id="submit" name="submit" class="btn btn-success">Sign in</button>
+    <button id="submit" name="submit" class="btn btn-success">Change Password</button>
   </div>
 </div>
-
+<input type="hidden" name="user_id" value="{{ user_id }}"/>
+<input type="hidden" name="account_id" value="{{ account_id }}"/>
 </fieldset>
 </form>
+
 <hr>
 <p>Need an account? No problem, <a href="/register">Register here.</a></p>
                 </div>

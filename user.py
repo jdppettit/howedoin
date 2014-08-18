@@ -33,12 +33,24 @@ def checkExistingActivation(activation):
     else:
         return True
 
-def checkExistingReset(activation)
+def checkExistingReset(activation):
     check = User.query.filter_by(password_reset_link=activation).first()
     if check:
         return False
     else:
         return True
+
+def validateReset(activation):
+    check = User.query.filter_by(password_reset_link=activation).first()
+    now = datetime.now()
+    if check:
+        if now > check.password_reset_expire:
+            # If its found but expired
+            return False, 0
+        else:
+            return True, check
+    else:
+        return False, 0
 
 def getAllTeams(account_id):
     teams = Team.query.filter_by(account_id=account_id).all()
@@ -74,6 +86,32 @@ def addMembership(account_id, user_id, team_id):
     db.session.add(newMembership)
     db.session.commit()
 
+@user.route('/forgot/<token>', methods=['GET','POST'])
+def forgotHandler(token):
+    if request.method == "GET":
+        resp, user = validateReset(token)
+        if resp:
+            return render_template("reset.html", token=token, user_id=user.id, accound_id=user.account_id)
+        else:
+            return render_template("forgot.html", error="That code either doesn't exist or has expired. Try again.")
+    elif request.method == "POST":
+        if request.form.has_key('username') and request.form.has_key('email') and request.form.has_key('password') and request.form.has_key('passwordconfirm') and request.form.has_key('user_id') and request.form.has_key('account_id'):
+            if request.form['password'] == request.form['passwordconfirm']:
+                user = User.query.filter_by(username=request.form['username']).filter_by(email=request.form['email']).filter_by(password_reset_link=token).first()
+                user.password_reset_link = ""
+                user.password_reset_expire = "2999-12-31 23:59:59"
+                newPassword = ""
+                newPassword = hashPassword(request.form['password'])
+                user.password = newPassword
+                db.session.commit()
+                return render_template("login.html", username=user.username, message="Password reset successfully.")
+            else:
+                resp, user = validateReset(token)
+                return render_template("reset.html", token=token, user_id=user.id, account_id=user.account_id,
+                error="Your passwords did not match, try again.")
+        else:
+            return render_template("forgot.html", error="Something went wrong, try again.")
+
 @user.route('/forgot', methods=['GET','POST'])
 def forgot():
     if request.method == "GET":
@@ -88,6 +126,7 @@ def forgot():
                 user.password_reset_link = resetLink
                 user.password_reset_expire = datetime.now() + relativedelta(days=1)
                 db.session.commit()
+                sendForgotPassword(user.email, resetLink)
             except:
                 pass
             return render_template("forgot.html", message="If an account matched those credentials you should get an email momentarily.")
