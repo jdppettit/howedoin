@@ -19,6 +19,23 @@ Flow should be something like this:
 
 '''
 
+def makeAdmin(user_id, account_id):
+    permission = Permission(account_id, user_id, 99, 5)
+    db.session.add(permission)
+    db.session.commit()
+    return 1
+
+def addPermission(user_id, account_id, permission_type, permission, team_id=0):
+    if team_id != 0:
+        permission = Permission(account_id, user_id, permission_type, permission, team_id=team_id)
+        db.session.add(permission)
+        db.session.commit()
+    else:
+        permission = Permission(account_id, user_id, permission_type, permission)
+        db.session.add(permission)
+        db.session.commit()
+    return 1
+
 def getPermissions(user_id, account_id, context, team_id=0)
     if team_id !=0:
         permissions = Permission.query.filter_by(user_id=user_id).filter_by(account_id=account_id).filter_by(team_id=team_id).filter_by(permission_type=context).all()
