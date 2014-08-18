@@ -247,4 +247,21 @@ class Subscription(db.Model):
         self.paid_thru = paid_thru
         self.total_monthly = total_monthly
 
+class Permission(db.Model):
+    __tablename__ = "permission"
 
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
+    team_id = db.Column(db.Integer)
+    permission_type = db.Column(db.Integer)
+    permission = db.Column(db.Integer)
+    date = db.Column(db.DateTime)
+
+    def __init__(self, account_id, user_id, permission_type, permission, date=datetime.now(), team_id=0):
+        self.account_id = account_id
+        self.user_id = user_id
+        self.permission_type = permission_type
+        self.permission = permission
+        self.date = date
+        self.team_id = team_id

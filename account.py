@@ -65,8 +65,13 @@ def accountBilling():
         monthly_cost = getMonthlyCost(account_id)
         paid_thru = getPaidThru(account_id)
         account_balance = getTotal(session['account_id'])
+        account_status = ""
+        if account_balance <= 0:
+            account_status = "Good"
+        else:
+            account_status = "Problem"
         return render_template("dashboard_account_billing.html", account_balance=account_balance, plan=plan_name,
         current_users=currentUsers, max_users=maxUsers, invoices=invoices, monthly_cost=monthly_cost,
-        paid_thru=paid_thru)
+        paid_thru=paid_thru, account_standing=account_status)
     else:
         return notLoggedIn()
