@@ -58,6 +58,13 @@ def addMembership(account_id, user_id, team_id):
     db.session.add(newMembership)
     db.session.commit()
 
+@user.route('/forgot', methods=['GET','POST'])
+def forgot():
+    if request.method == "GET":
+        return render_template("forgot.html")
+    elif request.method == "POST":
+        return render_template("login.html", message="Password changed successfully.")
+
 @user.route('/dashboard/user/')
 def viewUsers():
     resp = checkLogin()

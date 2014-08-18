@@ -43,7 +43,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a href="/"><img style="padding-top:5px; padding-right:5px;" src="{{ url_for('static', filename='images/logo.png') }}"/></a>
+          <a href="/"><img style="padding-top:10px; padding-right:5px;" src="{{ url_for('static', filename='images/logo.png') }}"/></a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -53,6 +53,7 @@
             </ul>
             {% if not session['username'] %}
           <form class="navbar-form navbar-right" role="form" method="post" action="/login">
+          <a href="/forgot" style="padding-right:10px;" class="hello">Forgot Password?</a>
             <div class="form-group">
               <input type="text" name="username" id="username" placeholder="Username" class="form-control">
             </div>
