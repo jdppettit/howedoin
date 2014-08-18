@@ -238,7 +238,7 @@ def checkout():
             subscription_id = makeSubscription(account_id, request.form['plan'], 0)
             updateSubscriptionID(account_id, subscription_id)
             updateIsCurrent(account_id)
-            makePayment(account_id, invoice_id, cost, 0.00, charge['id'])
+            makePayment(account_id, invoice_id, getCost(request.form['plan']), 0.00, charge['id'])
             return render_template("done.html")
         else:
             return render_template("billing.html", error="Something went wrong, your card has not been billed. Please try again.") # need to add in the variables again
