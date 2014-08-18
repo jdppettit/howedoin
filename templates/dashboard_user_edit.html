@@ -48,7 +48,8 @@
 <div class="form-group">
   <label class="col-md-4 control-label" for="name">Name</label>  
   <div class="col-md-4">
-  <input id="name" name="name" type="text" placeholder="Required" class="form-control input-md" value="{{ user.name }}">  
+  <input id="name" value="{{ user.name }}" name="name" type="text" placeholder="" class="form-control input-md">
+    
   </div>
 </div>
 
@@ -56,22 +57,68 @@
 <div class="form-group">
   <label class="col-md-4 control-label" for="username">Username</label>  
   <div class="col-md-4">
-  <input id="username" name="username" type="text" placeholder="Required" class="form-control input-md" value="{{ user.username }}">
+  <input id="username" value="{{ user.username }}" name="username" type="text" placeholder="" class="form-control input-md">
     
   </div>
 </div>
 
+<!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="email">Email</label>
+  <label class="col-md-4 control-label" for="email">Email</label>  
   <div class="col-md-4">
-  <input id="email" name="email" type="text" placeholder="Required" class="form-control input-md" value="{{ user.email }}">
-
+  <input id="email" value="{{ user.email }}" name="email" type="text" placeholder="" class="form-control input-md">
+    
   </div>
 </div>
 
+<!-- Multiple Checkboxes (inline) -->
+<!-- Multiple Checkboxes (inline) -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="account_permissions">Account Permissions</label>
+  <div class="col-md-4">
+    <label class="checkbox-inline" for="account_permissions-0">
+      <input type="checkbox" name="account_permissions" id="account_permissions-0" value="add">
+      Add
+    </label>
+    <label class="checkbox-inline" for="account_permissions-1">
+      <input type="checkbox" name="account_permissions" id="account_permissions-1" value="remove">
+      Remove
+    </label>
+    <label class="checkbox-inline" for="account_permissions-2">
+      <input type="checkbox" name="account_permissions" id="account_permissions-2" value="modify">
+      Modify
+    </label>
+    <label class="checkbox-inline" for="account_permissions-3">
+      <input type="checkbox" name="account_permissions" id="account_permissions-3" value="all">
+      All
+    </label>
+  </div>
+</div>
 
-<!-- Select Multiple -->
-
+{% for team in teams %}
+<!-- Multiple Checkboxes (inline) -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="&amp;_permissions">{{ team.team_name }} Permissions</label>
+  <div class="col-md-4">
+    <label class="checkbox-inline" for="{{ team.team_name }}_permissions-0">
+      <input type="checkbox" name="{{ team.team_name}}_permissions" id="{{ team.team_name }}_permissions-0" value="add">
+      Add
+    </label>
+    <label class="checkbox-inline" for="{{ team.team_name }}_permissions-1">
+      <input type="checkbox" name="{{ team.team_name}}_permissions" id="{{ team.team_name }}_permissions-1" value="remove">
+      Remove
+    </label>
+    <label class="checkbox-inline" for="{{ team.team_name }}_permissions-2">
+      <input type="checkbox" name="{{ team.team_name }}_permissions" id="{{ team.team_name }}_permissions-2" value="modify">
+      Modify
+    </label>
+    <label class="checkbox-inline" for="{{ team.team_name }}_permissions-3">
+      <input type="checkbox" name="{{ team.team_name }}_permissions" id="{{ team.team_name }}_permissions-3" value="all">
+      All
+    </label>
+  </div>
+</div>
+{% endfor %}
 <!-- Button -->
 <div class="form-group">
   <label class="col-md-4 control-label" for="submit"></label>
