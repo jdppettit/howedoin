@@ -5,6 +5,7 @@ from email_manager import *
 from password import *
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from pprint import pprint
 
 import string
 import random
@@ -86,6 +87,41 @@ def addMembership(account_id, user_id, team_id):
     db.session.add(newMembership)
     db.session.commit()
 
+def translatePermission(permission):
+    if permission == "add":
+        return 1
+    elif permission == "remove":
+        return 2
+    elif permission == "modify":
+        return 3
+    elif permission == "all":
+        return 5
+
+def checkAndMakePermissions(account_id, user_id, permission_type, permission, team_id=0):
+    translated_permission = translatePermission(permission)
+    if team_id != 0:
+        check = Permission.query.filter_by(account_id=account_id).filter_by(user_id=user_id).filter_by(team_id=team_id).filter_by(permission_type=permission_type).filter_by(permission=translated_permission).first()
+        if check:
+            # Permission already exists
+            return 1
+        else:
+            # doesn't exist, make it
+            perm = Permission(account_id, user_id, permission_type, translated_permission, team_id=team_id)
+            db.session.add(perm)
+            db.session.commit()
+            return 1
+    else:
+        check = Permission.query.filter_by(account_id=account_id).filter_by(user_id=user_id).filter_by(permission_type=permission_type).filter_by(permission=translated_permission).first()
+        if check:
+            # permission there
+            return 1
+        else:
+            perm = Permission(account_id, user_id, permission_type, translated_permission)
+            db.session.add(perm)
+            db.session.commit()
+            return 1
+
+
 @user.route('/forgot/<token>', methods=['GET','POST'])
 def forgotHandler(token):
     if request.method == "GET":
@@ -157,12 +193,21 @@ def editUser(user_id):
             iterable=iterable)
         elif request.method == "POST":
             user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
+            teams = Team.query.filter_by(account_id=session['account_id']).all()
             if request.form.has_key('username'):
                 user.username = request.form['username']
             if request.form.has_key('email'):
                 user.email = request.form['email']
             if request.form.has_key('name'):
                 user.name = request.form['name']
+            if request.form.has_key('account_permissions'):
+                for a in request.form.getlist('account_permissions'):
+                    checkAndMakePermissions(user.account_id, user.id, 2, a)
+            for team in teams:
+                if request.form.has_key('%s_permissions' % team.team_name):
+                    # permissions changed
+                    for a in request.form.getlist('%s_permissions' % team.team_name):
+                        checkAndMakePermissions(user.account_id, user.id, 1, a, team_id=team.id)
             db.session.commit()
             return redirect('/dashboard/user')
     else:
