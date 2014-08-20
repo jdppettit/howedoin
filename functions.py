@@ -47,7 +47,7 @@ def checkIdentity(user_hash, db):
     if identity:
         return True, identity.id
     else:
-        return False
+        return False, 0
 
 def checkCookie(request, user_hash):
     print "User hash is: %s" % str(user_hash)
@@ -74,11 +74,9 @@ def validateTeam(team_id):
 def validateUser(user_id):
     checkedUser = User.query.filter_by(id=user_id).first()
     if checkedUser:
-        print "I found the cookie"
-        return True
+        return True, checkedUser
     else:
-        print "Nope, no cookie here"
-        return False
+        return False, 0
 
 def validateUserMembership(user_id, team_id):
     checkMembership = Membership.query.filter_by(user_id=user_id).filter_by(team_id=team_id).first()
