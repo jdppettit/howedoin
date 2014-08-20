@@ -50,18 +50,21 @@
                 <th>Duplicate</th>
             </tr>
             {% for rating in ratings %}
+            {% if rating.duplicate == 1%}
+            <tr style="background-color: #e5e5e5">
+            {% else %}
             <tr>
+            {% endif %}
                 <td>{{ rating.id }}</td>
                 <td>{{ rating.username }}</td>
                 <td>{{ rating.team_id }}</td>
-                <td>No item yet</td>
-                <td>{{ rating.score }}</td>
+                <td>{{ rating.item_id }}</td>
+                <td>{% if rating.score == 1 %}Good{% elif rating.score == 2 %}Okay{% else %}Bad{%endif%}</td>
                 <td>{{ rating.comment }}</td>
                 <td>{{ rating.duplicate }}</td>
             </tr>
             {% endfor %}
             </table>
-            <a href="/dashboard/user/create" class="btn btn-success">Create New User</a>
         </div>
       </div>
     </div>

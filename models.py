@@ -67,7 +67,7 @@ class Rating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer)
-    item = db.Column(db.String(50))
+    item_id = db.Column(db.String(50))
     score = db.Column(db.Integer)
     comment = db.Column(db.Text)
     username = db.Column(db.String(35))
@@ -82,7 +82,7 @@ class Rating(db.Model):
     duplicate = db.Column(db.Integer)
 
     def __init__(self, account_id, user_id, team_id, score, username, rater_email="", rater_name="", rater_id="", comment="",
-    hidden=0, duplicate=0, date=datetime.now()):
+    hidden=0, duplicate=0, item_id=0, date=datetime.now()):
         self.account_id = account_id
         self.user_id = user_id
         self.score = score
@@ -95,6 +95,7 @@ class Rating(db.Model):
         self.rater_id = rater_id
         self.team_id = team_id
         self.duplicate = duplicate
+        self.item_id = item_id
 
 class Team(db.Model):
     __tablename__ = "team"

@@ -21,7 +21,7 @@ comment="", duplicate=0):
         db.session.add(newRating)
         db.session.commit()
 
-def nonTokenLogic(db, request, team_id, user_id, account_id, score=0, item_id=0):
+def nonTokenLogic(db, request, team_id, user_id, account_id, postURL, score=0, item_id=0):
     ip = request.remote_addr
     identity = makeIdentityHash(ip)
     check_id, rater_id = checkIdentity(identity, db)
@@ -33,13 +33,13 @@ def nonTokenLogic(db, request, team_id, user_id, account_id, score=0, item_id=0)
             # If the cookie is not present
             # need to make the cookie
             resp = make_response(render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
-            duplicate=0))
+            duplicate=0, postURL=postURL))
             resp.set_cookie("howedoin_%s" % identity)
             return resp
         elif check_cookie == True:
             # Cookie is present
             return render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
-            duplicate=1)
+            duplicate=1, postURL=postURL)
         else:
             abort(404)
     elif check_id:
@@ -49,13 +49,13 @@ def nonTokenLogic(db, request, team_id, user_id, account_id, score=0, item_id=0)
             # Cookie not present
             # need to make the cookie
             resp = make_response(render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
-            duplicate=0))
+            duplicate=0, postURL=postURL))
             resp.set_cookie("howedoin_%s" % identity)
             return resp
         elif check_cookie == True:
             # Cookie present
             return render_template("rating.html", rater_id=rater_id, team_id=team_id, user_id=user_id, score=score, item_id=item_id,
-            duplicate=1)
+            duplicate=1, postURL=postURL)
         else:
             abort(404)
     else:
@@ -73,30 +73,65 @@ def tokenLogic(db, request, token, team_id, user_id, score, item_id=0):
 @ratings.route('/rate/team/<team_id>/user/<user_id>', methods=['POST', 'GET'])
 def rateNoScoreNoItem(team_id, user_id):
     userValidate, user = validateUser(user_id)
+    teamValidate = validateTeam(team_id)
+    userMembershipValidate = validateTeam(team_id)
+    postURL = "/rate/team/%s/user/%s" % (str(team_id), str(user_id))
+    if userValidate and teamValidate and userMembershipValidate and team_id and user_id:
+        if request.method == "GET":
+            return nonTokenLogic(db, request, team_id, user_id, user.account_id, postURL)
+        elif request.method == "POST":
+            rater_email = ""
+            rater_name = ""
+            rater_id = request.form['rater_id']
+            score = int(request.form['score'])
+            comment = ""
+            if request.form.has_key('comment'):
+                comment = request.form['comment']
+            if request.form.has_key('email'):
+                rater_email = request.form['email']
+            if request.form.has_key('name'):
+                rater_name = request.form['name']
+    
+            user = User.query.filter_by(id=user_id).first()
+            newRating = Rating(user.account_id, user.id, team_id, score, user.username, rater_email=rater_email,
+            rater_name=rater_name, rater_id=rater_id, comment=comment, duplicate=request.form['duplicate'])
+            db.session.add(newRating)
+            db.session.commit()
+            return render_template("rating_complete.html")
+    else:
+        return render_template("rating_error.html")
+
+@ratings.route('/rate/team/<team_id>/item/<item_id>/user/<user_id>', methods=['POST','GET'])
+def rateNoScoreItem(team_id, item_id, user_id):
+    userValidate, user = validateUser(user_id)
     teamValdiate = validateTeam(team_id)
     userMembershipValidate = validateTeam(team_id)
-    if request.method == "GET":
-        return nonTokenLogic(db, request, team_id, user_id, user.account_id)
-    elif request.method == "POST":
-        rater_email = ""
-        rater_name = ""
-        rater_id = request.form['rater_id']
-        score = int(request.form['score'])
-        comment = ""
-        if request.args.has_key('comment'):
-            comment = request.form['comment']
-        if 'email' in request.args:
-            rater_email = request.form['email']
-        if 'name' in request.args:
-            rater_name = request.form['name']
+    postURL = "/rate/team/%s/item/%s/user/%s" % (str(team_id), str(item_id), str(user_id))
+    if userValidate and teamValidate and userMembershipValidate and team_id and item_id and user_id:
+        if request.method == "GET":
+            return nonTokenLogic(db, request, team_id, user_id, user.account_id, postURL, item_id=item_id)
+        elif request.method == "POST":
+            rater_email = ""
+            rater_name = ""
+            rater_id = request.form['rater_id']
+            score = int(request.form['score'])
+            comment = ""
+            if request.form.has_key('comment'):
+                comment = request.form['comment']
+            if request.form.has_key('email'):
+                rater_email = request.form['email']
+            if request.form.has_key('name'):
+                rater_name = request.form['name']
 
-        user = User.query.filter_by(id=user_id).first()
-        newRating = Rating(user.account_id, user.id, team_id, score, user.username, rater_email=rater_email,
-        rater_name=rater_name, rater_id=rater_id, comment=comment, duplicate=request.form['duplicate'])
-        db.session.add(newRating)
-        db.session.commit()
-        return render_template("rating_complete.html")
-
+            user = User.query.filter_by(id=user_id).first()
+            newRating = Rating(user.account_id, user.id, team_id, score, user.username, rater_email=rater_email,
+            rater_name=rater_name, rater_id=rater_id, comment=comment, duplicate=int(request.form['duplicate']), item_id=request.form['item_id'])
+            db.session.add(newRating)
+            db.session.commit()
+            return render_template("rating_complete.html")
+    
+    else:
+        return render_template("rating_error.html")
 
 @ratings.route('/rate/team/<team_id>/item/<item_id>/user/<user_id>/score/<score>', methods=['POST', 'GET'])
 @ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>', methods=['POST', 'GET'])
