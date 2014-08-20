@@ -75,3 +75,12 @@ def accountBilling():
         paid_thru=paid_thru, account_standing=account_status)
     else:
         return notLoggedIn()
+
+@account.route('/dashboard/account/settings')
+def accountSettings():
+    res = checkLogin()
+    if res:
+        account = Account.query.filter_by(id=session['account_id']).first()
+        return render_template("dashboard_account_settings.html", account=account)
+    else:
+        return notLoggedIn()
