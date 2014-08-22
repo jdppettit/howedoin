@@ -2,6 +2,7 @@ from flask import *
 from functions import *
 from models import *
 from werkzeug import secure_filename
+from password import *
 
 import os
 
@@ -59,6 +60,29 @@ def dashboardLeaderboard():
     res = checkLogin()
     if res:
         return render_template("dashboard_leaderboard.html")
+    else:
+        return notLoggedIn()
+
+@dashboard.route('/dashboard/password', methods=['POST','GET'])
+def dashboardPassword():
+    res = checkLogin()
+    if res:
+        if request.method == "POST":
+            if request.form.has_key('currentpassword') and request.form.has_key('newpassword') and request.form.has_key('confirmnewpassword'):
+                currentHash = hashPassword(request.form['currentpassword'])
+                user = User.query.filter_by(id=session['user_id']).filter_by(account_id=session['account_id']).first()
+                if user.password == currentHash:
+                    if request.form['newpassword'] == request.form['confirmnewpassword']:
+                        newPassword = hashPassword(request.form['newpassword'])
+                        user.password = newPassword
+                        db.session.commit()
+                        return render_template("dashboard_profile.html", user=user, message="Password successfully updated")
+                    else:
+                        return render_template("dashboard_password.html", error="New passwords do not match.")
+                else:
+                    return render_template("dashboard_password.html", error="Current password does not match.")
+        elif request.method == "GET":
+            return render_template("dashboard_password.html")
     else:
         return notLoggedIn()
 
