@@ -52,6 +52,7 @@ connectionString = "mysql://%s:%s@%s:3306/%s" % (USERNAME, PASSWORD, HOSTNAME, D
 
 app.config['SQLALCHEMY_DATABASE_URI'] = connectionString
 app.secret_key = SECRET_KEY
+app.config['UPLOAD_FOLDER'] = "/srv/howedoin/static/upload/user"
 
 app.config.update(
     MAIL_SERVER=EMAIL_SERVER,
