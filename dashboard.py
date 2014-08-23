@@ -47,6 +47,19 @@ def dashboardEndpoint():
     else:
         return notLoggedIn()
 
+def usernameConfirm(username):
+    check = User.query.filter_by(username=username).first()
+    if check:
+        return False
+    else:
+        return True
+    
+def updateRatings(account_id, user_id, username):
+    ratings = Rating.query.filter_by(account_id=account_id).filter_by(user_id=user_id).all()
+    for rating in ratings:
+        rating.username = username
+    db.session.commit()
+
 @dashboard.route('/dashboard/you')
 def dashboardYou():
     res = checkLogin()
@@ -96,7 +109,12 @@ def dashboardProfile():
         elif request.method == "POST":
             user = User.query.filter_by(id=session['user_id']).filter_by(account_id=session['account_id']).first()
             if request.form.has_key('username'):
-                user.username = request.form['username']
+                check = usernameConfirm(request.form['username'])
+                if check == True:
+                    user.username = request.form['username']
+                    updateRatings(user.account_id, user.id, request.form['username'])
+                elif check == False and request.form['username'] != user.username:
+                    return render_template("dashboard_profile.html", user=user, error="That username is taken, please pick another.")
             if request.form.has_key('email'):
                 user.email = request.form['email']
             if request.form.has_key('name'):

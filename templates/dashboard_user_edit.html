@@ -77,19 +77,43 @@
   <label class="col-md-4 control-label" for="account_permissions">Account Permissions</label>
   <div class="col-md-4">
     <label class="checkbox-inline" for="account_permissions-0">
-      <input type="checkbox" name="account_permissions" id="account_permissions-0" value="add">
+      <input type="checkbox" name="account_permissions" id="account_permissions-0" value="add"
+        {% for permission in account_permissions %}
+            {% if permission.permission_type == 2 and permission.permission == 1 %}
+                checked
+            {% endif %}
+      {% endfor %}
+      >
       Add
     </label>
     <label class="checkbox-inline" for="account_permissions-1">
-      <input type="checkbox" name="account_permissions" id="account_permissions-1" value="remove">
+      <input type="checkbox" name="account_permissions" id="account_permissions-1" value="remove"
+        {% for permission in account_permissions %}
+            {% if permission.permission_type == 2 and permission.permission == 2 %}
+                checked
+            {% endif %}
+      {% endfor %}
+      >
       Remove
     </label>
     <label class="checkbox-inline" for="account_permissions-2">
-      <input type="checkbox" name="account_permissions" id="account_permissions-2" value="modify">
+      <input type="checkbox" name="account_permissions" id="account_permissions-2" value="modify"
+        {% for permission in account_permissions %}
+            {% if permission.permission_type == 2 and permission.permission == 3 %}
+                checked
+            {% endif %}
+      {% endfor %}
+      >
       Modify
     </label>
     <label class="checkbox-inline" for="account_permissions-3">
-      <input type="checkbox" name="account_permissions" id="account_permissions-3" value="all">
+      <input type="checkbox" name="account_permissions" id="account_permissions-3" value="all"
+        {% for permission in account_permissions %}
+            {% if permission.permission_type == 2 and permission.permission == 5 %}
+                checked
+            {% endif %}
+      {% endfor %}
+      >
       All
     </label>
   </div>
@@ -101,19 +125,43 @@
   <label class="col-md-4 control-label" for="&amp;_permissions">{{ team.team_name }} Permissions</label>
   <div class="col-md-4">
     <label class="checkbox-inline" for="{{ team.team_name }}_permissions-0">
-      <input type="checkbox" name="{{ team.team_name}}_permissions" id="{{ team.team_name }}_permissions-0" value="add">
+      <input type="checkbox" name="{{ team.team_name}}_permissions" id="{{ team.team_name }}_permissions-0" value="add"
+      {% for p in team_permissions %}
+            {% if p.team_id == team.id and p.permission == 1 %}
+                checked
+            {% endif %}
+      {% endfor %}
+      >
       Add
     </label>
     <label class="checkbox-inline" for="{{ team.team_name }}_permissions-1">
-      <input type="checkbox" name="{{ team.team_name}}_permissions" id="{{ team.team_name }}_permissions-1" value="remove">
+      <input type="checkbox" name="{{ team.team_name}}_permissions" id="{{ team.team_name }}_permissions-1" value="remove"
+        {% for p in team_permissions %}
+            {% if p.team_id == team.id and p.permission == 2 %}
+                checked
+            {% endif %}
+      {% endfor %}
+        >
       Remove
     </label>
     <label class="checkbox-inline" for="{{ team.team_name }}_permissions-2">
-      <input type="checkbox" name="{{ team.team_name }}_permissions" id="{{ team.team_name }}_permissions-2" value="modify">
+      <input type="checkbox" name="{{ team.team_name }}_permissions" id="{{ team.team_name }}_permissions-2" value="modify"
+        {% for p in team_permissions %}
+            {% if p.team_id == team.id and p.permission == 3 %}
+                checked
+            {% endif %}
+      {% endfor %}
+        >
       Modify
     </label>
     <label class="checkbox-inline" for="{{ team.team_name }}_permissions-3">
-      <input type="checkbox" name="{{ team.team_name }}_permissions" id="{{ team.team_name }}_permissions-3" value="all">
+      <input type="checkbox" name="{{ team.team_name }}_permissions" id="{{ team.team_name }}_permissions-3" value="all"
+        {% for p in team_permissions %}
+            {% if p.team_id == team.id and p.permission == 5 %}
+                checked
+            {% endif %}
+      {% endfor %}
+        >
       All
     </label>
   </div>

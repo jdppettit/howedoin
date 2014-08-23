@@ -189,8 +189,10 @@ def editUser(user_id):
                 iterable = 1
             else:
                 iterable = 0
+            account_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=session['user_id']).filter_by(permission_type=2).all()
+            team_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=session['user_id']).filter_by(permission_type=1).all()
             return render_template("dashboard_user_edit.html", user=user, teams=teams, membership=membership,
-            iterable=iterable)
+            iterable=iterable, account_permissions=account_permissions, team_permissiosn=team_permissions)
         elif request.method == "POST":
             user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
             teams = Team.query.filter_by(account_id=session['account_id']).all()
