@@ -64,7 +64,7 @@ def specificTeam(team_id):
             gatekeeper = teamGatekeeper(session['user_id'], team_id, session['account_id'], 4)
             if gatekeeper:
                 users = getAllUsers(session['account_id'])
-                team = Team.query.filter_by(id=team_id).first()
+                team = Team.query.filter_by(id=team_id).filter_by(account_id=session['account_id']).first()
                 members = getMemberList(team.id)
                 membership = Membership.query.filter_by(account_id=session['account_id']).filter_by(team_id=team_id).all()
                 return render_template("dashboard_team_edit.html", team=team, users=users, members=members,
