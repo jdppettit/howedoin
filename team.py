@@ -91,19 +91,23 @@ def specificTeam(team_id):
 def teamCreate():
     res = checkLogin()
     if res:
-        if request.method == "GET":
-            users = getAllUsers(session['account_id'])
-            return render_template("dashboard_team_create.html", users=users)
-        elif request.method == "POST":
-            if request.form['name'] and request.form['leader']:
-                team_leader_name = getTeamLeaderName(session['account_id'], request.form['leader'])
-                newTeam = Team(session['account_id'], request.form['name'], team_leader_name, request.form['leader'])
-                db.session.add(newTeam)
-                db.session.commit()
-                addLeaderMembership(session['account_id'], request.form['leader'], getTeamID(newTeam))
-                return redirect('/dashboard/team')
-            else:
-                return render_template('/dashboard/team/create', users=getAllUsers(session['account_id']), error="A team name is required.")
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 1)
+        if gatekeeper:
+            if request.method == "GET":
+                users = getAllUsers(session['account_id'])
+                return render_template("dashboard_team_create.html", users=users)
+            elif request.method == "POST":
+                if request.form['name'] and request.form['leader']:
+                    team_leader_name = getTeamLeaderName(session['account_id'], request.form['leader'])
+                    newTeam = Team(session['account_id'], request.form['name'], team_leader_name, request.form['leader'])
+                    db.session.add(newTeam)
+                    db.session.commit()
+                    addLeaderMembership(session['account_id'], request.form['leader'], getTeamID(newTeam))
+                    return redirect('/dashboard/team')
+                else:
+                    return render_template('/dashboard/team/create', users=getAllUsers(session['account_id']), error="A team name is required.")
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
@@ -112,17 +116,21 @@ def teamCreate():
 def teamDelete(team_id):
     res = checkLogin()
     if res:
-        if request.method == "GET":
-            return render_template('dashboard_team_delete.html', team_id=team_id)
-        elif request.method == "POST":
-            team = Team.query.filter_by(id=team_id).first()
-            members = Membership.query.filter_by(team_id=team_id, account_id=session['account_id']).all()
-
-            for member in members:
-                db.session.delete(member)
-            db.session.delete(team)
-            db.session.commit()
-            return redirect('/dashboard/team')
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 2)
+        if gatekeeper:
+            if request.method == "GET":
+                return render_template('dashboard_team_delete.html', team_id=team_id)
+            elif request.method == "POST":
+                team = Team.query.filter_by(id=team_id).first()
+                members = Membership.query.filter_by(team_id=team_id, account_id=session['account_id']).all()
+    
+                for member in members:
+                    db.session.delete(member)
+                    db.session.delete(team)
+                    db.session.commit()
+                    return redirect('/dashboard/team')
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
@@ -131,10 +139,14 @@ def teamDelete(team_id):
 def teamAddSpecificUser(team_id, user_id):
     res = checkLogin()
     if res:
-        team = Team.query.filter_by(id=team_id).first()
-        user = User.query.filter_by(id=user_id).first()
-        addMembership(session['account_id'], user.id, team.id)
-        return redirect('/dashboard/team/%s' % str(team.id))
+        gatekeeper = teamGatekeeper(session['user_id'], team_id, session['account_id'], 3)
+        if gatekeeper:
+            team = Team.query.filter_by(id=team_id).first()
+            user = User.query.filter_by(id=user_id).first()
+            addMembership(session['account_id'], user.id, team.id)
+            return redirect('/dashboard/team/%s' % str(team.id))
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
@@ -142,13 +154,17 @@ def teamAddSpecificUser(team_id, user_id):
 def teamAddUser(team_id):
     res = checkLogin()
     if res:
-        if team_id:
-            team = Team.query.filter_by(id=team_id).first()
-            users = getAllUsers(session['account_id'])
-            return render_template("dashboard_team_add_user.html", team=team, users=users)
+        gatekeeper = teamGatekeeper(session['user_id'], team_id, session['account_id'], 3)
+        if gatekeeper:
+            if team_id:
+                team = Team.query.filter_by(id=team_id).first()
+                users = getAllUsers(session['account_id'])
+                return render_template("dashboard_team_add_user.html", team=team, users=users)
+            else:
+                team = Team.query.filter_by(id=team_id).first()
+                return render_template('/dashboard/team/%s' % str(team_id), team=team)
         else:
-            team = Team.query.filter_by(id=team_id).first()
-            return render_template('/dashboard/team/%s' % str(team_id), team=team)
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
     
@@ -158,16 +174,20 @@ def teamAddUser(team_id):
 def teamDeleteUser(user_id, team_id):
     res = checkLogin()
     if res:
-        if team_id and user_id:
-            if request.method == "GET":
-                return render_template('dashboard_team_user_delete.html', user_id=user_id, team_id=team_id)
-            elif request.method == "POST":
-                membership = Membership.query.filter_by(account_id=session['account_id'], user_id=user_id, team_id=team_id).first()
-                db.session.delete(membership)
-                db.session.commit()
+        gatekeeper = teamGatekeeper(session['user_id'], team_id, session['account_id'], 3)
+        if gatekeeper:
+            if team_id and user_id:
+                if request.method == "GET":
+                    return render_template('dashboard_team_user_delete.html', user_id=user_id, team_id=team_id)
+                elif request.method == "POST":
+                    membership = Membership.query.filter_by(account_id=session['account_id'], user_id=user_id, team_id=team_id).first()
+                    db.session.delete(membership)
+                    db.session.commit()
+                    return redirect('/dashboard/team/%s' % str(team_id))
+            else:
                 return redirect('/dashboard/team/%s' % str(team_id))
         else:
-            return redirect('/dashboard/team/%s' % str(team_id))
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
@@ -175,12 +195,16 @@ def teamDeleteUser(user_id, team_id):
 def teamPromoteUser(user_id, team_id):
     res = checkLogin()
     if res:
-        if team_id and user_id:
-            user = User.query.filter_by(id=user_id).first()
-            addAdminMembership(session['account_id'], user.id, team_id)
-            return redirect('/dashboard/team/%s' % str(team_id))
+        gatekeeper = teamGatekeeper(session['user_id'], team_id, session['account_id'], 3)
+        if gatekeeper:
+            if team_id and user_id:
+                user = User.query.filter_by(id=user_id).first()
+                addAdminMembership(session['account_id'], user.id, team_id)
+                return redirect('/dashboard/team/%s' % str(team_id))
+            else:
+                return redirect('/dashboard/team/%s' % str(team_id))
         else:
-            return redirect('/dashboard/team/%s' % str(team_id))
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
@@ -188,12 +212,16 @@ def teamPromoteUser(user_id, team_id):
 def teamDemoteUser(user_id, team_id):
     res = checkLogin()
     if res:
-        if team_id and user_id:
-            user = User.query.filter_by(id=user_id).first()
-            removeAdminMembership(session['account_id'], user.id, team_id)
-            return redirect('/dashboard/team/%s' % str(team_id))
+        gatekeeper = teamGatekeeper(session['user_id'], team_id, session['account_id'], 3)
+        if gatekeeper:
+            if team_id and user_id:
+                user = User.query.filter_by(id=user_id).first()
+                removeAdminMembership(session['account_id'], user.id, team_id)
+                return redirect('/dashboard/team/%s' % str(team_id))
+            else:
+                return redirect('/dashboard/team/%s' % str(team_id))
         else:
-            return redirect('/dashboard/team/%s' % str(team_id))
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 

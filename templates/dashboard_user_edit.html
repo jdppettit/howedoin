@@ -71,6 +71,14 @@
   </div>
 </div>
 
+<div class="form-group">
+    <div class="col-md-4">
+    <label class="col-md-4 control-label" for="is_admin">Admin Status</label>
+    <span id="is_admin">{% if is_admin == True %}User is an administrator{% else %}User is not an administrator{% endif
+    %}&nbsp;<a href="/dashboard/user/{{ user.id }}/admin" class="btn btn-info">Toggle Admin</a></span>
+    </div>
+</div>
+
 <!-- Multiple Checkboxes (inline) -->
 <!-- Multiple Checkboxes (inline) -->
 <div class="form-group">

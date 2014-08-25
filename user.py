@@ -6,11 +6,17 @@ from password import *
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from pprint import pprint
+from gatekeeper import *
 
 import string
 import random
 
 user = Blueprint("user", __name__, template_folder="templates")
+
+def removeAdminStatus(user_id, account_id):
+    permission = Permission.query.filter_by(user_id=user_id).filter_by(account_id=account_id).filter_by(permission_type=99).first()
+    db.session.delete(permission)
+    db.session.commit()
 
 def getAllUsers(account_id):
     users = User.query.filter_by(account_id=account_id).all()
@@ -224,8 +230,11 @@ def editUser(user_id):
                 iterable = 0
             account_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=user_id).filter_by(permission_type=2).all()
             team_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=user_id).filter_by(permission_type=1).all()
+            is_admin = checkAdmin(user_id, session['account_id'])
+            print str(is_admin)
             return render_template("dashboard_user_edit.html", user=user, teams=teams, membership=membership,
-            iterable=iterable, account_permissions=account_permissions, team_permissions=team_permissions)
+            iterable=iterable, account_permissions=account_permissions, team_permissions=team_permissions,
+            is_admin=is_admin)
         elif request.method == "POST":
             user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
             teams = Team.query.filter_by(account_id=session['account_id']).all()
@@ -369,5 +378,26 @@ def createUser():
                     return render_template("dashboard_user_create.html", error="All fields must be completed.")
             else:
                 return render_template("dashboard_user_view.html", message="You need to add more users to you account!")
+    else:
+        return notLoggedIn()
+
+@user.route('/dashboard/user/<user_id>/admin')
+def toggleAdmin(user_id):
+    resp = checkLogin()
+    if resp:
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 3)
+        if gatekeeper:
+            if user_id:
+                user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
+                currentAdminStatus = checkAdmin(user.id, user.account_id)
+                if currentAdminStatus == True:
+                    removeAdminStatus(user.id, user.account_id)
+                else:
+                    makeAdmin(user.id, user.account_id)
+                return redirect('/dashboard/user/%s' % str(user_id))
+            else:
+                return redirect('/dashboard/user/%s' % str(user_id))
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
