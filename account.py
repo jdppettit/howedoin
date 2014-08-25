@@ -59,6 +59,10 @@ def accountBilling():
     if resp:
         gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 4)
         if gatekeeper:
+            account = Account.query.filter_by(id=session['account_id']).first()
+            if account.plan_id == 0:
+                currentUsers = getCurrentUsers(account.id)
+                return render_template("dashboard_account_billing_upgrade.html", current_users=currentUsers)
             account_id = session['account_id']
             plan_id = getPlan(account_id)
             plan_name = getPlanName(plan_id)
