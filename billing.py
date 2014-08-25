@@ -3,6 +3,7 @@ from models import db, Account, Invoice, InvoiceItem, Payment, Subscription
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from functions import *
+from email_manager import *
 
 import stripe
 import pprint
