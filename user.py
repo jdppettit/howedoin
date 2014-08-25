@@ -210,8 +210,12 @@ def forgot():
 def viewUsers():
     resp = checkLogin()
     if resp:
-        allUsers = getAllUsers(session['account_id'])
-        return render_template("dashboard_user_view.html", users=allUsers)
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 4)
+        if gatekeeper:
+            allUsers = getAllUsers(session['account_id'])
+            return render_template("dashboard_user_view.html", users=allUsers)
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
@@ -219,84 +223,88 @@ def viewUsers():
 def editUser(user_id):
     res = checkLogin()
     if res:
-        if request.method == "GET":
-            user = User.query.filter_by(id=user_id).first()
-            teams = Team.query.filter_by(account_id=session['account_id']).all()
-            membership = Membership.query.filter_by(account_id=session['account_id']).all()
-            iterable = 0
-            if len(membership) > 1:
-                iterable = 1
-            else:
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 3)
+        if gatekeeper:
+            if request.method == "GET":
+                user = User.query.filter_by(id=user_id).first()
+                teams = Team.query.filter_by(account_id=session['account_id']).all()
+                membership = Membership.query.filter_by(account_id=session['account_id']).all()
                 iterable = 0
-            account_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=user_id).filter_by(permission_type=2).all()
-            team_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=user_id).filter_by(permission_type=1).all()
-            is_admin = checkAdmin(user_id, session['account_id'])
-            print str(is_admin)
-            return render_template("dashboard_user_edit.html", user=user, teams=teams, membership=membership,
-            iterable=iterable, account_permissions=account_permissions, team_permissions=team_permissions,
-            is_admin=is_admin)
-        elif request.method == "POST":
-            user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
-            teams = Team.query.filter_by(account_id=session['account_id']).all()
-            if request.form.has_key('username'):
-                user.username = request.form['username']
-            if request.form.has_key('email'):
-                user.email = request.form['email']
-            if request.form.has_key('name'):
-                user.name = request.form['name']
-            if request.form.has_key('account_permissions'):
-                account_list = request.form.getlist('account_permissions')
-                if "add" not in account_list:
-                    addRemovePermissions(user.account_id, user.id, 2, "add", 2)
-
-                if "remove" not in account_list:
-                    addRemovePermissions(user.account_id, user.id, 2, "remove", 2)
-
-                if "modify" not in account_list:
-                    addRemovePermissions(user.account_id, user.id, 2, "modify", 2)
-                
-                if "view" not in account_list:
-                    addRemovePermissions(user.account_id, user.id, 2, "view", 2)
-
-                if "all" not in account_list:
-                    addRemovePermissions(user.account_id, user.id, 2, "all", 2)
-
-                for a in request.form.getlist('account_permissions'):
-                    addRemovePermissions(user.account_id, user.id, 2, a, 1)
-            else:
-                # remove them all
-                addRemovePermissions(user.account_id, user.id, 2, "add", 2)
-                addRemovePermissions(user.account_id, user.id, 2, "remove", 2)
-                addRemovePermissions(user.account_id, user.id, 2, "modify", 2)
-                addRemovePermissions(user.account_id, user.id, 2, "view", 2)
-                addRemovePermissions(user.account_id, user.id, 2, "all", 2)
-
-            for team in teams:
-                if request.form.has_key('%s_permissions' % team.team_name):
-                    # permissions changed
-                    team_list = request.form.getlist('%s_permission' % team.team_name)
-                    if "add" not in team_list:
-                        addRemovePermissions(user.account_id, user.id, 1, "add", 2, team_id=team.id)
-                    if "remove" not in team_list:
-                        addRemovePermissions(user.account_id, user.id, 1, "remove", 2, team_id=team.id)
-                    if "modify" not in team_list:
-                        addRemovePermissions(user.account_id, user.id, 1, "modify", 2, team_id=team.id)
-                    if "view" not in team_list:
-                        addRemovePermissions(user.account_id, user.id, 1, "view", 2, team_id=team.id)
-                    if "all" not in team_list:
-                        addRemovePermissions(user.account_id, user.id, 1, "all", 2, team_id=team.id)
-                    for a in request.form.getlist('%s_permissions' % team.team_name):
-                        addRemovePermissions(user.account_id, user.id, 1, a, 1, team_id=team.id)
+                if len(membership) > 1:
+                    iterable = 1
+                else:
+                    iterable = 0
+                account_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=user_id).filter_by(permission_type=2).all()
+                team_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=user_id).filter_by(permission_type=1).all()
+                is_admin = checkAdmin(user_id, session['account_id'])
+                print str(is_admin)
+                return render_template("dashboard_user_edit.html", user=user, teams=teams, membership=membership,
+                iterable=iterable, account_permissions=account_permissions, team_permissions=team_permissions,
+                is_admin=is_admin)
+            elif request.method == "POST":
+                user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
+                teams = Team.query.filter_by(account_id=session['account_id']).all()
+                if request.form.has_key('username'):
+                    user.username = request.form['username']
+                if request.form.has_key('email'):
+                    user.email = request.form['email']
+                if request.form.has_key('name'):
+                    user.name = request.form['name']
+                if request.form.has_key('account_permissions'):
+                    account_list = request.form.getlist('account_permissions')
+                    if "add" not in account_list:
+                        addRemovePermissions(user.account_id, user.id, 2, "add", 2)
+    
+                    if "remove" not in account_list:
+                        addRemovePermissions(user.account_id, user.id, 2, "remove", 2)
+    
+                    if "modify" not in account_list:
+                        addRemovePermissions(user.account_id, user.id, 2, "modify", 2)
+                    
+                    if "view" not in account_list:
+                        addRemovePermissions(user.account_id, user.id, 2, "view", 2)
+    
+                    if "all" not in account_list:
+                        addRemovePermissions(user.account_id, user.id, 2, "all", 2)
+    
+                    for a in request.form.getlist('account_permissions'):
+                        addRemovePermissions(user.account_id, user.id, 2, a, 1)
                 else:
                     # remove them all
-                    addRemovePermissions(user.account_id, user.id, 1, "add", 2, team_id=team.id)
-                    addRemovePermissions(user.account_id, user.id, 1, "remove", 2, team_id=team.id)
-                    addRemovePermissions(user.account_id, user.id, 1, "modify", 2, team_id=team.id)
-                    addRemovePermissions(user.account_id, user.id, 1, "view", 2, team_id=team.id)
-                    addRemovePermissions(user.account_id, user.id, 1, "all", 2, team_id=team.id)
-
-            db.session.commit()
-            return redirect('/dashboard/user')
+                    addRemovePermissions(user.account_id, user.id, 2, "add", 2)
+                    addRemovePermissions(user.account_id, user.id, 2, "remove", 2)
+                    addRemovePermissions(user.account_id, user.id, 2, "modify", 2)
+                    addRemovePermissions(user.account_id, user.id, 2, "view", 2)
+                    addRemovePermissions(user.account_id, user.id, 2, "all", 2)
+    
+                for team in teams:
+                    if request.form.has_key('%s_permissions' % team.team_name):
+                        # permissions changed
+                        team_list = request.form.getlist('%s_permission' % team.team_name)
+                        if "add" not in team_list:
+                            addRemovePermissions(user.account_id, user.id, 1, "add", 2, team_id=team.id)
+                        if "remove" not in team_list:
+                            addRemovePermissions(user.account_id, user.id, 1, "remove", 2, team_id=team.id)
+                        if "modify" not in team_list:
+                            addRemovePermissions(user.account_id, user.id, 1, "modify", 2, team_id=team.id)
+                        if "view" not in team_list:
+                            addRemovePermissions(user.account_id, user.id, 1, "view", 2, team_id=team.id)
+                        if "all" not in team_list:
+                            addRemovePermissions(user.account_id, user.id, 1, "all", 2, team_id=team.id)
+                        for a in request.form.getlist('%s_permissions' % team.team_name):
+                            addRemovePermissions(user.account_id, user.id, 1, a, 1, team_id=team.id)
+                    else:
+                        # remove them all
+                        addRemovePermissions(user.account_id, user.id, 1, "add", 2, team_id=team.id)
+                        addRemovePermissions(user.account_id, user.id, 1, "remove", 2, team_id=team.id)
+                        addRemovePermissions(user.account_id, user.id, 1, "modify", 2, team_id=team.id)
+                        addRemovePermissions(user.account_id, user.id, 1, "view", 2, team_id=team.id)
+                        addRemovePermissions(user.account_id, user.id, 1, "all", 2, team_id=team.id)
+    
+                db.session.commit()
+                return redirect('/dashboard/user')
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
@@ -325,28 +333,32 @@ def activateUser(token):
 def deleteUser(user_id):
     res = checkLogin()
     if res:
-        if request.method == "GET":
-            return render_template("dashboard_user_delete.html", user_id=user_id)
-        elif request.method == "POST":
-            user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
-            membership = Membership.query.filter_by(user_id=user_id).filter_by(account_id=session['account_id']).all()
-
-            for member in membership:
-                db.session.delete(member)
-            
-            ratings = Rating.query.filter_by(user_id=user_id).filter_by(account_id=session['account_id']).all()
-
-            for rating in ratings:
-                db.session.delete(rating)
-            
-            permissions = Permission.query.filter_by(user_id=user_id).filter_by(account_id=session['account_id']).all()
-
-            for permission in permissions:
-                db.session.delete(permission)
-
-            db.session.delete(user)
-            db.session.commit()
-            return redirect('/dashboard/user')
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 2)
+        if gatekeeper:
+            if request.method == "GET":
+                return render_template("dashboard_user_delete.html", user_id=user_id)
+            elif request.method == "POST":
+                user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
+                membership = Membership.query.filter_by(user_id=user_id).filter_by(account_id=session['account_id']).all()
+    
+                for member in membership:
+                    db.session.delete(member)
+                
+                ratings = Rating.query.filter_by(user_id=user_id).filter_by(account_id=session['account_id']).all()
+    
+                for rating in ratings:
+                    db.session.delete(rating)
+                
+                permissions = Permission.query.filter_by(user_id=user_id).filter_by(account_id=session['account_id']).all()
+    
+                for permission in permissions:
+                    db.session.delete(permission)
+    
+                db.session.delete(user)
+                db.session.commit()
+                return redirect('/dashboard/user')
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
@@ -354,30 +366,34 @@ def deleteUser(user_id):
 def createUser():
     resp = checkLogin()
     if resp:    
-        if request.method == "GET":
-            teams = getAllTeams(session['account_id'])
-            return render_template("dashboard_user_create.html", teams=teams)
-        elif request.method == "POST":
-            max_user_check = checkMaxUsers(session['account_id'])
-            if max_user_check:
-                if request.form['name'] and request.form['email'] and request.form['username']:
-                    activation_code = getActivationURL(10)
-                    while not checkExistingActivation(activation_code):
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 1)
+        if gatekeeper:
+            if request.method == "GET":
+                teams = getAllTeams(session['account_id'])
+                return render_template("dashboard_user_create.html", teams=teams)
+            elif request.method == "POST":
+                max_user_check = checkMaxUsers(session['account_id'])
+                if max_user_check:
+                    if request.form['name'] and request.form['email'] and request.form['username']:
                         activation_code = getActivationURL(10)
-                    user_id = makeUser(session['account_id'], request.form['name'], request.form['username'],
-                    request.form['email'], 0, activation_code)
-                    if request.form.has_key('teams'):
-                        selected_teams = request.form.getlist('teams')
-                        for team in selected_teams:
-                            addMembership(session['account_id'], user_id, team)
-                    sendCreateNewUser(request.form['email'], activation_code, session['account_id'], user_id, request.form['name'])
-                    users = getAllUsers(session['account_id'])
-                    return render_template("dashboard_user_view.html", message="Activation email sent to this user.",
-                    users=users)
+                        while not checkExistingActivation(activation_code):
+                            activation_code = getActivationURL(10)
+                        user_id = makeUser(session['account_id'], request.form['name'], request.form['username'],
+                        request.form['email'], 0, activation_code)
+                        if request.form.has_key('teams'):
+                            selected_teams = request.form.getlist('teams')
+                            for team in selected_teams:
+                                addMembership(session['account_id'], user_id, team)
+                        sendCreateNewUser(request.form['email'], activation_code, session['account_id'], user_id, request.form['name'])
+                        users = getAllUsers(session['account_id'])
+                        return render_template("dashboard_user_view.html", message="Activation email sent to this user.",
+                        users=users)
+                    else:
+                        return render_template("dashboard_user_create.html", error="All fields must be completed.")
                 else:
-                    return render_template("dashboard_user_create.html", error="All fields must be completed.")
+                    return render_template("dashboard_user_view.html", message="You need to add more users to you account!")
             else:
-                return render_template("dashboard_user_view.html", message="You need to add more users to you account!")
+                return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
