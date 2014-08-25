@@ -106,6 +106,16 @@
       >
       Modify
     </label>
+    <label class="checkbox-inline" for="account_permissions-4">
+      <input type="checkbox" name="account_permissions" id="account_permissions-4" value="view"
+        {% for permission in account_permissions %}
+            {% if permission.permission_type == 2 and permission.permission == 4 %}
+                checked
+            {% endif %}
+      {% endfor %}
+      >
+      View
+    </label>
     <label class="checkbox-inline" for="account_permissions-3">
       <input type="checkbox" name="account_permissions" id="account_permissions-3" value="all"
         {% for permission in account_permissions %}
@@ -153,6 +163,16 @@
       {% endfor %}
         >
       Modify
+    </label>
+    <label class="checkbox-inline" for="{{ team.team_name }}_permissions-4">
+      <input type="checkbox" name="{{ team.team_name }}_permissions" id="{{ team.team_name }}_permissions-4" value="view"
+        {% for p in team_permissions %}
+            {% if p.team_id == team.id and p.permission == 4 %}
+                checked
+            {% endif %}
+      {% endfor %}
+        >
+      View
     </label>
     <label class="checkbox-inline" for="{{ team.team_name }}_permissions-3">
       <input type="checkbox" name="{{ team.team_name }}_permissions" id="{{ team.team_name }}_permissions-3" value="all"
