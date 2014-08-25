@@ -128,7 +128,7 @@ States
 2 = Is not present in list, should be removed if present in permissions table
 '''
 
-def addRemovePermissions(account_id, team_id, permission_type, permission, state, team_id=0):
+def addRemovePermissions(account_id, user_id, permission_type, permission, state, team_id=0):
     translated_permission = translatePermission(permission)
     if team_id != 0:
         permission = Permission.query.filter_by(account_id=account_id).filter_by(user_id=user_id).filter_by(permission_type=permission_type).filter_by(permission=translated_permission).filter_by(team_id=team_id).first()
@@ -137,7 +137,7 @@ def addRemovePermissions(account_id, team_id, permission_type, permission, state
 
     if state == 1 and not permission:
         # this means the permission was checked, but is not present, make it
-        if table_id != 0:
+        if team_id != 0:
             newPermission = Permission(account_id, user_id, permission_type, translated_permission, team_id=team_id)
             db.session.add(newPermission)
             db.session.commit()
@@ -234,13 +234,49 @@ def editUser(user_id):
             if request.form.has_key('name'):
                 user.name = request.form['name']
             if request.form.has_key('account_permissions'):
+                account_list = request.form.getlist('account_permissions')
+                if "add" not in account_list:
+                    addRemovePermissions(user.account_id, user.id, 2, "add", 2)
+
+                if "remove" not in account_list:
+                    addRemovePermissions(user.account_id, user.id, 2, "remove", 2)
+
+                if "modify" not in account_list:
+                    addRemovePermissions(user.account_id, user.id, 2, "modify", 2)
+
+                if "all" not in account_list:
+                    addRemovePermissions(user.account_id, user.id, 2, "all", 2)
+
                 for a in request.form.getlist('account_permissions'):
-                    checkAndMakePermissions(user.account_id, user.id, 2, a)
+                    addRemovePermissions(user.account_id, user.id, 2, a, 1)
+            else:
+                # remove them all
+                addRemovePermissions(user.account_id, user.id, 2, "add", 2)
+                addRemovePermissions(user.account_id, user.id, 2, "remove", 2)
+                addRemovePermissions(user.account_id, user.id, 2, "modify", 2)
+                addRemovePermissions(user.account_id, user.id, 2, "all", 2)
+
             for team in teams:
                 if request.form.has_key('%s_permissions' % team.team_name):
                     # permissions changed
+                    team_list = request.form.getlist('%s_permission' % team.team_name)
+                    if "add" not in team_list:
+                        addRemovePermissions(user.account_id, user.id, 1, "add", 2, team_id=team.id)
+                    if "remove" not in team_list:
+                        addRemovePermissions(user.account_id, user.id, 1, "remove", 2, team_id=team.id)
+                    if "modify" not in team_list:
+                        addRemovePermissions(user.account_id, user.id, 1, "modify", 2, team_id=team.id)
+                    if "all" not in team_list:
+                        addRemovePermissions(user.account_id, user.id, 1, "all", 2, team_id=team.id)
                     for a in request.form.getlist('%s_permissions' % team.team_name):
-                        checkAndMakePermissions(user.account_id, user.id, 1, a, team_id=team.id)
+                        addRemovePermissions(user.account_id, user.id, 1, a, 1, team_id=team.id)
+                else:
+                    # remove them all
+                    addRemovePermissions(user.account_id, user.id, 1, "add", 2, team_id=team.id)
+                    addRemovePermissions(user.account_id, user.id, 1, "remove", 2, team_id=team.id)
+                    addRemovePermissions(user.account_id, user.id, 1, "modify", 2, team_id=team.id)
+                    addRemovePermissions(user.account_id, user.id, 1, "all", 2, team_id=team.id)
+
             db.session.commit()
             return redirect('/dashboard/user')
     else:
