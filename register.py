@@ -83,7 +83,7 @@ def registerEndpoint():
                     if request.form['password'] == request.form['passwordconfirm']:
                         # if the passwords match proceed
                         accountID = makeAccountID()
-                        newAccount = Account(accountID, request.form['company_name'], request.form['plan'], "2999-12-31 23:59:59", 1, 3)
+                        newAccount = Account(accountID, request.form['company_name'], request.form['plan'], "2999-12-31 23:59:59", 1, 3, billing_email=request.form['email'])
 
                         encryptedPassword = hashPassword(request.form['password'])
                         usernameCheck = checkUsername(request.form['username'])
@@ -94,7 +94,7 @@ def registerEndpoint():
                             db.session.add(newUser)
                             db.session.commit()
                             user_id = getUserID(newUser, db)
-                            makeAdmin(user.id, user.account_id)
+                            makeAdmin(user_id, accountID)
                             doLogin(request.form['username'], request.form['name'], user_id, accountID, request.form['email'])
                             return render_template("dashboard.html")
                         else:
@@ -107,7 +107,8 @@ def registerEndpoint():
                 else:
                     if request.form['password'] == request.form['passwordconfirm']:
                         accountID = makeAccountID()
-                        newAccount = Account(accountID, "", request.form['plan'], "2999-12-31 23:59:59", 1, 3)
+                        newAccount = Account(accountID, "", request.form['plan'], "2999-12-31 23:59:59", 1, 3,
+                        billing_email=request.form['email'])
 
                         encryptedPassword = hashPassword(request.form['password'])
                         usernameCheck = checkUsername(request.form['username'])
@@ -117,6 +118,7 @@ def registerEndpoint():
                             db.session.add(newUser)
                             db.session.commit()
                             user_id = getUserID(newUser, db)
+                            makeAdmin(user_id, accountID)
                             doLogin(request.form['username'], request.form['name'], user_id, accountID, request.form['email'])
                             return render_template("dashboard.html")
                         else:
@@ -133,7 +135,7 @@ def registerEndpoint():
                         goodThru = datetime.now() + relativedelta(days=1)
                         maxUsers = getMaxUsers(request.form['plan'])
                         newAccount = Account(accountID, request.form['company_name'], request.form['plan'],
-                        goodThru, 0, maxUsers)
+                        goodThru, 0, maxUsers, billing_email=request.form['email'])
 
                         encryptedPassword = hashPassword(request.form['password'])
                         usernameCheck = checkUsername(request.form['username'])
@@ -144,6 +146,7 @@ def registerEndpoint():
                             db.session.add(newUser)
                             db.session.commit()
                             user_id = getUserID(newUser, db)
+                            makeAdmin(user_id, accountID)
                             doLogin(request.form['username'], request.form['name'], user_id, accountID,
                             request.form['email'])
                             return doBilling(request.form['plan'], request.form['company_name'], accountID,
@@ -163,7 +166,7 @@ def registerEndpoint():
                         goodThru = datetime.now() + relativedelta(days=1)
                         maxUsers = getMaxUsers(request.form['plan'])
                         newAccount = Account(accountID, "", request.form['plan'],
-                        goodThru, 0, maxUsers)
+                        goodThru, 0, maxUsers, billing_email=request.form['email'])
 
                         encryptedPassword = hashPassword(request.form['password'])
                         usernameCheck = checkUsername(request.form['username'])
@@ -174,6 +177,7 @@ def registerEndpoint():
                             db.session.add(newUser)
                             db.session.commit()
                             user_id = getUserID(newUser, db)
+                            makeAdmin(user_id, accountID)
                             doLogin(request.form['username'], request.form['name'], user_id, accountID,
                             request.form['email'])
                             return doBilling(request.form['plan'], request.form['company_name'], accountID,

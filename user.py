@@ -226,7 +226,7 @@ def editUser(user_id):
         gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 3)
         if gatekeeper:
             if request.method == "GET":
-                user = User.query.filter_by(id=user_id).first()
+                user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
                 teams = Team.query.filter_by(account_id=session['account_id']).all()
                 membership = Membership.query.filter_by(account_id=session['account_id']).all()
                 iterable = 0
