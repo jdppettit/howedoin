@@ -3,6 +3,7 @@ from functions import *
 from models import *
 from werkzeug import secure_filename
 from password import *
+from gatekeeper import *
 
 import os
 
@@ -135,7 +136,11 @@ def dashboardProfile():
 def dashboardRatingsAll():
     res = checkLogin()
     if res:
-        allRatings = getAllRatings(session['account_id'])
-        return render_template("dashboard_rating_view_all.html", ratings=allRatings)
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 4)
+        if gatekeeper:
+            allRatings = getAllRatings(session['account_id'])
+            return render_template("dashboard_rating_view_all.html", ratings=allRatings)
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()

@@ -1,6 +1,7 @@
 from flask import *
 from models import db, Subscription, Invoice, InvoiceItem, Account, Payment, User
 from functions import *
+from gatekeeper import *
 
 account = Blueprint('account', __name__, template_folder="templates")
 
@@ -56,23 +57,27 @@ def getInvoices(account_id):
 def accountBilling():
     resp = checkLogin()
     if resp:
-        account_id = session['account_id']
-        plan_id = getPlan(account_id)
-        plan_name = getPlanName(plan_id)
-        currentUsers = getCurrentUsers(account_id)
-        maxUsers = getMaxUsers(account_id)
-        invoices = getInvoices(account_id)
-        monthly_cost = getMonthlyCost(account_id)
-        paid_thru = getPaidThru(account_id)
-        account_balance = getTotal(session['account_id'])
-        account_status = ""
-        if account_balance <= 0:
-            account_status = "Good"
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 4)
+        if gatekeeper:
+            account_id = session['account_id']
+            plan_id = getPlan(account_id)
+            plan_name = getPlanName(plan_id)
+            currentUsers = getCurrentUsers(account_id)
+            maxUsers = getMaxUsers(account_id)
+            invoices = getInvoices(account_id)
+            monthly_cost = getMonthlyCost(account_id)
+            paid_thru = getPaidThru(account_id)
+            account_balance = getTotal(session['account_id'])
+            account_status = ""
+            if account_balance <= 0:
+                account_status = "Good"
+            else:
+                account_status = "Problem"
+            return render_template("dashboard_account_billing.html", account_balance=account_balance, plan=plan_name,
+            current_users=currentUsers, max_users=maxUsers, invoices=invoices, monthly_cost=monthly_cost,
+            paid_thru=paid_thru, account_standing=account_status)
         else:
-            account_status = "Problem"
-        return render_template("dashboard_account_billing.html", account_balance=account_balance, plan=plan_name,
-        current_users=currentUsers, max_users=maxUsers, invoices=invoices, monthly_cost=monthly_cost,
-        paid_thru=paid_thru, account_standing=account_status)
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
@@ -80,7 +85,11 @@ def accountBilling():
 def accountSettings():
     res = checkLogin()
     if res:
-        account = Account.query.filter_by(id=session['account_id']).first()
-        return render_template("dashboard_account_settings.html", account=account)
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 4)
+        if gatekeeper:
+            account = Account.query.filter_by(id=session['account_id']).first()
+            return render_template("dashboard_account_settings.html", account=account)
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
