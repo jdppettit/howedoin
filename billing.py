@@ -193,6 +193,14 @@ def doBilling():
             print "charge successful"
         else:
             # charge failed
+            try:
+                adminUser = Permission.query.filter_by(account_id=account_id).filter_by(permission_type=99).first()
+                user = User.query.filter_by(id=adminUser.user_id).first()
+                sendPaymentFailed(user.email, sub.total_monthly, invoice_id)
+            except:
+                pass
+            # set retry billing flag to 1
+            # bump paid through 1 week
             print "failed"
 
 @billing.route('/billing/checkout', methods=['POST'])

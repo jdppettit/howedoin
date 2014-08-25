@@ -20,9 +20,12 @@ class Account(db.Model):
     needs_billing = db.Column(db.Integer)
     total_monthly_bill = db.Column(db.Float)
     subscription_id = db.Column(db.Integer)
+    retry_billing = db.Column(db.Integer)
+    cancel = db.Column(db.Integer)
+    billing_email = db.Column(db.String(50))
 
     def __init__(self, id, company_name, plan_id, paid_thru, is_current, max_users, subscription_id=0, date=datetime.now(),
-    needs_billing=0, total_monthly_bill=0.00):
+    needs_billing=0, total_monthly_bill=0.00, billing_email=""):
         self.id = id
         self.company_name = company_name
         self.plan_id = plan_id
@@ -33,6 +36,7 @@ class Account(db.Model):
         self.needs_billing = needs_billing
         self.total_monthly_bill = total_monthly_bill
         self.subscription_id = subscription_id
+        self.billing_email = billing_email
 
 class User(db.Model):
     __tablename__ = "user"
