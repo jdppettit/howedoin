@@ -121,6 +121,37 @@ def checkAndMakePermissions(account_id, user_id, permission_type, permission, te
             db.session.commit()
             return 1
 
+'''
+States
+-----
+1 = Is present in list, should be added if not present in permissions table
+2 = Is not present in list, should be removed if present in permissions table
+'''
+
+def addRemovePermissions(account_id, team_id, permission_type, permission, state, team_id=0):
+    translated_permission = translatePermission(permission)
+    if team_id != 0:
+        permission = Permission.query.filter_by(account_id=account_id).filter_by(user_id=user_id).filter_by(permission_type=permission_type).filter_by(permission=translated_permission).filter_by(team_id=team_id).first()
+    else:
+        permission = Permission.query.filter_by(account_id=account_id).filter_by(user_id=user_id).filter_by(permission_type=permission_type).filter_by(permission=translated_permission).first()
+
+    if state == 1 and not permission:
+        # this means the permission was checked, but is not present, make it
+        if table_id != 0:
+            newPermission = Permission(account_id, user_id, permission_type, translated_permission, team_id=team_id)
+            db.session.add(newPermission)
+            db.session.commit()
+            return 1
+        else:
+            newPermission = Permission(account_id, user_id, permission_type, translated_permission)
+            db.session.add(newPermission)
+            db.session.commit()
+            return 1
+    if state == 2 and permission:
+        # this means the permission was not checked, but it exists, remove it
+        db.session.delete(permission)
+        db.session.commit()
+        return 1
 
 @user.route('/forgot/<token>', methods=['GET','POST'])
 def forgotHandler(token):
