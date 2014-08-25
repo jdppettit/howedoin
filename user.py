@@ -94,6 +94,8 @@ def translatePermission(permission):
         return 2
     elif permission == "modify":
         return 3
+    elif permission == "view":
+        return 4
     elif permission == "all":
         return 5
 
@@ -220,8 +222,8 @@ def editUser(user_id):
                 iterable = 1
             else:
                 iterable = 0
-            account_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=session['user_id']).filter_by(permission_type=2).all()
-            team_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=session['user_id']).filter_by(permission_type=1).all()
+            account_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=user_id).filter_by(permission_type=2).all()
+            team_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=user_id).filter_by(permission_type=1).all()
             return render_template("dashboard_user_edit.html", user=user, teams=teams, membership=membership,
             iterable=iterable, account_permissions=account_permissions, team_permissions=team_permissions)
         elif request.method == "POST":
@@ -243,6 +245,9 @@ def editUser(user_id):
 
                 if "modify" not in account_list:
                     addRemovePermissions(user.account_id, user.id, 2, "modify", 2)
+                
+                if "view" not in account_list:
+                    addRemovePermissions(user.account_id, user.id, 2, "view", 2)
 
                 if "all" not in account_list:
                     addRemovePermissions(user.account_id, user.id, 2, "all", 2)
@@ -254,6 +259,7 @@ def editUser(user_id):
                 addRemovePermissions(user.account_id, user.id, 2, "add", 2)
                 addRemovePermissions(user.account_id, user.id, 2, "remove", 2)
                 addRemovePermissions(user.account_id, user.id, 2, "modify", 2)
+                addRemovePermissions(user.account_id, user.id, 2, "view", 2)
                 addRemovePermissions(user.account_id, user.id, 2, "all", 2)
 
             for team in teams:
@@ -266,6 +272,8 @@ def editUser(user_id):
                         addRemovePermissions(user.account_id, user.id, 1, "remove", 2, team_id=team.id)
                     if "modify" not in team_list:
                         addRemovePermissions(user.account_id, user.id, 1, "modify", 2, team_id=team.id)
+                    if "view" not in team_list:
+                        addRemovePermissions(user.account_id, user.id, 1, "view", 2, team_id=team.id)
                     if "all" not in team_list:
                         addRemovePermissions(user.account_id, user.id, 1, "all", 2, team_id=team.id)
                     for a in request.form.getlist('%s_permissions' % team.team_name):
@@ -275,6 +283,7 @@ def editUser(user_id):
                     addRemovePermissions(user.account_id, user.id, 1, "add", 2, team_id=team.id)
                     addRemovePermissions(user.account_id, user.id, 1, "remove", 2, team_id=team.id)
                     addRemovePermissions(user.account_id, user.id, 1, "modify", 2, team_id=team.id)
+                    addRemovePermissions(user.account_id, user.id, 1, "view", 2, team_id=team.id)
                     addRemovePermissions(user.account_id, user.id, 1, "all", 2, team_id=team.id)
 
             db.session.commit()

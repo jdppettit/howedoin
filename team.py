@@ -1,7 +1,10 @@
 from models import db, Team, Account, User, Membership
 from flask import *
 from functions import *
+from gatekeeper import *
+
 import pprint
+
 team = Blueprint('team', __name__, template_folder='templates')
 
 @team.route('/dashboard/team')
@@ -58,20 +61,28 @@ def specificTeam(team_id):
     res = checkLogin()
     if res:
         if request.method == "GET":
-            users = getAllUsers(session['account_id'])
-            team = Team.query.filter_by(id=team_id).first()
-            members = getMemberList(team.id)
-            membership = Membership.query.filter_by(account_id=session['account_id']).filter_by(team_id=team_id).all()
-            return render_template("dashboard_team_edit.html", team=team, users=users, members=members,
-            membership=membership)
+            gatekeeper = teamGatekeeper(session['user_id'], team_id, session['account_id'], 4)
+            if gatekeeper:
+                users = getAllUsers(session['account_id'])
+                team = Team.query.filter_by(id=team_id).first()
+                members = getMemberList(team.id)
+                membership = Membership.query.filter_by(account_id=session['account_id']).filter_by(team_id=team_id).all()
+                return render_template("dashboard_team_edit.html", team=team, users=users, members=members,
+                membership=membership)
+            else:
+                return render_template("permission_denied.html")
         elif request.method == "POST":
-            # update the stuff
-            team = Team.query.filter_by(id=team_id).first()
-            team.team_name = request.form['name']
-            team.team_leader_id = request.form['leader']
-            team.team_leader_name = getTeamLeaderName(session['account_id'], request.form['leader'])
-            db.session.commit()
-            return redirect('/dashboard/team')
+            gatekeeper = teamGatekeeper(session['user_id'], team_id, session['account_id'], 3)
+            if gatekeeper:
+                # update the stuff
+                team = Team.query.filter_by(id=team_id).first()
+                team.team_name = request.form['name']
+                team.team_leader_id = request.form['leader']
+                team.team_leader_name = getTeamLeaderName(session['account_id'], request.form['leader'])
+                db.session.commit()
+                return redirect('/dashboard/team')
+            else:
+                return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 

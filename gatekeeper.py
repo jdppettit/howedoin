@@ -7,7 +7,8 @@ Action types:
 1 - Add 
 2 - Remove
 3 - Modify
-4 - Everything
+4 - View
+5 - Everything
 
 Flow should be something like this:
 
@@ -36,7 +37,7 @@ def addPermission(user_id, account_id, permission_type, permission, team_id=0):
         db.session.commit()
     return 1
 
-def getPermissions(user_id, account_id, context, team_id=0)
+def getPermissions(user_id, account_id, context, team_id=0):
     if team_id !=0:
         permissions = Permission.query.filter_by(user_id=user_id).filter_by(account_id=account_id).filter_by(team_id=team_id).filter_by(permission_type=context).all()
     else:
@@ -46,7 +47,7 @@ def getPermissions(user_id, account_id, context, team_id=0)
 def checkPermissions(permissions, action, permission_type):
     action = int(action)
     for permission in permissions:
-        if permission.permission_type = permission_type and permission.permission = action:
+        if permission.permission_type == permission_type and permission.permission == action:
             return True
     return False
 
