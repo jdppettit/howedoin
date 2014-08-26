@@ -42,13 +42,20 @@ def makeInvoiceLineItem(account_id, invoice_id, item, credit=0.00, debit=0.00):
     db.session.commit()
     return 1
 
-def makePayment(account_id, invoice_id, credit, debit, transaction_id, date=datetime.now()):
-    newPayment = Payment(account_id, invoice_id, credit, debit, transaction_id, date)
-    invoice = Invoice.query.filter_by(id=invoice_id).first()
-    invoice.paid = 1
-    db.session.add(newPayment)
-    db.session.commit()
-    return 1
+def makePayment(account_id, invoice_id, credit, debit, transaction_id, date=datetime.now(), switch=0):
+    if switch == 0:
+        newPayment = Payment(account_id, invoice_id, credit, debit, transaction_id, date)
+        invoice = Invoice.query.filter_by(id=invoice_id).first()
+        invoice.paid = 1
+        db.session.add(newPayment)
+        db.session.commit()
+        return 1
+    elif switch == 1:
+        newPayment = Payment(account_id, invoice_id, credit, debit, transaction_id, date)
+        db.session.add(newPayment)
+        db.session.commit()
+        db.session.refresh(newPayment)
+        return newPayment.id
 
 def getTotal(plan_id, extra_users):
     plan_id = int(plan_id)
@@ -143,7 +150,7 @@ def getAllSubscriptions():
 
 def getBillableSubscriptions():
     now = datetime.now()
-    subscriptions = Subscription.query.filter(Subscription.paid_thru<=now).all()
+    subscriptions = Subscription.query.filter(Subscription.paid_thru<=now).filter_by(cancelled!=1).all()
     return subscriptions
 
 def getBillableAccounts():
@@ -158,6 +165,41 @@ def updateSubscriptionPaidThru(subscription_id):
     subscription = Subscription.query.filter_by(id=subscription_id).first()
     subscription.paid_thru = datetime.now() + relativedelta(months=1)
     db.session.commit()
+
+def makeLastInvoicePaid(account_id, invoice_total, payment_id):
+    lastInvoice = Invoice.query.filter_by(account_id=account_id).filter_by(total=invoice_total).filter_by(paid=0).first()
+    lastInvoice.paid = 1
+    lastInvoice.payment_id = payment_id
+    db.session.commit()
+
+def retryBilling():
+    retryAccounts = Account.query.filter_by(retry_billing=1).all()
+
+    for account in retryAccounts:
+        sub = Subscription.query.filter_by(account_id=account.id).filter_by(cancelled!=1).first()
+        stripe_customer = account.stripe_customer
+        invoice_total = sub.total_monthly
+        
+        res, charge = makeCharge(stripe_customer, invoice_total, "Howedoin - Monthly Recurring")
+
+        if res:
+            payment_id = makePayment(account.id, invoice_id, invoice_total, 0, charge['id'], switch=1)
+            markLastInvoicePaid(account.id, invoice_total, payment_id)
+            updateSubscriptionPaidThru(sub.id)
+            print "charge successful"
+        else:
+            # charge failed
+            try:
+                sendPaymentFailed(account.billing_email, sub.total_monthly, invoice_id)
+            except:
+                pass
+            account.retry_billing = 0
+            account.cancel = 1
+            db.session.commit()
+            # set retry billing flag to 1
+            # bump paid through 1 week
+            print "failed"
+
 
 def doBilling():
     billableSubs = getBillableSubscriptions()
@@ -194,11 +236,12 @@ def doBilling():
         else:
             # charge failed
             try:
-                adminUser = Permission.query.filter_by(account_id=account_id).filter_by(permission_type=99).first()
-                user = User.query.filter_by(id=adminUser.user_id).first()
-                sendPaymentFailed(user.email, sub.total_monthly, invoice_id)
+                sendPaymentFailed(account.billing_email, sub.total_monthly, invoice_id)
             except:
                 pass
+            account.retry_billing = 1
+            account.paid_thru = datetime.datetime.now() + relativedelta(weeks=1)
+            db.session.commit()
             # set retry billing flag to 1
             # bump paid through 1 week
             print "failed"
@@ -304,9 +347,14 @@ def editBilling():
     elif request.method == "POST":
         print "does the thing"
 
-@billing.route('/admin/billing/dobilling')
+@billing.route('/admin/billing/dobilling/initial')
 def adminDoBilling():
     doBilling()
+    return "Done."
+
+@billing.route('/admin/billing/dobilling/retry')
+def adminRetryBilling():
+    retryBilling()
     return "Done."
 
 @billing.route('/dashboard/billing/invoice/<invoice_id>')
