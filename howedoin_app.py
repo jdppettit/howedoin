@@ -26,6 +26,7 @@ from team import team
 from account import account
 from user import user
 from email_manager import mail
+from admin import admin 
 
 from models import db
 
@@ -47,6 +48,7 @@ app.register_blueprint(billing)
 app.register_blueprint(team)
 app.register_blueprint(account)
 app.register_blueprint(user)
+app.register_blueprint(admin)
 
 connectionString = "mysql://%s:%s@%s:3306/%s" % (USERNAME, PASSWORD, HOSTNAME, DATABASE)
 

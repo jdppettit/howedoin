@@ -270,3 +270,18 @@ class Permission(db.Model):
         self.permission = permission
         self.date = date
         self.team_id = team_id
+
+class Administrator(db.Model):
+    __tablename__ = "administrator"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(25))
+    password = db.Column(db.String(50))
+    email = db.Column(db.String(50))
+    name = db.Column(db.String(50))
+
+    def __init__(self, username, password, email, name):
+        self.username = username
+        self.password = password
+        self.email = email
+        self.name = name
