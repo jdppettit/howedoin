@@ -5,6 +5,7 @@ from datetime import datetime
 from functions import *
 from email_manager import *
 from gatekeeper import *
+from account import *
 
 import stripe
 import pprint
@@ -377,7 +378,15 @@ def changeBilling():
         gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 3)
         if gatekeeper:
             if request.method == "GET":
-                return render_template("dashboard_account_billing_change.html")
+                account = Account.query.filter_by(id=session['account_id']).first()
+                plan_id = account.plan_id
+                plan_name = getPlanName(plan_id)
+                currentUsers = getCurrentUsers(account.id)
+                maxUsers = getMaxUsers(account.id)
+                paid_thru = getPaidThru(account.id)
+                monthly_cost = getMonthlyCost(account.id)
+                return render_template("dashboard_account_billing_change.html", plan_id=plan_id, plan_name=plan_name,
+                current_users=currentUsers, max_users=maxUsers, monthly_cost=monthly_cost, paid_thru=paid_thru)
             elif request.method == "POST":
                 return redirect('/dashboard/account/billing')
         else:

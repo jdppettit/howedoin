@@ -38,19 +38,15 @@
  <div class="container-fluid">
         {% include 'sidebar.html' %}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h2 class="page-header">Billing</h1>
+          <h2 class="page-header">Change Billing</h1>
             <table class="table">
                 <tr>
-                    <td>Billing Plan</td>
+                    <td>Current Billing Plan</td>
                     <td>{{ plan }}</td>
                 </tr>
                 <tr>
-                    <td>Monthly Cost</td>
+                    <td>Current Monthly Cost</td>
                     <td>${{ monthly_cost }}0</td>
-                </tr>
-                <tr>
-                    <td>Account Balance</td>
-                    <td>${{ account_balance }}0</td>
                 </tr>
                 <tr>
                     <td>Current / Maximum Users</td>
@@ -60,27 +56,40 @@
                     <td>Paid Through</td>
                     <td>{{ paid_thru }}</td>
                 </tr>
-                <tr>
-                    <td>Account Standing</td>
-                    <td>{{ account_standing }}</td>
-                </tr>
             </table>
             <br/>
-            <h3>Invoices</h3>
-            <table class="table">
-                <tr>
-                    <th>#</th>
-                    <th>Total</th>
-                    <th>Paid</th>
-                </tr>
-                {% for invoice in invoices %}
-                <tr>
-                    <td><a href="/dashboard/billing/invoice/{{ invoice.id }}">{{ invoice.id }}</a></td>
-                    <td>$ {{ invoice.total }}</td>
-                    <td>{% if invoice.paid == 1 %}Yes{% else %}No{%endif%}</td>
-                </tr>
-                {% endfor %}
-                </table>
+            <p>You are welcome to change your plan at any time. To make things simple, we don't do proration, so any
+            changes you make will be made effective on your next billing date. You can reference the "Paid Through"
+            field above for the date that this change will occur. You will continue to enjoy your current plan until
+            that date.</p>
+           <form class="form-horizontal" action="/dashboard/billing/change" method="post">
+<fieldset>
+
+<!-- Form Name -->
+
+<!-- Select Basic -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="plan">Plan</label>
+  <div class="col-md-4">
+    <select id="plan" name="plan" class="form-control">
+      <option value="0" {% if plan_id == 0 %}selected="selected"{%endif %}>Free</option>
+      <option value="1" {% if plan_id == 1 %}selected="selected"{% endif %}>Business</option>
+      <option value="2" {% if plan_id == 2 %}selected="selected"{% endif %}>Enterprise</option>
+    </select>
+  </div>
+</div>
+
+<!-- Button -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="submit"></label>
+  <div class="col-md-4">
+    <button id="submit" name="submit" class="btn btn-warning">Save Changes</button>
+  </div>
+</div>
+
+</fieldset>
+</form>
+ 
         </div>
       </div>
     </div>

@@ -70,7 +70,7 @@
 </div>
 
 <hr/>
-<img src="https://howedo.in/static/uploads/user/{{ user.avatar }}"/><br/>
+<img src="{% if user.avatar == ""%}https://howedo.in/static/images/default.png{%else%}https://howedo.in/static/uploads/user/{{ user.avatar }}{%endif%}"/><br/>
 <!-- File Button --> 
 <div class="form-group">
   <label class="col-md-4 control-label" for="avatar">Avatar</label>
