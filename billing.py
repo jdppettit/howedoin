@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from functions import *
 from email_manager import *
+from gatekeeper import *
 
 import stripe
 import pprint
@@ -364,5 +365,22 @@ def getInvoice(invoice_id):
         invoice = Invoice.query.filter_by(id=invoice_id).first()
         invoice_lines = InvoiceItem.query.filter_by(invoice_id=invoice.id).all()
         return render_template("dashboard_account_billing_invoice.html", invoice=invoice, invoice_lines=invoice_lines)
+    else:
+        return notLoggedIn()
+
+@billing.route('/dashboard/billing/change')
+@billing.route('/billing/change')
+def changeBilling():
+    # This will allow the user to modify their billing plan
+    res = checkLogin()
+    if res:
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 3)
+        if gatekeeper:
+            if request.method == "GET":
+                return render_template("dashboard_account_billing_change.html")
+            elif request.method == "POST":
+                return redirect('/dashboard/account/billing')
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()

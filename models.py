@@ -241,9 +241,10 @@ class Subscription(db.Model):
     start_date = db.Column(db.DateTime)
     paid_thru = db.Column(db.DateTime)
     total_monthly = db.Column(db.Float)
+    most_recent = db.Column(db.Integer)
     cancelled = db.Column(db.Integer)
 
-    def __init__(self, account_id, plan, cost_per_add, extra_users, start_date, paid_thru, total_monthly):
+    def __init__(self, account_id, plan, cost_per_add, extra_users, start_date, paid_thru, total_monthly, most_recent=1):
         self.account_id = account_id
         self.plan = plan
         self.cost_per_add = cost_per_add
@@ -251,6 +252,7 @@ class Subscription(db.Model):
         self.start_date = start_date
         self.paid_thru = paid_thru
         self.total_monthly = total_monthly
+        self.most_recent = most_recent
 
 class Permission(db.Model):
     __tablename__ = "permission"

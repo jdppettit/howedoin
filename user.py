@@ -392,8 +392,8 @@ def createUser():
                         return render_template("dashboard_user_create.html", error="All fields must be completed.")
                 else:
                     return render_template("dashboard_user_view.html", message="You need to add more users to you account!")
-            else:
-                return render_template("permission_denied.html")
+        else:
+            return render_template("permission_denied.html")
     else:
         return notLoggedIn()
 
