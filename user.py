@@ -105,6 +105,13 @@ def translatePermission(permission):
     elif permission == "all":
         return 5
 
+def checkIfLastAdmin(account_id, user_id):
+    check = Permission.query.filter_by(account_id=account_id).filter_by(permission_type=99).filter(user_id!=user_id).first()
+    if check:
+        return False
+    else:
+        return True
+
 def checkAndMakePermissions(account_id, user_id, permission_type, permission, team_id=0):
     translated_permission = translatePermission(permission)
     if team_id != 0:
@@ -302,7 +309,7 @@ def editUser(user_id):
                         addRemovePermissions(user.account_id, user.id, 1, "all", 2, team_id=team.id)
     
                 db.session.commit()
-                return redirect('/dashboard/user')
+                return redirect('/dashboard/user/%s' % str(user.id))
         else:
             return render_template("permission_denied.html")
     else:
@@ -404,6 +411,22 @@ def toggleAdmin(user_id):
         gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 3)
         if gatekeeper:
             if user_id:
+                check = checkIfLastAdmin(session['account_id'], user_id)
+                if check:
+                    user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
+                    teams = Team.query.filter_by(account_id=session['account_id']).all()
+                    membership = Membership.query.filter_by(account_id=session['account_id']).all()
+                    iterable = 0
+                    if len(membership) > 1:
+                        iterable = 1
+                    else:
+                        iterable = 0
+                    account_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=user_id).filter_by(permission_type=2).all()
+                    team_permissions = Permission.query.filter_by(account_id=session['account_id']).filter_by(user_id=user_id).filter_by(permission_type=1).all()
+                    is_admin = checkAdmin(user_id, session['account_id'])
+                    return render_template("dashboard_user_edit.html", user=user, teams=teams, membership=membership,
+                    iterable=iterable, account_permissions=account_permissions, team_permissions=team_permissions,
+                    is_admin=is_admin, error="This is your last administrator. You must have at least one administrator.")
                 user = User.query.filter_by(id=user_id).filter_by(account_id=session['account_id']).first()
                 currentAdminStatus = checkAdmin(user.id, user.account_id)
                 if currentAdminStatus == True:
