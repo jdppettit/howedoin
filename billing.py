@@ -47,9 +47,12 @@ def makeInvoiceLineItem(account_id, invoice_id, item, credit=0.00, debit=0.00):
 def makePayment(account_id, invoice_id, credit, debit, transaction_id, date=datetime.now(), switch=0):
     if switch == 0:
         newPayment = Payment(account_id, invoice_id, credit, debit, transaction_id, date)
+        db.session.add(newPayment)
+        db.session.commit()
+        db.session.refresh(newPayment)
         invoice = Invoice.query.filter_by(id=invoice_id).first()
         invoice.paid = 1
-        db.session.add(newPayment)
+        invoice.payment_id = newPayment.id
         db.session.commit()
         return 1
     elif switch == 1:
@@ -100,7 +103,6 @@ def getCost(plan_id):
         return 25.00
 
 def getProrationUsers(account_id, users_added):
-    print account_id
     subscription = Subscription.query.filter_by(account_id=account_id).first()
     now = datetime.now()
     diff = subscription.paid_thru - now
@@ -115,6 +117,20 @@ def cancelSubscription(account_id):
     subscription = Subscription.query.filter_by(account_id=account_id).first()
     subscription.cancelled = 1
     db.session.commit()
+
+def makeRefund(stripe_customer, charge_id, amount):
+    charge = stripe.Charge.retrieve(charge_id)
+    striped_amount = amount * 100
+    striped_amount = int(striped_amount)
+    try:
+        refund = charge.refunds.create(
+                    amount=striped_amount
+                )
+    except Exception, e:
+        print "Shit broke: %s" % str(e)
+        return False
+    return True
+    
 
 def makeCharge(stripe_customer, cost, description):
     try:
@@ -398,11 +414,28 @@ def changeBilling():
                 current_users=currentUsers, max_users=maxUsers, monthly_cost=monthly_cost, paid_thru=paid_thru,
                 pending_change=pending_change, new_subscription=new_subscription)
             elif request.method == "POST":
-                # First grab the changes
-                # Make a new subscription
-                # Set old subscription cancelled
-                new_plan = request.form['plan']
                 account = Account.query.filter_by(id=session['account_id']).first()
+                current_subscription = Subscription.query.filter_by(id=account.subscription_id).first()
+                last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).order_by(Invoice.id.asc()).limit(1).first()
+                last_payment = last_invoice.total
+                daily_prorated_rate = 0.00
+                daily_prorated_rate = last_payment / 30
+                invoice_payment = Payment.query.filter_by(id=last_invoice.payment_id).first()
+                now = datetime.now() + relativedelta(weeks=1)
+                payment_date = invoice_payment.date
+                elapsed_time = now - payment_date
+                inter = elapsed_time.days * daily_prorated_rate
+                refund_due = 0.00
+                refund_due =  last_invoice.total - inter
+                if refund_due > last_invoice.total:
+                    refund_due = last_invoice.total
+                stripe_response = makeRefund(account.stripe_customer, invoice_payment.transaction_id, refund_due)
+                if stripe_response == True:
+                    # Proceed
+                    return "Refund successful in the amount of: %s" % str(refund_due)
+                else:
+                    return "Something broke"
+                
                 if new_plan == account.plan_id:
                     return redirect('/dashboard/account/billing')
                 else:
