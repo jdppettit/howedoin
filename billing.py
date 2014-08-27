@@ -369,8 +369,8 @@ def getInvoice(invoice_id):
     else:
         return notLoggedIn()
 
-@billing.route('/dashboard/billing/change')
-@billing.route('/billing/change')
+@billing.route('/dashboard/billing/change', methods=['POST','GET'])
+@billing.route('/billing/change', methods=['POST','GET'])
 def changeBilling():
     # This will allow the user to modify their billing plan
     res = checkLogin()
@@ -385,10 +385,32 @@ def changeBilling():
                 maxUsers = getMaxUsers(account.id)
                 paid_thru = getPaidThru(account.id)
                 monthly_cost = getMonthlyCost(account.id)
+                subscriptions = Subscription.query.filter_by(account_id=account.id).all()
+                pending_change = False
+                new_subscription = 0
+                if len(subscriptions) > 1:
+                    # There is a change pending
+                    pending_change = True
+                    for subscription in subscriptions:
+                        if subscription.cancelled != 1:
+                            new_subscription = subscription.plan
                 return render_template("dashboard_account_billing_change.html", plan_id=plan_id, plan_name=plan_name,
-                current_users=currentUsers, max_users=maxUsers, monthly_cost=monthly_cost, paid_thru=paid_thru)
+                current_users=currentUsers, max_users=maxUsers, monthly_cost=monthly_cost, paid_thru=paid_thru,
+                pending_change=pending_change, new_subscription=new_subscription)
             elif request.method == "POST":
-                return redirect('/dashboard/account/billing')
+                # First grab the changes
+                # Make a new subscription
+                # Set old subscription cancelled
+                new_plan = request.form['plan']
+                account = Account.query.filter_by(id=session['account_id']).first()
+                if new_plan == account.plan_id:
+                    return redirect('/dashboard/account/billing')
+                else:
+                    currentSubscription = Subscription.query.filter_by(id=account.subscription_id).first()
+                    currentSubscription.cancelled = 1
+                    subscription_id = makeSubscription(account.id, new_plan, currentSubscription.extra_users)
+
+                    return redirect('/dashboard/account/billing')
         else:
             return render_template("permission_denied.html")
     else:
