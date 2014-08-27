@@ -415,13 +415,16 @@ def changeBilling():
                 pending_change=pending_change, new_subscription=new_subscription)
             elif request.method == "POST":
                 account = Account.query.filter_by(id=session['account_id']).first()
+                new_plan = request.form['plan']
+                if new_plan == account.plan_id:
+                    return redirect('/dashboard/account/billing')
                 current_subscription = Subscription.query.filter_by(id=account.subscription_id).first()
                 last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).order_by(Invoice.id.asc()).limit(1).first()
                 last_payment = last_invoice.total
                 daily_prorated_rate = 0.00
                 daily_prorated_rate = last_payment / 30
                 invoice_payment = Payment.query.filter_by(id=last_invoice.payment_id).first()
-                now = datetime.now() + relativedelta(weeks=1)
+                now = datetime.now()
                 payment_date = invoice_payment.date
                 elapsed_time = now - payment_date
                 inter = elapsed_time.days * daily_prorated_rate
@@ -429,21 +432,26 @@ def changeBilling():
                 refund_due =  last_invoice.total - inter
                 if refund_due > last_invoice.total:
                     refund_due = last_invoice.total
-                stripe_response = makeRefund(account.stripe_customer, invoice_payment.transaction_id, refund_due)
-                if stripe_response == True:
-                    # Proceed
-                    return "Refund successful in the amount of: %s" % str(refund_due)
+                new_subscription_id = makeSubscription(account.id, request.form['plan'],
+                current_subscription.extra_users)
+                new_subscription = Subscription.query.filter_by(id=new_subscription_id).first()
+                if new_subscription.total_monthly > refund_due:
+                    amount_to_charge = new_subscription.total_monthly - refund_due
+                    # Proceed with no refund logic
+                    # Make invoice showing refund and charge for new month of service
+                    # Charge customer difference
+                    # Update invoice as paid, make payment
+                    return "No refund needed, you would be charged: %s" % str(amount_to_charge)
                 else:
-                    return "Something broke"
-                
-                if new_plan == account.plan_id:
-                    return redirect('/dashboard/account/billing')
-                else:
-                    currentSubscription = Subscription.query.filter_by(id=account.subscription_id).first()
-                    currentSubscription.cancelled = 1
-                    subscription_id = makeSubscription(account.id, new_plan, currentSubscription.extra_users)
-
-                    return redirect('/dashboard/account/billing')
+                    refund_due = refund_due - new_subscription.total_monthly
+                    # Proceed with refund logic
+                    stripe_response = makeRefund(account.stripe_customer, invoice_payment.transaction_id, refund_due)
+                    if stripe_response == True:
+                        # Make invoice showing refund and charge
+                        # Update invoice as paid, make payment
+                        return "Refund successful in the amount of: %s" % str(refund_due)
+                    else:
+                        return "Something broke"
         else:
             return render_template("permission_denied.html")
     else:
