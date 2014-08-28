@@ -189,6 +189,8 @@ class Payment(db.Model):
     debit = db.Column(db.Float)
     transaction_id = db.Column(db.String(30))
     date = db.Column(db.DateTime)
+    refunded = db.Column(db.Integer)
+    refund_id = db.Column(db.String(30))
 
     def __init__(self, account_id, invoice_id, credit, debit, transaction_id, date):
         self.account_id = account_id
@@ -206,12 +208,14 @@ class Invoice(db.Model):
     total = db.Column(db.Float)
     paid = db.Column(db.Integer)
     payment_id = db.Column(db.Integer)
+    refunded = db.Column(db.Integer)
 
     def __init__(self, account_id, total, paid, payment_id=0):
         self.account_id = account_id
         self.total = total
         self.paid = paid
         self.payment_id = payment_id
+        self.refunded = 0
 
 class InvoiceItem(db.Model):
     __tablename__ = "invoice_item"

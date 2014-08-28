@@ -156,11 +156,17 @@ def updateSubscription(account_id, cost, max_users):
     db.session.commit()
     return 1
 
-def updateAccountMaxUsers(account_id, max_users):
-    account = Account.query.filter_by(id=account_id).first()
-    account.max_users = int(account.max_users) + int(max_users)
-    db.session.commit()
-    return 1
+def updateAccountMaxUsers(account_id, max_users, switch=0):
+    if switch == 0:
+        account = Account.query.filter_by(id=account_id).first()
+        account.max_users = int(account.max_users) + int(max_users)
+        db.session.commit()
+        return 1
+    else:
+        account = Account.query.filter_by(id=account_id).first()
+        account.max_users = int(max_users)
+        db.session.commit()
+        return 1
 
 def getAllSubscriptions():
     subscriptions = Subscription.query.filter_by(id>0).all()
@@ -189,6 +195,15 @@ def makeLastInvoicePaid(account_id, invoice_total, payment_id):
     lastInvoice.paid = 1
     lastInvoice.payment_id = payment_id
     db.session.commit()
+
+def getPlanName(plan_id):
+    plan_id = int(plan_id)
+    if plan_id == 0:
+        return "Howedoin Free"
+    elif plan_id == 1:
+        return "Howedoin Business Plan"
+    elif plan_id == 2:
+        return "Howedoin Enterprise Plan"
 
 def retryBilling():
     retryAccounts = Account.query.filter_by(retry_billing=1).all()
@@ -418,8 +433,11 @@ def changeBilling():
                 new_plan = request.form['plan']
                 if new_plan == account.plan_id:
                     return redirect('/dashboard/account/billing')
+                if new_plan == 1 or new_plan == 2 and account.plan_id == 0:
+                    # This is an upgrade, must be handled differently
+                    return 1
                 current_subscription = Subscription.query.filter_by(id=account.subscription_id).first()
-                last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).order_by(Invoice.id.asc()).limit(1).first()
+                last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).filter_by(refunded=0).order_by(Invoice.id.asc()).limit(1).first()
                 last_payment = last_invoice.total
                 daily_prorated_rate = 0.00
                 daily_prorated_rate = last_payment / 30
@@ -437,21 +455,66 @@ def changeBilling():
                 new_subscription = Subscription.query.filter_by(id=new_subscription_id).first()
                 if new_subscription.total_monthly > refund_due:
                     amount_to_charge = new_subscription.total_monthly - refund_due
-                    # Proceed with no refund logic
-                    # Make invoice showing refund and charge for new month of service
-                    # Charge customer difference
-                    # Update invoice as paid, make payment
-                    return "No refund needed, you would be charged: %s" % str(amount_to_charge)
+                    new_invoice_id = makeInvoice(account.id, new_subscription.total_monthly, 0)
+                    makeInvoiceLineItem(account.id, new_invoice_id, getPlanName(new_subscription.plan),
+                    debit=new_subscription.total_monthly)
+                    new_plan_id = int(new_subscription.plan)
+                    if new_subscription.extra_users > 0:
+                        if new_plan_id == 1:
+                            extra_user_cost = new_subscription.extra_users * 3.00
+                            updateAccountMaxUsers(account.id, 5 + new_subscription.extra_users, switch=1)
+                        if new_plan_id == 2:
+                            extra_user_cost = new_subscription.extra_users * 2.50
+                            updateAccountMaxUsers(account.id, 10 + new_subscription.extra_users, switch=1)
+                        makeInvoiceLineItem(account.id, new_invoice_id, "Extra Users", debit=extra_user_cost)
+                    else:
+                        if new_plan_id == 1:
+                            updateAccountMaxUsers(account.id, 5, switch=1)
+                        elif new_plan_id == 2:
+                            updateAccountMaxUsers(account.id, 10, switch=1)
+                    makeInvoiceLineItem(account.id, new_invoice_id, "Prorated Amount", credit=refund_due)
+                    db.session.delete(current_subscription)
+                    charge_amount = new_subscription.total_monthly - refund_due
+                    resp, charge = makeCharge(account.stripe_customer, charge_amount, "Change to Howedoin Plan")
+                    if resp:
+                        # Charge successful
+                        updatePaidThru(account)
+                        updateSubscriptionID(account.id, new_subscription_id)
+                        new_payment_id = makePayment(account.id, new_invoice_id, 0, charge_amount, charge.id)
+                        updateIsCurrent(account.id)
+                        return redirect('/dashboard/account/billing')
+                    else:
+                        # return a template to try again
+                        return "The payment failed"
                 else:
                     refund_due = refund_due - new_subscription.total_monthly
                     # Proceed with refund logic
                     stripe_response = makeRefund(account.stripe_customer, invoice_payment.transaction_id, refund_due)
                     if stripe_response == True:
-                        # Make invoice showing refund and charge
-                        # Update invoice as paid, make payment
-                        return "Refund successful in the amount of: %s" % str(refund_due)
-                    else:
-                        return "Something broke"
+                        new_invoice_id = makeInvoice(account.id, new_subscription.total_monthly, 0)
+                        makeInvoiceLineItem(account.id, new_invoice_id, getPlanName(newsubscription.plan),
+                        debit=new_subscription.total_monthly)
+                        new_plan_id = int(new_subscription.plan)
+                        if new_subscription.extra_users > 0:
+                            if plan_id == 1:
+                                extra_user_cost = new_subscription.extra_users * 3.00
+                                updateAccountMaxUsers(account.id, 5 + new_subscription.extra_users, switch=1)
+                            elif plan_id == 2:
+                                extra_user_cost = new_subscription.extra_users * 2.50
+                                updateAccountMaxUsers(account.id, 10 + new_subscription.extra_users, switch=1)
+                            makeInvoiceLineItem(account.id, new_invoice_id, "Extra Users", debit=extra_user_cost)
+                        else:
+                            if plan_id == 1:
+                                updateAccountMaxUsers(account.id, 5, switch=1)
+                            elif plan_id == 2:
+                                updateAccountMaxUsers(account.id, 10, switch=1)
+                        makeInvoiceLineItem(account.id, new_invoice_id, "Prorated Amount", credit=refund_due)
+                        db.session.delete(current_subscription)
+                        updatePaidThru(account)
+                        updateSubscriptionID(account.id, new_subscription_id)
+                        new_payment_id = makePayment(account.id, new_invoice_id, 0, 0.00, "CREDIT")
+                        updateIsCurrent(account_id)
+                        return redirect('/dashboard/account/billing')
         else:
             return render_template("permission_denied.html")
     else:
