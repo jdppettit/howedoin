@@ -1,0 +1,26 @@
+{% extends 'admin_dashboard.html' %}
+{% block content %}
+<form action="/dashboard/account/{{ account.id }}" method="post">
+<input type="text" name="company_name" value="{{ account.company_name }}"/><br/>
+<input type="text" name="name" value="{{ account.name }}"/><br/>
+<input type="text" name="billing_email" value="{{ account.billing_email }}"/><br/>
+</form>
+<br/>
+<h2>Users</h2>
+<table>
+<tr>
+    <th>Username</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Is Active</th>
+</tr>
+{% for user in users %}
+<tr>
+    <td>{{ user.username }}</td>
+    <td>{{ user.name }}</td>
+    <td>{{ user.email }}</td>
+    <td>{{ user.is_active }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

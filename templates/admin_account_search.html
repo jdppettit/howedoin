@@ -1,0 +1,6 @@
+{% extends 'admin_dashboard.html' %}
+{% block content %}
+<form action="/admin/account/search" method="post">
+    <input type="text" name="search" placeholder="Account ID"/>&nbsp;<input type="submit" value="Search"/>
+</form>
+{% endblock %}

@@ -1,4 +1,6 @@
 from flask import *
+from password import *
+from models import *
 
 admin = Blueprint('admin', __name__, template_folder="templates")
 
@@ -32,13 +34,31 @@ def doAdminLogin(username, password):
     else:
         return redirect('/')
 
+def doAdminLogout():
+        session.pop('username', None)
+        session.pop('name', None)
+        session.pop('admin_id', None)
+        session.pop('email', None)
+        session.pop('is_admin', None)
+        return redirect('/admin/login')
+
 @admin.route('/admin/login', methods=['POST','GET'])
 def adminLogin():
     if request.method == "GET":
         return render_template("admin_login.html")
     elif request.method == "POST":
         if request.form.has_key('username') and request.form.has_key('password'):
-            return doAdminLogin()
+            return doAdminLogin(request.form['username'], request.form['password'])
+        else:
+            return redirect('/')
+
+@admin.route('/admin/logout')
+def adminLogout():
+    res = checkAdminLogin()
+    if res:
+        return doAdminLogout()
+    else:
+        return redirect('/admin/login')
 
 @admin.route('/admin')
 def adminDashboard():
@@ -47,4 +67,16 @@ def adminDashboard():
         return render_template("admin_dashboard.html")
     else:
         return adminNotLoggedIn()
-    
+
+@admin.route('/admin/account/search', methods=['POST','GET'])
+def adminAccountSearch():
+    res = checkAdminLogin()
+    if res:
+        if request.method == "GET":
+            return render_template("admin_account_search.html")
+        elif request.method == "POST":
+            account = Account.query.filter_by(id=request.form['search']).first()
+            users = User.query.filter_by(account_id=account.id).all()
+            return render_template("admin_account_view.html", account=account, users=users)
+    else:
+        return adminNotLoggedIn()
