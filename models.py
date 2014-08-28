@@ -52,6 +52,7 @@ class User(db.Model):
     password_reset_link = db.Column(db.String(25))
     avatar = db.Column(db.String(50))
     password_reset_expire = db.Column(db.DateTime)
+    score = db.Column(db.Integer)
 
     def __init__(self, account_id, name, username, password, email, active, activation_link="", password_reset_link="",
     avatar = ""):
@@ -64,6 +65,7 @@ class User(db.Model):
         self.activation_link = activation_link
         self.password_reset_link = password_reset_link
         self.avatar = avatar
+        self.score = 0
 
 class Rating(db.Model):
     __tablename__ = "rating"

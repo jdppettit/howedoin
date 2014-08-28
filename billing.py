@@ -19,6 +19,11 @@ def updatePaidThru(account):
     account.paid_thru = newExpiry
     db.session.commit()
 
+def updateAccountPlanID(account_id, plan_id):
+    account = Account.query.filter_by(id=account_id).first()
+    account.plan_id = plan_id
+    db.session.commit()
+
 def updateSubscriptionID(account_id, subscription_id):
     account = Account.query.filter_by(id=account_id).first()
     account.subscription_id = subscription_id
@@ -482,6 +487,7 @@ def changeBilling():
                         updateSubscriptionID(account.id, new_subscription_id)
                         new_payment_id = makePayment(account.id, new_invoice_id, 0, charge_amount, charge.id)
                         updateIsCurrent(account.id)
+                        updateAccountPlanID(account.id, new_plan_id)
                         return redirect('/dashboard/account/billing')
                     else:
                         # return a template to try again
@@ -514,6 +520,7 @@ def changeBilling():
                         updateSubscriptionID(account.id, new_subscription_id)
                         new_payment_id = makePayment(account.id, new_invoice_id, 0, 0.00, "CREDIT")
                         updateIsCurrent(account_id)
+                        updateAccountPlanID(account.id, new_plan_id)
                         return redirect('/dashboard/account/billing')
         else:
             return render_template("permission_denied.html")
