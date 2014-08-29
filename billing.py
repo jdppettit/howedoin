@@ -453,7 +453,11 @@ def changeBilling():
                 elapsed_time = now - payment_date
                 inter = elapsed_time.days * daily_prorated_rate
                 refund_due = 0.00
-                refund_due =  last_invoice.total - inter
+                if account.plan_id == 1 and current_subscription.extra_users > 0:
+                    extcost = current_subscription.extra_users * 3.00
+                if account.plan_id == 2 and current_subscription.extra_users > 0:
+                    extcost = current_subscription.extra_users * 2.50
+                refund_due =  last_invoice.total - inter - extcost
                 if refund_due > last_invoice.total:
                     refund_due = last_invoice.total
                 print "I got plan: %s" % str(request.form['plan'])
