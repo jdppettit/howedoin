@@ -80,18 +80,12 @@
 </div>
 
 <!-- Button -->
-{% if pending_change %}
-<p>Your billing plan is pending a change on {{ paid_thru }}. The plan is changing to a {% if new_subscription == 0
-%}Free Plan{% elif new_subscription == 1 %}Business Plan{% elif new_subscription == 2 %}Enterprise Plan{% endif %}. No further
-%changes can be made until the subscription has migrated.</p>
-{% else %}
 <div class="form-group">
   <label class="col-md-4 control-label" for="submit"></label>
   <div class="col-md-4">
     <button id="submit" name="submit" class="btn btn-warning">Save Changes</button>
   </div>
 </div>
-{% endif %}
 </fieldset>
 </form>
  

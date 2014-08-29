@@ -133,6 +133,7 @@ def makeRefund(stripe_customer, charge_id, amount):
                 )
     except Exception, e:
         print "Shit broke: %s" % str(e)
+        print "Tried to refund: %s " % str(amount)
         return False
     return True
     
@@ -442,7 +443,7 @@ def changeBilling():
                     # This is an upgrade, must be handled differently
                     return 1
                 current_subscription = Subscription.query.filter_by(id=account.subscription_id).first()
-                last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).filter_by(refunded=0).order_by(Invoice.id.asc()).limit(1).first()
+                last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).filter_by(refunded=0).order_by(Invoice.id.desc()).limit(1).first()
                 last_payment = last_invoice.total
                 daily_prorated_rate = 0.00
                 daily_prorated_rate = last_payment / 30
@@ -455,10 +456,12 @@ def changeBilling():
                 refund_due =  last_invoice.total - inter
                 if refund_due > last_invoice.total:
                     refund_due = last_invoice.total
+                print "I got plan: %s" % str(request.form['plan'])
                 new_subscription_id = makeSubscription(account.id, request.form['plan'],
                 current_subscription.extra_users)
                 new_subscription = Subscription.query.filter_by(id=new_subscription_id).first()
                 if new_subscription.total_monthly > refund_due:
+                    print "I think there is no refund due"
                     amount_to_charge = new_subscription.total_monthly - refund_due
                     new_invoice_id = makeInvoice(account.id, new_subscription.total_monthly, 0)
                     makeInvoiceLineItem(account.id, new_invoice_id, getPlanName(new_subscription.plan),
@@ -493,33 +496,35 @@ def changeBilling():
                         # return a template to try again
                         return "The payment failed"
                 else:
+                    print "Refund_due is %s and new totalmonthly is %s " % (str(refund_due),
+                    str(new_subscription.total_monthly))
                     refund_due = refund_due - new_subscription.total_monthly
                     # Proceed with refund logic
                     stripe_response = makeRefund(account.stripe_customer, invoice_payment.transaction_id, refund_due)
                     if stripe_response == True:
                         new_invoice_id = makeInvoice(account.id, new_subscription.total_monthly, 0)
-                        makeInvoiceLineItem(account.id, new_invoice_id, getPlanName(newsubscription.plan),
+                        makeInvoiceLineItem(account.id, new_invoice_id, getPlanName(new_subscription.plan),
                         debit=new_subscription.total_monthly)
                         new_plan_id = int(new_subscription.plan)
                         if new_subscription.extra_users > 0:
-                            if plan_id == 1:
+                            if new_plan_id == 1:
                                 extra_user_cost = new_subscription.extra_users * 3.00
                                 updateAccountMaxUsers(account.id, 5 + new_subscription.extra_users, switch=1)
-                            elif plan_id == 2:
+                            elif new_plan_id == 2:
                                 extra_user_cost = new_subscription.extra_users * 2.50
                                 updateAccountMaxUsers(account.id, 10 + new_subscription.extra_users, switch=1)
                             makeInvoiceLineItem(account.id, new_invoice_id, "Extra Users", debit=extra_user_cost)
                         else:
-                            if plan_id == 1:
+                            if new_plan_id == 1:
                                 updateAccountMaxUsers(account.id, 5, switch=1)
-                            elif plan_id == 2:
+                            elif new_plan_id == 2:
                                 updateAccountMaxUsers(account.id, 10, switch=1)
                         makeInvoiceLineItem(account.id, new_invoice_id, "Prorated Amount", credit=refund_due)
                         db.session.delete(current_subscription)
                         updatePaidThru(account)
                         updateSubscriptionID(account.id, new_subscription_id)
                         new_payment_id = makePayment(account.id, new_invoice_id, 0, 0.00, "CREDIT")
-                        updateIsCurrent(account_id)
+                        updateIsCurrent(account.id)
                         updateAccountPlanID(account.id, new_plan_id)
                         return redirect('/dashboard/account/billing')
         else:
