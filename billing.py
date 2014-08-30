@@ -442,31 +442,55 @@ def changeBilling():
                 if new_plan == 1 or new_plan == 2 and account.plan_id == 0:
                     # This is an upgrade, must be handled differently
                     return 1
+                # NEW STUFF #
+                
+                # Get current subscription
                 current_subscription = Subscription.query.filter_by(id=account.subscription_id).first()
-                last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).filter_by(refunded=0).order_by(Invoice.id.desc()).limit(1).first()
-                last_payment = last_invoice.total
-                daily_prorated_rate = 0.00
-                daily_prorated_rate = last_payment / 30
-                invoice_payment = Payment.query.filter_by(id=last_invoice.payment_id).first()
+
+                # Get last non refunded invoice
+                last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).filter_by(refunded=0).filter(Invoice.total>10.00).order_by(Invoice.id.desc()).limit(1).first()
+
+                # Get the number of days left until sub is over
                 now = datetime.now()
-                payment_date = invoice_payment.date
-                elapsed_time = now - payment_date
-                inter = elapsed_time.days * daily_prorated_rate
-                refund_due = 0.00
-                if account.plan_id == 1 and current_subscription.extra_users > 0:
-                    extcost = current_subscription.extra_users * 3.00
-                if account.plan_id == 2 and current_subscription.extra_users > 0:
-                    extcost = current_subscription.extra_users * 2.50
-                refund_due =  last_invoice.total - inter - extcost
-                if refund_due > last_invoice.total:
-                    refund_due = last_invoice.total
-                print "I got plan: %s" % str(request.form['plan'])
+                paid_thru = current_subscription.paid_thru
+            
+                remaining_days = paid_thru - now
+                remaining_days = remaining_days.days
+
+                # Get monthly cost / extra user cost
+                monthly_cost = 0.00
+                extra_user_cost = 0.00
+
+                if account.plan_id == 1:
+                    monthly_cost = 10.00
+                    extra_user_cost = 3.00
+                elif account.plan_id == 2:
+                    monthly_cost = 25.00
+                    extra_user_cost = 2.50
+
+                # Calculate total monthly cost
+                total_monthly_cost = 0.00
+
+                total_monthly_cost += total_monthly_cost + monthly_cost
+
+                extra_user_holder = 0.00
+                extra_user_holder = extra_user_cost * current_subscription.extra_users
+
+                total_monthly_cost += extra_user_holder
+
+                # Calculate the daily rate
+                daily_rate = total_monthly_cost / 30
+
+                # Calculate the funds not yet used
+                unused_funds = daily_rate * remaining_days
+                
+                # Make new subscription
                 new_subscription_id = makeSubscription(account.id, request.form['plan'],
                 current_subscription.extra_users)
                 new_subscription = Subscription.query.filter_by(id=new_subscription_id).first()
-                if new_subscription.total_monthly > refund_due:
-                    print "I think there is no refund due"
-                    amount_to_charge = new_subscription.total_monthly - refund_due
+
+                if new_subscription.total_monthly > unused_funds:
+                    amount_to_charge = new_subscription.total_monthly - unused_funds 
                     new_invoice_id = makeInvoice(account.id, new_subscription.total_monthly, 0)
                     makeInvoiceLineItem(account.id, new_invoice_id, getPlanName(new_subscription.plan),
                     debit=new_subscription.total_monthly)
@@ -484,26 +508,26 @@ def changeBilling():
                             updateAccountMaxUsers(account.id, 5, switch=1)
                         elif new_plan_id == 2:
                             updateAccountMaxUsers(account.id, 10, switch=1)
-                    makeInvoiceLineItem(account.id, new_invoice_id, "Prorated Amount", credit=refund_due)
+                    makeInvoiceLineItem(account.id, new_invoice_id, "Prorated Amount", credit=unused_funds)
                     db.session.delete(current_subscription)
-                    charge_amount = new_subscription.total_monthly - refund_due
+                    charge_amount = new_subscription.total_monthly - unused_funds
                     resp, charge = makeCharge(account.stripe_customer, charge_amount, "Change to Howedoin Plan")
                     if resp:
                         # Charge successful
                         updatePaidThru(account)
                         updateSubscriptionID(account.id, new_subscription_id)
-                        new_payment_id = makePayment(account.id, new_invoice_id, 0, charge_amount, charge.id)
+                        new_payment_id = makePayment(account.id, new_invoice_id, 0, charge_amount + unused_funds, charge.id)
                         updateIsCurrent(account.id)
                         updateAccountPlanID(account.id, new_plan_id)
+                        db.session.commit()
                         return redirect('/dashboard/account/billing')
                     else:
                         # return a template to try again
                         return "The payment failed"
                 else:
-                    print "Refund_due is %s and new totalmonthly is %s " % (str(refund_due),
-                    str(new_subscription.total_monthly))
-                    refund_due = refund_due - new_subscription.total_monthly
+                    refund_due = unused_funds - new_subscription.total_monthly
                     # Proceed with refund logic
+                    invoice_payment = Payment.query.filter_by(id=last_invoice.payment_id).first()
                     stripe_response = makeRefund(account.stripe_customer, invoice_payment.transaction_id, refund_due)
                     if stripe_response == True:
                         new_invoice_id = makeInvoice(account.id, new_subscription.total_monthly, 0)
@@ -530,6 +554,7 @@ def changeBilling():
                         new_payment_id = makePayment(account.id, new_invoice_id, 0, 0.00, "CREDIT")
                         updateIsCurrent(account.id)
                         updateAccountPlanID(account.id, new_plan_id)
+                        db.session.commit()
                         return redirect('/dashboard/account/billing')
         else:
             return render_template("permission_denied.html")
