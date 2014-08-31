@@ -11,10 +11,13 @@ def getTotal(account_id):
     invoiceTotal = 0.00
     paymentTotal = 0.00
     for invoice in invoices:
-        invoiceTotal += invoice.total
+        if invoice.total != 0 and invoice.total:
+            invoiceTotal += invoice.total
     for payment in payments:
-        paymentTotal += payment.debit
-        paymentTotal -= payment.credit
+        if payment.debit != 0 and payment.debit:
+            paymentTotal += payment.debit
+        if payment.credit != 0 and payment.credit:
+            paymentTotal -= payment.credit
     account_balance = invoiceTotal - paymentTotal
     print "InvoiceTotal is %s" % str(invoiceTotal)
     print "PaymentTOtal is %s" % str(paymentTotal)
