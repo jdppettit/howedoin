@@ -6,6 +6,7 @@ from functions import *
 from email_manager import *
 from gatekeeper import *
 from account import *
+import register
 
 import stripe
 import pprint
@@ -330,6 +331,8 @@ def checkout():
             updateSubscriptionID(account_id, subscription_id)
             updateIsCurrent(account_id)
             makePayment(account_id, invoice_id, getCost(request.form['plan']), 0.00, charge['id'])
+            account.plan_id = request.form['plan']
+            db.session.commit()
             return render_template("done.html")
         else:
             return render_template("billing.html", error="Something went wrong, your card has not been billed. Please try again.") # need to add in the variables again
@@ -408,7 +411,7 @@ def getInvoice(invoice_id):
 
 @billing.route('/dashboard/billing/change', methods=['POST','GET'])
 @billing.route('/billing/change', methods=['POST','GET'])
-def changeBilling():
+def changeBilling(account_id = 0):
     # This will allow the user to modify their billing plan
     res = checkLogin()
     if res:
@@ -437,18 +440,13 @@ def changeBilling():
             elif request.method == "POST":
                 account = Account.query.filter_by(id=session['account_id']).first()
                 new_plan = request.form['plan']
+                new_plan = int(new_plan)
                 if new_plan == account.plan_id:
                     return redirect('/dashboard/account/billing')
-                if new_plan == 1 or new_plan == 2 and account.plan_id == 0:
-                    # This is an upgrade, must be handled differently
-                    return 1
-                # NEW STUFF #
+                    # NEW STUFF #
                 
                 # Get current subscription
                 current_subscription = Subscription.query.filter_by(id=account.subscription_id).first()
-
-                # Get last non refunded invoice
-                last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).filter_by(refunded=0).filter(Invoice.total>10.00).order_by(Invoice.id.desc()).limit(1).first()
 
                 # Get the number of days left until sub is over
                 now = datetime.now()
@@ -485,9 +483,17 @@ def changeBilling():
                 unused_funds = daily_rate * remaining_days
                 
                 # Make new subscription
-                new_subscription_id = makeSubscription(account.id, request.form['plan'],
-                current_subscription.extra_users)
+                if new_plan == 0:
+                    new_subscription_id = makeSubscription(account.id, request.form['plan'], 0)
+                else:
+                    new_subscription_id = makeSubscription(account.id, request.form['plan'],
+                    current_subscription.extra_users)
+
                 new_subscription = Subscription.query.filter_by(id=new_subscription_id).first()
+                
+#                if new_plan == 1 or new_plan == 2 and account.plan_id == 0:
+                    # This is an upgrade, must be handled differently
+#                    return 1
 
                 if new_subscription.total_monthly > unused_funds:
                     amount_to_charge = new_subscription.total_monthly - unused_funds 
@@ -525,11 +531,17 @@ def changeBilling():
                         # return a template to try again
                         return "The payment failed"
                 else:
-                    refund_due = unused_funds - new_subscription.total_monthly
+                    if new_plan == 0:
+                        refund_due = unused_funds
+                    else:
+                        refund_due = unused_funds - new_subscription.total_monthly
                     # Proceed with refund logic
+                    last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).filter_by(refunded=0).filter(Invoice.total>=refund_due).order_by(Invoice.id.desc()).limit(1).first()
                     invoice_payment = Payment.query.filter_by(id=last_invoice.payment_id).first()
                     stripe_response = makeRefund(account.stripe_customer, invoice_payment.transaction_id, refund_due)
                     if stripe_response == True:
+                        invoice_payment.refunded = 1
+                        db.session.commit()
                         new_invoice_id = makeInvoice(account.id, new_subscription.total_monthly, 0)
                         makeInvoiceLineItem(account.id, new_invoice_id, getPlanName(new_subscription.plan),
                         debit=new_subscription.total_monthly)
@@ -556,6 +568,26 @@ def changeBilling():
                         updateAccountPlanID(account.id, new_plan_id)
                         db.session.commit()
                         return redirect('/dashboard/account/billing')
+        else:
+            return render_template("permission_denied.html")
+    else:
+        return notLoggedIn()
+
+@billing.route('/billing/upgrade', methods=['POST','GET'])
+def upgradeBilling():
+    res = checkLogin()
+    if res:
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 3)
+        if gatekeeper:
+            if request.method == "GET":
+                return render_template("upgrade.html")
+            elif request.method == "POST":
+                new_plan = request.form['plan']
+                account = Account.query.filter_by(id=session['account_id']).first()
+                subscription = Subscription.query.filter_by(account_id=account_id).filter_by(plan=0).first()
+                db.session.delete(subscription)
+                db.session.commit()
+                return register.doBilling(new_plan, account.company_name, account.id, account.billing_email)
         else:
             return render_template("permission_denied.html")
     else:

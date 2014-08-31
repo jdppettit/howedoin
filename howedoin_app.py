@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python2
 
 from __future__ import absolute_import
@@ -82,6 +83,10 @@ def rating():
 @app.route('/email/newuser')
 def newuser():
     return render_template("email_create_new_user.html")
+
+@app.route('/test/navbar')
+def testnavbar():
+    return render_template("navbar_test.html")
 
 if __name__ == '__main__':
     handler = RotatingFileHandler('howedoin.log', maxBytes=10000, backupCount=1)
