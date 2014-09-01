@@ -592,3 +592,32 @@ def upgradeBilling():
             return render_template("permission_denied.html")
     else:
         return notLoggedIn()
+
+@billing.route('/billing/removeusers', methods=['POST','GET'])
+def removeUsers():
+    res = checkLogin()
+    if res:
+        gatekeeper = accountGatekeeper(session['user_id'], session['account_id'], 3)
+        if gatekeeper:
+            if request.method == "GET":
+                account = Account.query.filter_by(id=session['account_id']).first()
+                return render_template("billing_remove_users.html", numUsers=account.max_users)
+            elif request.method == "POST":
+                # Get prorated amount
+                prorated = getProrationUsers(session['account_id'], int(request.form['users_to_remove']))
+                return "Total proration would be %s " % str(prorated)
+                # Make invoice
+
+                # make Line item
+
+                # make refund
+
+                if result:
+                    return "ok"            
+                else:
+                    return render_template("done.html", error="Your card was declined.")
+                
+        else:
+            return render_template("permission_denied.html")
+    else:
+        return notLoggedIn()
