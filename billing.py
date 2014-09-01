@@ -584,7 +584,7 @@ def upgradeBilling():
             elif request.method == "POST":
                 new_plan = request.form['plan']
                 account = Account.query.filter_by(id=session['account_id']).first()
-                subscription = Subscription.query.filter_by(account_id=account_id).filter_by(plan=0).first()
+                subscription = Subscription.query.filter_by(account_id=account.id).filter_by(plan=0).first()
                 db.session.delete(subscription)
                 db.session.commit()
                 return register.doBilling(new_plan, account.company_name, account.id, account.billing_email)
