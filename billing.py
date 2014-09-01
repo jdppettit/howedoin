@@ -108,16 +108,31 @@ def getCost(plan_id):
     elif plan_id == 2:
         return 25.00
 
-def getProrationUsers(account_id, users_added):
-    subscription = Subscription.query.filter_by(account_id=account_id).first()
-    now = datetime.now()
-    diff = subscription.paid_thru - now
-    diff_days = diff.days
+def getProrationUsers(account_id, users_added, switch=0):
+    if switch == 0:
+        subscription = Subscription.query.filter_by(account_id=account_id).first()
+        now = datetime.now()
+        diff = subscription.paid_thru - now
+        diff_days = diff.days
     
-    monthly_cost = subscription.cost_per_add * users_added
-    daily_cost = subscription.cost_per_add / 30
-    prorated_cost = daily_cost * diff_days * users_added
-    return prorated_cost, monthly_cost
+        monthly_cost = subscription.cost_per_add * users_added
+        daily_cost = subscription.cost_per_add / 30
+        prorated_cost = daily_cost * diff_days * users_added
+        return prorated_cost, monthly_cost
+    elif switch == 1:
+        subscription = Subscription.query.filter_by(account_id=account_id).first()
+        now = datetime.now()
+        if subscription.touch_date != None:
+            diff = subscription.touch_date - now
+            diff_days = diff.days
+        else:
+            diff = subscription.paid_thru - now
+            diff_days = diff.days
+        monthly_cost = subscription.cost_per_add * users_added
+        daily_cost = subscription.cost_per_add / 30
+        prorated_cost = daily_cost * diff_days * users_added
+        prorated_cost = monthly_cost - prorated_cost 
+        return prorated_cost, monthly_cost
 
 def cancelSubscription(account_id):
     subscription = Subscription.query.filter_by(account_id=account_id).first()
@@ -156,22 +171,46 @@ def getStripeCustomer(account_id):
     account = Account.query.filter_by(id=account_id).first()
     return account.stripe_customer
 
-def updateSubscription(account_id, cost, max_users):
-    subscription = Subscription.query.filter_by(account_id=account_id).first()
-    subscription.total_monthly = subscription.total_monthly + cost
-    subscription.extra_users = subscription.extra_users + int(max_users)
-    db.session.commit()
-    return 1
+def updateSubscription(account_id, cost, max_users, touch_date=0, switch=0):
+    if touch_date !=0:
+        subscription = Subscription.query.filter_by(account_id=account_id).first()
+        subscription.total_monthly = subscription.total_monthly + cost
+        subscription.extra_users = subscription.extra_users + int(max_users)
+        subscription.touch_date = touch_date
+        db.session.commit()
+        return 1
+    else:
+        if switch != 0:
+            # Switch to remove users and lower cost
+            subscription = Subscription.query.filter_by(account_id=account_id).first()
+            subscription.total_monthly = subscription.total_monthly - cost
+            subscription.extra_users = subscription.extra_users - int(max_users)
+            db.session.commit()
+            return 1
+        else:
+            subscription = Subscription.query.filter_by(account_id=account_id).first()
+            subscription.total_monthly = subscription.total_monthly + cost
+            subscription.extra_users = subscription.extra_users + int(max_users)
+            db.session.commit()
+            return 1
 
 def updateAccountMaxUsers(account_id, max_users, switch=0):
     if switch == 0:
+        # increase max users by a value
         account = Account.query.filter_by(id=account_id).first()
         account.max_users = int(account.max_users) + int(max_users)
         db.session.commit()
         return 1
-    else:
+    elif switch == 1:
+        # set max users to a value
         account = Account.query.filter_by(id=account_id).first()
         account.max_users = int(max_users)
+        db.session.commit()
+        return 1
+    elif switch == 2:
+        # reduce max users by a value
+        account = Account.query.filter_by(id=account_id).first()
+        account.max_users = int(account.max_users) - int(max_users)
         db.session.commit()
         return 1
 
@@ -376,7 +415,8 @@ def addUsers():
         if result:
             # proceed, card accepted
             makePayment(session['account_id'], invoice_id, cost, 0, charge['id'])
-            updateSubscription(session['account_id'], monthly_cost, request.form['users_to_add'])
+            updateSubscription(session['account_id'], monthly_cost, request.form['users_to_add'],
+            touch_date=datetime.now())
             updateAccountMaxUsers(session['account_id'], request.form['users_to_add'])
             return render_template("done.html", message="Complete.")
         else:
@@ -604,16 +644,31 @@ def removeUsers():
                 return render_template("billing_remove_users.html", numUsers=account.max_users)
             elif request.method == "POST":
                 # Get prorated amount
-                prorated = getProrationUsers(session['account_id'], int(request.form['users_to_remove']))
-                return "Total proration would be %s " % str(prorated)
+                account = Account.query.filter_by(id=session['account_id']).first()
+                subscription = Subscription.query.filter_by(account_id=account.id).first()
+                max_users = account.max_users
+                users = User.query.filter_by(id=session['account_id']).all()
+                current_users = len(users)
+                new_max_users = max_users - int(request.form['users_to_remove'])
+                if new_max_users < current_users:
+                    return render_template("billing_remove_users.html", error="You need to remove some users before you can do that.")
+                if int(request.form['users_to_remove']) > subscription.extra_users:
+                    return render_template("billing_remove_users.html", error="You haven't added that many extra users.")
+                prorated, monthly_cost = getProrationUsers(session['account_id'], int(request.form['users_to_remove']), switch=1)
                 # Make invoice
-
+                invoice_id = makeInvoice(session['account_id'], prorated, 0)
                 # make Line item
-
+                makeInvoiceLineItem(session['account_id'], invoice_id, "Removed %s User(s)" %
+                str(request.form['users_to_remove']), credit=prorated)
                 # make refund
-
+                last_invoice = Invoice.query.filter_by(account_id=account.id).filter_by(paid=1).filter_by(refunded=0).filter(Invoice.total>=prorated).order_by(Invoice.id.desc()).limit(1).first()
+                invoice_payment = Payment.query.filter_by(id=last_invoice.payment_id).first()
+                result = makeRefund(account.stripe_customer, invoice_payment.transaction_id, prorated)
                 if result:
-                    return "ok"            
+                    new_payment_id = makePayment(session['account_id'], invoice_id, prorated, 0, "CREDIT")
+                    updateSubscription(session['account_id'], monthly_cost, request.form['users_to_remove'], switch=1)
+                    updateAccountMaxUsers(session['account_id'], request.form['users_to_remove'], switch=2)
+                    return render_template("done.html", message="Complete")
                 else:
                     return render_template("done.html", error="Your card was declined.")
                 

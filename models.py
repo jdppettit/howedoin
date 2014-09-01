@@ -249,6 +249,7 @@ class Subscription(db.Model):
     total_monthly = db.Column(db.Float)
     most_recent = db.Column(db.Integer)
     cancelled = db.Column(db.Integer)
+    touch_date = db.Column(db.DateTime)
 
     def __init__(self, account_id, plan, cost_per_add, extra_users, start_date, paid_thru, total_monthly, most_recent=1):
         self.account_id = account_id
