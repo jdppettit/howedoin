@@ -1,0 +1,49 @@
+.flat .plan {
+  border-radius: 6px;
+  list-style: none;
+  padding: 0 0 20px;
+  margin: 0 0 15px;
+  background: #F3F3F3;
+  text-align: center;
+}
+.flat .plan li {
+  padding: 10px 15px;
+  color: #414141;
+  border-top: 1px solid #D6D6D6;
+  -webkit-transition: 300ms;
+  transition: 300ms;
+}
+.flat .plan li.plan-price {
+  border-top: 0;
+}
+.flat .plan li.plan-name {
+  border-radius: 6px 6px 0 0;
+  padding: 15px;
+  font-size: 24px;
+  line-height: 24px;
+  color: #fff;
+  background: #00a2ff;
+  margin-bottom: 30px;
+  border-top: 0;
+}
+.flat .plan li > strong {
+  color: #0099FF;
+}
+.flat .plan li.plan-action {
+  margin-top: 10px;
+  border-top: 0;
+}
+.flat .plan.featured {
+  -webkit-transform: scale(1.1);
+  -ms-transform: scale(1.1);
+  transform: scale(1.1);
+}
+.flat .plan.featured li.plan-name {
+  background: #00a2ff;
+}
+.flat .plan.featured:hover li.plan-name {
+  background: #00a2ff;
+}
+.flat .plan:hover li.plan-name {
+  background: #00a2ff;
+}

@@ -71,6 +71,9 @@ with app.app_context():
     db.create_all()
     db.session.commit()
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 @app.route('/')
 def index():
@@ -87,6 +90,10 @@ def newuser():
 @app.route('/test/navbar')
 def testnavbar():
     return render_template("navbar_test.html")
+
+@app.route('/test/rate')
+def testrate():
+    return render_template("rating_test.html")
 
 if __name__ == '__main__':
     handler = RotatingFileHandler('howedoin.log', maxBytes=10000, backupCount=1)

@@ -1,300 +1,410 @@
-<!DCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Howedoin - Customer feedback, made easy</title>
+<!-- Bootstrap -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
 
-    <title>howedoin - how is your team doing</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="static/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="static/js/ie-emulation-modes-warning.js"></script>
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="static/js/ie10-viewport-bug-workaround.js"></script>
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+		html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 100px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 100px;
+  background-color: #2E2E2E;
+}
+		.navbar {
+			margin-bottom:0px;	
+			width:100%;
+			font-size:18px;
+		}
+		
+		.white {
+			color:#FFF;	
+		}
+		
+		.jumbotrontop {
+            height:auto;
+			min-height:500px;	
+			background-color:#00a2ff;
+		}
+		
+		.jumbotronbottom {
+			height:300px;	
+			background-color:#00a2ff;
+		}
+		
+		.navbarhowedoin {
+			background-color:#00a2ff;
+			border-color:#00a2ff;
+			color:#FFF;
+		}
+		
+		.navbar-default .navbar-nav>li>a {
+			color:#FFF;	
+		}
+		
+		.navbar-default .navbar-brand {
+			color:#FFF;	
+		} 
+		
+		.containerheader {
+			margin-left:0px;
+			margin-right:0px;	
+			width:100%;
+		}
+		
+		.containerfull {
+			width:100%;	
+		}
+		
+		.jumbotron h2 {
+			color:#FFF;	
+		}
+		
+		.jumbotron h1 {
+			color:#FFF;	
+		}
+		
+		.center {
+			text-align:center;	
+		}
+		
+		.container80 {
+			width:80%;	
+		}
+		
+		.row {
+			padding-bottom:75px;	
+		}
+		
+		hr {
+			background-color:#FFF;
+			color:#EAEAEA;
+			height:2px;
+			width:75%;
+			margin-top:25px;
+			margin-bottom:25px;
+		}
+		
+		.footer-text {
+			color:#BBB;	
+		}
+		
+		.footer-div {
+			margin-top:45px;	
+		}
+		
+		a:link {
+			color:#FFF;	
+		}
+		
+		.footerlink {
+			color:#BBB;	
+		}
+		
+		.wide {
+			width:80%;	
+		}
 
-    <!-- Custom styles for this template -->
-    <link href="static/css/carousel.css" rel="stylesheet">
+        .widebottom {
+            width:60%;
+        }
+		
+		.form-control {
+			width:60%;	
+		}
+		
+		form {
+			 margin: 0 auto;
+    text-align: center;
+		}
+		
+		input {
+			margin-left:auto;
+			margin-right:auto;
+			color:#000;
+			padding:5px;
+		}
+		
+		.navbar-nav>li>.dropdown-menu {
+			padding:10px;	
+		}
+		
+		.logo {
+			padding-top:40px;
+			padding-bottom:10px;
+			vertical-align:middle;	
+		}
+	</style>
   </head>
-<!-- NAVBAR
-================================================== -->
   <body>
-    <div class="navbar-wrapper">
-      <div class="container">
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a href="/"><img style="padding-top:10px; padding-right:5px;" src="{{ url_for('static', filename='images/logo.png') }}"/></a>
+    <div class="navbar navbar-default navbar-static-top navbarhowedoin" role="navigation">
+    	<div class="container containerheader">
+        	<div class="navbar-header">
+            	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            	<span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            </button>
         </div>
         <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="/#plans">Plans</a></li>
-                <li><a href="/help">Help</a></li>
-                <li><a href="/register">Register</a></li>
-            </ul>
-            {% if not session['username'] %}
-          <form class="navbar-form navbar-right" role="form" method="post" action="/login">
-          <a href="/forgot" style="padding-right:10px;" class="hello">Forgot Password?</a>
-            <div class="form-group">
-              <input type="text" name="username" id="username" placeholder="Username" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" id="password" name="password"  placeholder="Password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-          </form>
-          {% else %}
-          <ul class="nav navbar-nav navbar-right">
-          <li style="padding-top:15px;" class="hello">Welcome back {{ session['name'] }}!</li>
-          <li><a href="/dashboard/account/settings">Account</a></li>
-          <li><a href="/dashboard">Dashboard</a></li>
-          <li><a href="/logout">Logout</a></li>
+          <ul class="nav navbar-nav">
+            <li class="white"><a href="#plans">Plans</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="/register">Register</a></li>
+            <li><a href="/demo">Demo</a></li>
           </ul>
+          <ul class="nav navbar-nav navbar-right">
+            {% if session['username'] %}
+            <li><a href="/dashboard">Dashboard</a></li>
             {% endif %}
-        </div><!--/.navbar-collapse -->
+          	<li class="dropdown">
+            {% if session['username'] %}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Profile <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/dashboard/profile">Profile</a></li>
+                <li><a href="/logout">Logout</a></li>
+              </ul>
+            {% else %}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Login <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+              	<form action="/login" method="post" accept-charset="UTF-8">
+  <li><input style="margin-bottom: 15px;" type="text" name="username" size="30" placeholder="Username" /></li>
+  <li> <input style="margin-bottom: 15px;" type="password" name="password" size="30" placeholder="Password" /></li>
+ 
+   <li><input class="btn btn-primary" style="clear: left; width: 100%; height: 32px; font-size: 13px; padding-bottom:10px;" type="submit" name="commit" value="Sign In" /></li>
+   <li>&nbps;</li>
+   <li><a href="/forgot">Forgot Password</a></li>
+</form>
+              </ul>
+              {% endif %}
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
       </div>
     </div>
-
-      </div>
+    
+    <!-- END HEADER !-->
+    
+    <div class="jumbotron jumbotrontop">
+    	<div class="container containerfull">
+        	
+            	<div class="col-lg-6 center">
+                <img class="logo" src="/static/images/logo_man.png"/>
+                </div>
+                <div class="col-lg-6 center">
+                	<h1>Customer feedback, made easy</h1>
+                    <br/>
+                    <h2>Our surveys make it easy for your customer to tell you what they love or what you could do better!</h2><br/>
+                    <a href="/register" class="btn btn-success btn-lg wide">Register Now</a>
+                </div>
+            
+        </div>
     </div>
-
-
-    <!-- Carousel
-    ================================================== -->
-    <div id="myCarousel" class="carousel slide" data-ride="carousel">
-      <!-- Indicators -->
-      <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
-      </ol>
-      <div class="carousel-inner">
-        <div class="item active">
-          <img src="static/images/slide2bg.jpg" alt="First
-          slide">
-          <div class="container">
-            <div class="carousel-caption">
-              <h1>Differentiate your business</h1>
-              <p>Let your customers know you value their feedback. Howedoin lets you measure customer satisfaction in an
-              easy, yet effective way. Customers love it, so will you.</p>
-              <p><a class="btn btn-lg btn-primary" href="/register" role="button">Sign up today</a></p>
+    <br/><br/>
+	<div class="container container80" id="features">
+    	<div class="col-md-4 center">
+        	<img src="/static/images/effective.png" /><br/>
+        	<h2>Effective</h2>
+            <p>Our super simple surveys make it easy and painless for customers to tell you what they think. Ratings are registered in a single click!</p>
+        </div>
+        <div class="col-md-4 center">
+        	<img src="/static/images/powerful.png" /><br/>
+        	<h2>Powerful</h2>
+            <p>From a robust API to incredible analytics, we have a full feature suite tailored to help you make the most of your customer's valuable feedback.</p>
+        </div>
+        <div class="col-md-4 center">
+        	<img src="/static/images/easy.png" /><br/>
+        	<h2>Easy</h2>
+            <p>Get up and running in no time flat. Howedoin easily integrates with some of the most common support systems. Use a customer solution? No worries, our rating URL's can be adapted to meet your needs.</p>
+        </div>
+ 	</div>
+    <hr/>
+    <div class="container container80">
+    	<div class="row">
+	    	<div class="col-md-4 center">
+    			<img src="/static/images/listen.png" />   
+	        </div>
+	        <div class="col-md-8">
+        		<h1>Listen to your customers</h1>
+                <p>Who knows better than your customers? Answer - nobody! Capture valuable feedback with our extremely effective surveys. Include a Howedoin link in each interaction to maximize your feedback.</p>
+	        </div>
+        </div>
+        <hr/>
+        <div class="row">
+	    	<div class="col-md-8">
+    			<h1>Foster friendly competition</h1>
+                <p>Howedoin shows your employees how they are doing based on an easy to understand score. The more positive feedback they get, the higher their score! Members of a team can then see how they stack up with other team members on the leaderboard. Your employees compete, your customers win.</p>    
+	        </div>
+	        <div class="col-md-4 center">
+        		<img src="/static/images/trophy.png"/>
+	        </div>
+        </div>
+        <hr/>
+        <div class="row">
+	    	<div class="col-md-4 center">
+    			<img src="/static/images/grow.png"/>
+	        </div>
+	        <div class="col-md-8">
+        		<h1>Grow your business</h1>
+                <p>Make your customer's happy and they will reward you with continued business.<br/>Howedoin + Your Business = Happy customers.</p>
+	        </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="center">
+    	<h1>Prices for every budget</h1>
+    </div>
+    <div id="plans" class="container">
+        <p>&nbsp;</p>
+        <div class="row flat">
+            <div class="col-md-4">
+                <ul class="plan plan1">
+                    <li class="plan-name">
+                        Basic
+                    </li>
+                    <li class="plan-price">
+                        Free
+                    </li>
+                    <li>
+                    	<strong>3</strong> Users
+                    </li>
+                    <li>
+                    	<strong>No</strong> Additional Users
+                    </li>
+                    <li>
+                    	<strong>1</strong> Team
+                    </li>
+                    <li>
+                        <strong>Unlimited</strong> Ratings
+                    </li>
+                    <li>
+                    	Small Teams
+                    </li>
+                    <li class="plan-action">
+                        <a href="#" class="btn btn-info btn-lg">Signup</a>
+                    </li>
+                </ul>
             </div>
-          </div>
-        </div>
-        <div class="item">
-          <img src="static/images/slide1bg.jpg" alt="Second slide">
-          <div class="container">
-            <div class="carousel-caption">
-              <h1>Incredibly simple setup</h1>
-              <p>Howedoin is very simple to set up, send an email, paste a link, or integrate with your existing CMS. We
-              make it easy as pie!</p>
-              <p><a class="btn btn-lg btn-primary" href="/register" role="button">Give it a try</a></p>
-            </div>
-          </div>
-        </div>
-        <div class="item">
-          <img src="static/images/slide3bg.jpg" alt="Third slide">
-          <div class="container">
-            <div class="carousel-caption">
-              <h1>Affordable plans</h1>
-              <p>We strive to make our service affordable for the smallest teams to the largest corporations. Take a
-              look at our simple pricing. Need something else? Let us know!</p>
-              <p><a class="btn btn-lg btn-primary" href="#plans" role="button">View Pricing</a></p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
-      <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
-    </div><!-- /.carousel -->
 
+            <div class="col-md-4">
+                <ul class="plan plan2 featured">
+                    <li class="plan-name">
+                        Business
+                    </li>
+                    <li class="plan-price">
+                        <strong>$10</strong> / month
+                    </li>
+                    <li>
+                    	<strong>5</strong> Users
+                    </li>
+                    <li>
+                    	<strong>$3.00</strong> per additional user
+                    </li>
+                    <li>
+                    	<strong>3</strong> Teams
+                    </li>
+                    <li>
+                        <strong>Unlimited</strong> Ratings
+                    </li>
+                    <li>
+                        Custom <strong>Branding</strong>
+                    </li>
+                    <li>
+                    	Medium Sized Teams
+                    </li>
+                    <li class="plan-action">
+                     <a href="#" class="btn btn-success btn-lg">Signup</a>
+                 </li>
+             </ul>
+         </div>
 
-
-    <!-- Marketing messaging and featurettes
-    ================================================== -->
-    <!-- Wrap the rest of the page in another container to center all the content. -->
-
-    <div class="container marketing">
-
-      <!-- Three columns of text below the carousel -->
-      <div class="row">
-        <div class="col-lg-4">
-          <img class="img-circle" src="static/images/powerfulmetrics.png" alt="Generic placeholder image" style="width: 140px; height: 140px;">
-          <h2>Powerful metrics</h2>
-          <p>Howedoin provides powerful reports and graphs that will help you identify where your team does well, and
-          where it can use a little improvement. We also offer individual employee ratings and a leaderboard to spark
-          friendly competition between coworkers! </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div><!-- /.col-lg-4 -->
-        <div class="col-lg-4">
-          <img class="img-circle" src="static/images/easy.png" alt="Generic placeholder image" style="width: 140px; height: 140px;">
-          <h2>Simple setup</h2>
-          <p>Can you paste a link in an email? That's about all you need to do to get started with Howedoin! If you
-          already have a CMS or ticket system we have a number of easy links you can add there too.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div><!-- /.col-lg-4 -->
-        <div class="col-lg-4">
-          <img class="img-circle" src="static/images/satisfaction.png" alt="Generic placeholder image" style="width: 140px; height: 140px;">
-          <h2>Happy customers</h2>
-          <p>Your customers will love knowing their voice is heard. Our rating system is simple for you and your
-          customers. Your customers can choose to give you a detailed comment, a simple review, or an easy score.
-          Howedoin's easy feedback forms will encourage your customers to rate your services.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div><!-- /.col-lg-4 -->
-      </div><!-- /.row -->
-
-
-      <!-- START THE FEATURETTES -->
-
-      <hr class="featurette-divider">
-
-      <div class="row featurette">
-        <div class="col-md-7">
-          <h2 class="featurette-heading">Simple setup, <span class="text-muted">CRM support in mind.</span></h2>
-          <p class="lead">We support lots of things like thing one, thing two, thing three and thing four. If you have a
-          custom CMS, we make that easy too! Just paste a link and you're set.</p>
-        </div>
-        <div class="col-md-5">
-          <img class="featurette-image img-responsive"
-          src="static/images/simplicity.jpg" alt="Generic placeholder image">
-        </div>
-      </div>
-
-      <hr class="featurette-divider">
-
-      <div class="row featurette">
-        <div class="col-md-5">
-          <img class="featurette-image img-responsive" src="static/images/trophy.png" alt="Generic placeholder image">
-        </div>
-        <div class="col-md-7">
-          <h2 class="featurette-heading">Foster friendly competition, <span class="text-muted">at your customer's
-          benefit.</span></h2>
-          <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
-        </div>
-      </div>
-
-      <hr class="featurette-divider">
-
-      <div class="row featurette">
-        <div class="col-md-7">
-          <h2 class="featurette-heading">Affordable and powerful,  <span class="text-muted">indespensable.</span></h2>
-          <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
-        </div>
-        <div class="col-md-5">
-          <img class="featurette-image img-responsive" src="static/images/cost.png" alt="Generic placeholder image">
-        </div>
-      </div>
-
-      <hr class="featurette-divider">
-        
-      <div class="container">
-
-<div class="row">
-<h2 style="margin-top:0px; margin-bottom:50px;" class="featurette-heading">Affordable plans for <span class="text-muted">everybody.</span></h2>
-<div class="col-md-4">
-  <div class="panel panel-info">
-     <div class="panel-heading"><h3 class="text-center">Free</h3></div>
-         <div class="panel-body text-center">
-            <p class="lead" style="font-size:40px"><strong>100% Free</strong></p>
-        </div>
-                       <ul class="list-group list-group-flush text-center">
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Personal use</li>
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> 1 Team</li>
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> 3 Users</li>
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> No additional users</li>
-                        </ul>
-    <div class="panel-footer">
-        <a class="btn btn-lg btn-block btn-info"
-        href="/register/free">Register</a>
-    </div>
+         <div class="col-md-4">
+            <ul class="plan plan3">
+                <li class="plan-name">
+                    Enterprise
+                </li>
+                <li class="plan-price">
+                    <strong>$25</strong> / month
+                </li>
+                <li>
+                	<strong>25</strong> Users
+                </li>
+                <li>
+                	<strong>$2.50</strong> per additional user
+                </li>
+                <li>
+                	<strong>Unlimited</strong> Teams
+                </li>
+                <li>
+                    <strong>Unlimited</strong> Ratings
+                </li>
+                <li>
+                    Custom <strong>Branding</strong>
+                </li>
+                <li>
+                	Large Teams
+                </li>
+                <li class="plan-action">
+                 <a href="#" class="btn btn-info btn-lg">Signup</a>
+             </li>
+         </ul>
+     </div>
  </div>
-
-  </div>
-   <div class="col-md-4">
-  <div class="panel panel-info">
-     <div class="panel-heading"><h3 class="text-center">Business</h3></div>
-         <div class="panel-body text-center">
-            <p class="lead" style="font-size:40px"><strong>$10 / month</strong></p>
-        </div>
-                       <ul class="list-group list-group-flush text-center">
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Small business use</li>
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> 3 Teams</li>
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> 5 Users</li>
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Additional users $3.00 /
-                            month</li>
-
-                        </ul>
-    <div class="panel-footer">
-        <a class="btn btn-lg btn-block btn-info"
-        href="/register/business">Buy Now</a>
-    </div>
- </div>
-
-  </div>
-   <div id="plans" name="plans" class="col-md-4">
-  <div class="panel panel-primary">
-    <div class="panel-heading"><h3 class="text-center">Enterprise</h3></div>
-         <div class="panel-body text-center">
-            <p class="lead" style="font-size:40px"><strong>$25 / month</strong></p>
-        </div>
-                       <ul class="list-group list-group-flush text-center">
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Enterprise use</li>
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Unlimited Teams</li>
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> 25 Users</li>
-                            <li class="list-group-item"><i class="icon-ok text-danger"></i> Additional users $2.50 /
-                            month</li
-                            >
-
-                        </ul>
-    <div class="panel-footer">
-        <a class="btn btn-lg btn-block btn-primary"
-        href="/register/enterprise">Buy Now</a>
-    </div>
- </div>
-
-  </div>
-  </div>
 </div>
 
-    <hr class="featurette-divider">
-      <!-- /END THE FEATURETTES -->
+</div> <!-- /container -->
 
+<div class="jumbotron jumbotronbottom">
+    	<div class="container center">
+        	<h2>Lets get started</h2>
+            <br/> 
+            <form>
+            	<input class="form-control narrow" type="text" name="name" placeholder="Your Name"/><br/>
+                <input class="form-control narrow" type="email" name="email" placeholder="Your Email"/><br/>
+                <button id="submit" name="submit" class="btn btn-success widebottom">Continue</button>
+            </form> 
+        </div>
+    </div>
 
-      <!-- FOOTER -->
-      <footer>
-        <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>&copy; 2014 Howedoin, LLC. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
-      </footer>
+	   <div class="footer">
+      <div class="container">
+      	<div class="footer-div">
+      	<div class="col-md-6 center">
+        <p class="footer-text">Copyright 2014 &copy; Howedoin LLC</p>
+        </div>
+        <div class="col-md-6 center">
+        	<a class="footerlink" href="/privacy">Privacy</a>&nbsp;&nbsp;
+            <a class="footerlink" href="/terms">Terms of Service</a>&nbsp;&nbsp;
+            <a class="footerlink" href="/about">About</a>&nbsp;&nbsp;
+            <a class="footerlink" href="/contact">Contact</a>
+        </div>
+        </div>
+      </div>
+    </div>
 
-    </div><!-- /.container -->
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="static/js/bootstrap.min.js"></script>
-    <script src="static/js/docs.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
   </body>
 </html>
-
-
