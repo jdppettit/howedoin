@@ -4,6 +4,12 @@ from dateutil.relativedelta import relativedelta
 
 import datetime
 
+'''
+1 = Good
+2 = Okay
+3 = Bad
+'''
+
 def getRatingsPerDay(account_id):
     now = datetime.datetime.now()
     week_ago = now - datetime.timedelta(days=7)
@@ -23,6 +29,67 @@ def getRatingsPerDay(account_id):
     sixAgoRatings = Rating.query.filter_by(account_id=account_id).filter(Rating.date>=six_ago).filter(Rating.date<five_ago).all()
     
     num_ratings = [0,0,0,0,0,0,0]
+    happy_ratings = [0,0,0,0,0,0,0]
+    okay_ratings = [0,0,0,0,0,0,0]
+    bad_ratings = [0,0,0,0,0,0,0]
+
+    for rating in yesterdayRatings:
+        if rating.score == 1:
+            happy_ratings[0] += 1
+        elif rating.score == 2:
+            okay_ratings[0] += 1
+        elif rating.score == 3:
+            bad_ratings[0] += 1
+    
+    for rating in twoAgoRatings:
+        if rating.score == 1:
+            happy_ratings[1] += 1
+        elif rating.score == 2:
+            okay_ratings[1] += 1
+        elif rating.score == 3:
+            bad_ratings[1] += 1
+
+    for rating in threeAgoRatings:
+        if rating.score == 1:
+            happy_ratings[2] += 1
+        elif rating.score == 2:
+            okay_ratings[2] += 1
+        elif rating.score == 3:
+            bad_ratings[2] += 1
+
+    for rating in fourAgoRatings:
+        if rating.score == 1:
+            happy_ratings[3] += 1
+        elif rating.score == 2:
+            okay_ratings[3] += 1
+        elif rating.score == 3:
+            bad_ratings[3] += 1
+
+    for rating in fiveAgoRatings:
+        if rating.score == 1:
+            happy_ratings[4] += 1
+        elif rating.score == 2:
+            okay_ratings[4] += 1
+        elif rating.score == 3:
+            bad_ratings[4] += 1
+
+    for rating in sixAgoRatings:
+        if rating.score == 1:
+            happy_ratings[5] += 1
+        elif rating.score == 2:
+            okay_ratings[5] += 1
+        elif rating.score == 3:
+            bad_ratings[5] += 1
+
+    for rating in weekAgoRatings:
+        if rating.score == 1:
+            happy_ratings[6] += 1
+        elif rating.score == 2:
+            okay_ratings[6] += 1
+        elif rating.score == 3:
+            bad_ratings[6] += 1
+
+
     num_ratings[0] = len(yesterdayRatings)
     num_ratings[1] = len(twoAgoRatings)
     num_ratings[2] = len(threeAgoRatings)
@@ -32,3 +99,6 @@ def getRatingsPerDay(account_id):
     num_ratings[6] = len(weekAgoRatings)
     
     print num_ratings
+    print happy_ratings
+    print okay_ratings
+    print bad_ratings
