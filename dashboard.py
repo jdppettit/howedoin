@@ -4,6 +4,7 @@ from models import *
 from werkzeug import secure_filename
 from password import *
 from gatekeeper import *
+from statistics import *
 
 import os
 
@@ -44,6 +45,7 @@ def dashboardRatingYou():
 def dashboardEndpoint():
     res = checkLogin()
     if res:
+        getRatingsPerDay(session['account_id'])
         return render_template("dashboard.html")
     else:
         return notLoggedIn()
