@@ -10,6 +10,7 @@ from password import *
 
 from models import Account, User, db
 
+import md5
 import random
 import sys
 import traceback
@@ -34,13 +35,15 @@ def checkUsername(username):
         return True
 
 def doLogin(username, name, user_id, account_id, email):
+    m = md5.new()
+    m.update(email)
 
     session['username'] = username
     session['name'] = name
     session['user_id'] = user_id
     session['email'] = email
     session['account_id'] = account_id
-
+    session['avatar'] = m.hexdigest()
     return True
 
 def getUserID(record, db):
