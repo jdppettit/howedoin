@@ -102,3 +102,37 @@ def getRatingsPerDay(account_id):
     print happy_ratings
     print okay_ratings
     print bad_ratings
+
+    return num_ratings, happy_ratings, okay_ratings, bad_ratings
+
+'''
+1 = Week
+2 = Month
+3 = Year
+4 = All time
+'''
+
+def getLeaderboard(account_id, scale):
+    scale = int(scale)
+    users = User.query.filter_by(account_id=account_id).all()
+    leaderboard = {}
+    if scale == 1:
+        time = datetime.datetime.now() - datetime.timedelta(weeks=1)
+        ratings = Rating.query.filter_by(account_id=account_id).filter(Rating.date>=time).all()
+        # week
+        return 1
+    elif scale == 2:
+        time = datetime.datetime.now() - datetime.timedelta(months=1)
+        ratings = Rating.query.filter_by(account_id=account_id).filter(Rating.date>=time).all()
+        # month
+        return 2
+    elif scale == 3:
+        time = datetime.datetime.now() - datetime.timedelta(years=1)
+        ratings = Rating.query.filter_by(account_id=account_id).filter(Rating.date>=time).all()
+        # year
+        return 3
+    elif scale == 4:
+        ratings = Rating.query.filter_by(account_id=account_id).all()
+        # all time
+        return 4
+
