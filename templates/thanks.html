@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Howedoin - Thanks!</title>
+<style>
+    html, body {
+        background-color:#00a2ff;
+        font-family:Arial, Helvetica, sans-serif;   
+    }
+    
+    .container {
+        margin-top:15%;
+        margin-left:auto;
+        margin-right:auto;
+        width:60%;
+        color:#FFF;
+        text-align:center;  
+    }
+    
+    .wrapper {
+        height:100%;
+        width:100%; 
+    }
+    
+    h1 {
+        font-size:64px; 
+    }
+</style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <h1>Thank you for your feedback!</h1>
+            <h2>Your feedback is greatly appreciated and we'll see to it that it is used to improve!</h2>
+            <h3>Need to make a change? Your ratings are shown below, just click and change as needed!</h3>
+            {% for rating in ratings %}
+                {{ rating.id }}<br/>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
+

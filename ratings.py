@@ -106,7 +106,8 @@ def handlePost(request, user_id=0, team_id=0, item_id=0):
         oldRating.score = score 
         oldRating.rater_id = rater_id
         db.session.commit()
-        return render_template("rating_complete.html")
+        raters_ratings = Rating.query.filter_by(account_id=user.account_id).filter_by(rater_id=rater_id).all()
+        return render_template("thanks.html", ratings=raters_ratings)
     else:
         # make new rating
         rater_email = ""
@@ -126,8 +127,8 @@ def handlePost(request, user_id=0, team_id=0, item_id=0):
         rater_name=rater_name, rater_id=rater_id, comment=comment, duplicate=request.form['duplicate'])
         db.session.add(newRating)
         db.session.commit()
-        return render_template("rating_complete.html")
-
+        raters_ratings = Rating.query.filter_by(account_id=user.account_id).filter_by(rater_id=rater_id).all()
+        return render_template("thanks.html", ratings=raters_ratings)
 
 @ratings.route('/rate/team/<team_id>/user/<user_id>/score/<score>', methods=['POST','GET'])
 def rateScoreNoItem(team_id, user_id, score):
