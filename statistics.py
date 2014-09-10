@@ -116,9 +116,21 @@ def getLeaderboard(account_id, scale):
     scale = int(scale)
     users = User.query.filter_by(account_id=account_id).all()
     leaderboard = {}
+    for user in users:
+        leaderboard.append("%s" % str(user.id))
+        leaderboard["%s" % str(user.id)] = { score: 0, userobj: user, happy: 0, okay: 0, bad: 0 }
     if scale == 1:
         time = datetime.datetime.now() - datetime.timedelta(weeks=1)
         ratings = Rating.query.filter_by(account_id=account_id).filter(Rating.date>=time).all()
+        for rating in ratings:
+            if rating.score == 1:
+                leaderboard["%s" % str(rating.user_id)]["score"] += 1
+                leaderboard["%s" % str(rating.user_id)]["happy"] += 1
+            elif rating.score == 2:
+                leaderboard["%s" % str(rating.user_id)]["okay"] += 1
+            elif rating.score == 3:
+                leaderboard["%s" % str(rating.user_id)]["score"] -= 1
+                leaderboard["%s" % str(rating.user_id)]["bad"} += 1
         # week
         return 1
     elif scale == 2:
