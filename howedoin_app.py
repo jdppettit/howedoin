@@ -28,6 +28,7 @@ from account import account
 from user import user
 from email_manager import mail
 from admin import admin 
+from pages import pages
 
 from models import db
 
@@ -40,6 +41,7 @@ db.init_app(app)
 #    db.session.commit()
 #    print db.Model.metadata.tables
 
+app.register_blueprint(pages)
 app.register_blueprint(ratings)
 app.register_blueprint(login)
 app.register_blueprint(register)
@@ -94,6 +96,10 @@ def testnavbar():
 @app.route('/test/rate')
 def testrate():
     return render_template("rating_test.html")
+
+@app.route('/test/index')
+def testindex():
+    return render_template("index_testing.html")
 
 if __name__ == '__main__':
     handler = RotatingFileHandler('howedoin.log', maxBytes=10000, backupCount=1)
