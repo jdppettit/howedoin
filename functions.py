@@ -92,13 +92,18 @@ def doLogout():
     session.pop('user_id', None)
     session.pop('email', None)
     session.pop('account_id', None)
+    session.pop('avatar', None)
 
 def doLogin(user):
+    m = md5.new()
+    m.update(user.email)
+
     session['username'] = user.username
     session['name'] = user.name
     session['user_id'] = user.id
     session['email'] = user.email
     session['account_id'] = user.account_id
+    session['avatar'] = m.hexdigest()
 
 def error_log(error, level):
     
