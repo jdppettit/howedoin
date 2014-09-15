@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Howedoin - Dashboard</title>
+<title>Howedoin - {% block title %}{% endblock %}</title>
 <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/main.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/font-awesome.min.css">
@@ -246,7 +246,7 @@ body {
     
     <div class="container-fluid">
       <div class="row">
-        <div class="col-sm-3 col-md-2 col-lg-2 sidebar">
+        <div class="col-sm-4 col-md-4 col-lg-2 sidebar">
           <div class="usertop">
           	<div class="pull-left">
           	<img src="https://www.gravatar.com/avatar/{{ session['avatar'] }}" />

@@ -75,7 +75,8 @@ def dashboardYou():
 def dashboardLeaderboard():
     res = checkLogin()
     if res:
-        return render_template("dashboard_leaderboard.html")
+        leaderboard = getLeaderboard(session['account_id'], 1)
+        return render_template("dashboard_leaderboard.html", leaderboard=leaderboard)
     else:
         return notLoggedIn()
 

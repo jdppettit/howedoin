@@ -29,13 +29,13 @@ def getRatingsPerDay(account_id):
     sixAgoRatings = Rating.query.filter_by(account_id=account_id).filter(Rating.date>=six_ago).filter(Rating.date<five_ago).all()
     
     num_ratings = [0,0,0,0,0,0,0]
-    happy_ratings = [0,0,0,0,0,0,0]
+    good_ratings = [0,0,0,0,0,0,0]
     okay_ratings = [0,0,0,0,0,0,0]
     bad_ratings = [0,0,0,0,0,0,0]
 
     for rating in yesterdayRatings:
         if rating.score == 1:
-            happy_ratings[0] += 1
+            good_ratings[0] += 1
         elif rating.score == 2:
             okay_ratings[0] += 1
         elif rating.score == 3:
@@ -43,7 +43,7 @@ def getRatingsPerDay(account_id):
     
     for rating in twoAgoRatings:
         if rating.score == 1:
-            happy_ratings[1] += 1
+            good_ratings[1] += 1
         elif rating.score == 2:
             okay_ratings[1] += 1
         elif rating.score == 3:
@@ -51,7 +51,7 @@ def getRatingsPerDay(account_id):
 
     for rating in threeAgoRatings:
         if rating.score == 1:
-            happy_ratings[2] += 1
+            good_ratings[2] += 1
         elif rating.score == 2:
             okay_ratings[2] += 1
         elif rating.score == 3:
@@ -59,7 +59,7 @@ def getRatingsPerDay(account_id):
 
     for rating in fourAgoRatings:
         if rating.score == 1:
-            happy_ratings[3] += 1
+            good_ratings[3] += 1
         elif rating.score == 2:
             okay_ratings[3] += 1
         elif rating.score == 3:
@@ -67,7 +67,7 @@ def getRatingsPerDay(account_id):
 
     for rating in fiveAgoRatings:
         if rating.score == 1:
-            happy_ratings[4] += 1
+            good_ratings[4] += 1
         elif rating.score == 2:
             okay_ratings[4] += 1
         elif rating.score == 3:
@@ -75,7 +75,7 @@ def getRatingsPerDay(account_id):
 
     for rating in sixAgoRatings:
         if rating.score == 1:
-            happy_ratings[5] += 1
+            good_ratings[5] += 1
         elif rating.score == 2:
             okay_ratings[5] += 1
         elif rating.score == 3:
@@ -83,7 +83,7 @@ def getRatingsPerDay(account_id):
 
     for rating in weekAgoRatings:
         if rating.score == 1:
-            happy_ratings[6] += 1
+            good_ratings[6] += 1
         elif rating.score == 2:
             okay_ratings[6] += 1
         elif rating.score == 3:
@@ -99,11 +99,11 @@ def getRatingsPerDay(account_id):
     num_ratings[6] = len(weekAgoRatings)
     
     print num_ratings
-    print happy_ratings
+    print good_ratings
     print okay_ratings
     print bad_ratings
 
-    return num_ratings, happy_ratings, okay_ratings, bad_ratings
+    return num_ratings, good_ratings, okay_ratings, bad_ratings
 
 '''
 1 = Week
@@ -117,34 +117,65 @@ def getLeaderboard(account_id, scale):
     users = User.query.filter_by(account_id=account_id).all()
     leaderboard = {}
     for user in users:
-        leaderboard.append("%s" % str(user.id))
-        leaderboard["%s" % str(user.id)] = { score: 0, userobj: user, happy: 0, okay: 0, bad: 0 }
+        leaderboard["%s" % str(user.id)] = { "score": 0, "userobj": user, "good": 0, "okay": 0, "bad": 0, "ratings": 0 }
     if scale == 1:
         time = datetime.datetime.now() - datetime.timedelta(weeks=1)
         ratings = Rating.query.filter_by(account_id=account_id).filter(Rating.date>=time).all()
         for rating in ratings:
             if rating.score == 1:
                 leaderboard["%s" % str(rating.user_id)]["score"] += 1
-                leaderboard["%s" % str(rating.user_id)]["happy"] += 1
+                leaderboard["%s" % str(rating.user_id)]["good"] += 1
             elif rating.score == 2:
                 leaderboard["%s" % str(rating.user_id)]["okay"] += 1
             elif rating.score == 3:
                 leaderboard["%s" % str(rating.user_id)]["score"] -= 1
                 leaderboard["%s" % str(rating.user_id)]["bad"] += 1
+            leaderboard["%s" % str(rating.user_id)]["ratings"] += 1
         # week
-        return 1
+        return leaderboard
     elif scale == 2:
         time = datetime.datetime.now() - datetime.timedelta(months=1)
         ratings = Rating.query.filter_by(account_id=account_id).filter(Rating.date>=time).all()
+
+        for rating in ratings:
+            if rating.score == 1:
+                leaderboard["%s" % str(rating.user_id)]["score"] += 1
+                leaderboard["%s" % str(rating.user_id)]["good"] += 1
+            elif rating.score == 2:
+                leaderboard["%s" % str(rating.user_id)]["okay"] += 1
+            elif rating.score == 3:
+                leaderboard["%s" % str(rating.user_id)]["score"] -= 1
+                leaderboard["%s" % str(rating.user_id)]["bad"] += 1
+            leaderboard["%s" % str(rating.user_id)]["ratings"] += 1
+        return leaderboard
         # month
-        return 2
     elif scale == 3:
         time = datetime.datetime.now() - datetime.timedelta(years=1)
         ratings = Rating.query.filter_by(account_id=account_id).filter(Rating.date>=time).all()
+        for rating in ratings:
+            if rating.score == 1:
+                leaderboard["%s" % str(rating.user_id)]["score"] += 1
+                leaderboard["%s" % str(rating.user_id)]["good"] += 1
+            elif rating.score == 2:
+                leaderboard["%s" % str(rating.user_id)]["okay"] += 1
+            elif rating.score == 3:
+                leaderboard["%s" % str(rating.user_id)]["score"] -= 1
+                leaderboard["%s" % str(rating.user_id)]["bad"] += 1
+            leaderboard["%s" % str(rating.user_id)]["ratings"] += 1
+        return leaderboard
         # year
-        return 3
     elif scale == 4:
         ratings = Rating.query.filter_by(account_id=account_id).all()
+        for rating in ratings:
+            if rating.score == 1:
+                leaderboard["%s" % str(rating.user_id)]["score"] += 1
+                leaderboard["%s" % str(rating.user_id)]["good"] += 1
+            elif rating.score == 2:
+                leaderboard["%s" % str(rating.user_id)]["okay"] += 1
+            elif rating.score == 3:
+                leaderboard["%s" % str(rating.user_id)]["score"] -= 1
+                leaderboard["%s" % str(rating.user_id)]["bad"] += 1
+            leaderboard["%s" % str(rating.user_id)]["ratings"] += 1
+        return leaderboard
         # all time
-        return 4
 

@@ -153,6 +153,15 @@ body {
 			padding-bottom:10px;
 			vertical-align:middle;	
 		}
+
+        .bottom-list {
+            list-style: none;
+            color:#FFF;
+        }
+
+        .bump-center {
+            padding-left:10%;
+        }
 	</style>
   </head>
   <body>
@@ -212,7 +221,7 @@ body {
                 <img class="logo" src="/static/images/logo_man.png"/>
                 </div>
                 <div class="col-lg-6 center">
-                	<h1>Customer feedback, made easy</h1>
+                	<h1>What do your customers think of you?</h1>
                     <br/>
                     <h2>Our surveys make it easy for your customer to tell you what they love or what you could do better!</h2><br/>
                     <a href="/register" class="btn btn-success btn-lg wide">Register Now</a>
@@ -389,12 +398,19 @@ body {
 	   <div class="footer">
       <div class="container">
       	<div class="footer-div">
-      	<div class="col-md-4">
-        <p class="footer-text">Copyright 2014 &copy; Howedoin LLC</p>
+      	<div class="col-sm-4 col-md-4 hidden-xs center">
+           <h4 class="white">Navigation</h4>
+            <ul class="bottom-list">
+                <li><a href="/api">API</a></li>
+                <li><a href="/privacy">Register</a></li>
+                <li><a href="/terms">Login</a></li>
+                <li><a href="/about">Dashboard</a></li>
+                <li><a href="/contact">Help</a></li>
+            </ul> 
         </div>
-        <div class="col-md-4">
-            <h4>Social</h4>
-            <ul>
+        <div class="col-sm-4 col-md-4 hidden-xs center">
+            <h4 class="white">Social</h4>
+            <ul class="bottom-list">
                 <li><i class="fa fa-facebook-square"></i>&nbsp;<a href="#">Facebook</a></li>
                 <li><i class="fa fa-twitter-square"></i>&nbsp;<a href="#">Twitter</a></li>
                 <li><i class="fa fa-linkedin-square"></i>&nbsp;<a href="#">Linkedin</a></li>
@@ -402,11 +418,9 @@ body {
                 <li><i class="fa fa-github-square"></i>&nbsp;<a href="#">Github</a></li>
             </ul>
         </div>
-        <div class="col-md-4">
-            <h4>Navigation</h4>
-            <ul>
-                <li><a class="footerlink" href="/api">API</a></li>
-                <li><a href="/help">Help</a></li>
+        <div class="col-sm-4 col-md-4 hidden-xs center">
+            <h4 class="white" style="text-align:left;">Company</h4>
+            <ul class="bottom-list">
                 <li><a href="/privacy">Privacy</a></li>
                 <li><a href="/terms">Terms</a></li>
                 <li><a href="/about">About</a></li>
@@ -415,6 +429,7 @@ body {
         </div>
         </div>
       </div>
+      <div align="center" style="padding-top:10px;"><p class="footer-text">Copyright 2014 &copy; Howedoin LLC</p></div>
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
