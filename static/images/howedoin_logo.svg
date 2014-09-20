@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.1"
+   width="346.82098"
+   height="199.46262"
+   id="svg2">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient5210">
+      <stop
+         id="stop5212"
+         style="stop-color:#00005d;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop5214"
+         style="stop-color:#00005d;stop-opacity:0"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3779">
+      <stop
+         id="stop3781"
+         style="stop-color:#0055d4;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop3783"
+         style="stop-color:#0055d4;stop-opacity:0"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       x1="116.61291"
+       y1="504.41525"
+       x2="357.05197"
+       y2="504.41525"
+       id="linearGradient3785"
+       xlink:href="#linearGradient3779"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       x1="116.11291"
+       y1="504.41525"
+       x2="357.55197"
+       y2="504.41525"
+       id="linearGradient5216"
+       xlink:href="#linearGradient5210"
+       gradientUnits="userSpaceOnUse" />
+    <clipPath
+       id="clipPath5236">
+      <rect
+         width="285.80246"
+         height="217.61227"
+         x="109.17516"
+         y="237.60414"
+         id="rect5238"
+         style="fill:#00005d;fill-opacity:1;stroke:none" />
+    </clipPath>
+    <linearGradient
+       x1="133.2962"
+       y1="357.65286"
+       x2="374.73526"
+       y2="357.65286"
+       id="linearGradient5279"
+       xlink:href="#linearGradient5210"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-115.89317,-200.5215)"
+     id="layer1"
+     style="display:inline">
+    <rect
+       width="346.82098"
+       height="199.46262"
+       x="115.89317"
+       y="200.5215"
+       id="rect5259"
+       style="fill:#00a2ff;fill-opacity:1;stroke:none" />
+    <text
+       x="89.449226"
+       y="719.14307"
+       transform="matrix(1.1639213,0,0,0.86210518,-0.5723124,-0.19396544)"
+       clip-path="url(#clipPath5236)"
+       id="text2989"
+       xml:space="preserve"
+       style="font-size:617.84088135px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#55c1ff;fill-opacity:1;stroke:none;font-family:Sans"><title
+         id="title3009">Question</title><tspan
+         x="89.449226"
+         y="719.14307"
+         id="tspan2991"
+         style="fill:#55c1ff;fill-opacity:1;stroke:none">?</tspan></text>
+    <text
+       x="147.65648"
+       y="611.68201"
+       id="text5261"
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="147.65648"
+         y="611.68201"
+         id="tspan5263" /></text>
+    <text
+       x="89.449226"
+       y="719.14307"
+       transform="matrix(1.1639213,0,0,0.86210518,-0.36996958,-8.2876783)"
+       clip-path="url(#clipPath5236)"
+       id="text5288"
+       xml:space="preserve"
+       style="font-size:617.84088135px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#8dd5ff;fill-opacity:1;stroke:none;font-family:Sans"><title
+         id="title5290">Question</title><tspan
+         x="89.449226"
+         y="719.14307"
+         id="tspan5292"
+         style="fill:#8dd5ff;fill-opacity:1;stroke:none">?</tspan></text>
+    <text
+       x="89.449226"
+       y="719.14307"
+       transform="matrix(1.1639213,0,0,0.86210518,-0.39339754,-15.167333)"
+       clip-path="url(#clipPath5236)"
+       id="text5294"
+       xml:space="preserve"
+       style="font-size:617.84088135px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#c6eaff;fill-opacity:1;stroke:none;font-family:Sans"><title
+         id="title5296">Question</title><tspan
+         x="89.449226"
+         y="719.14307"
+         id="tspan5298"
+         style="fill:#c6eaff;fill-opacity:1;stroke:none">?</tspan></text>
+  </g>
+  <g
+     transform="translate(-115.89317,-200.5215)"
+     id="layer3"
+     style="display:inline" />
+  <g
+     transform="translate(-115.89317,-200.5215)"
+     id="layer2"
+     style="display:inline">
+    <text
+       x="151.75711"
+       y="336.40079"
+       id="text5301"
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="151.75711"
+         y="336.40079"
+         id="tspan5303"
+         style="font-size:36px">howedoin</tspan></text>
+    <text
+       x="153.99339"
+       y="353.20172"
+       transform="scale(1.0028793,0.99712897)"
+       id="text5305"
+       xml:space="preserve"
+       style="font-size:40.11517334px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="153.99339"
+         y="353.20172"
+         id="tspan5307"
+         style="font-size:10.4822073px;fill:#ffffff">customer satisfaction, delivered </tspan></text>
+  </g>
+</svg>

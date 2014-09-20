@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="159.26198"
+   height="180.55487"
+   id="svg4472">
+  <defs
+     id="defs4474" />
+  <metadata
+     id="metadata4477">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-295.36902,-442.08475)"
+     id="layer1">
+    <rect
+       width="159.26198"
+       height="180.55487"
+       ry="32.26646"
+       x="295.36902"
+       y="442.08475"
+       id="rect5207-9"
+       style="opacity:0.93999999;fill:#e6e6e6;fill-opacity:1;stroke:none" />
+    <text
+       x="316.85474"
+       y="584.4223"
+       id="text5200-6"
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;opacity:0.93999999;fill:#333333;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="316.85474"
+         y="584.4223"
+         id="tspan5202-8"
+         style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#333333;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L">Powerful</tspan></text>
+    <path
+       d="m 341.51649,492.09771 28.79635,-9.19487 15.57137,18.10168 -9.18496,0.0885 20.44372,17.96499 -7.01676,0.003 20.41687,25.65186 -38.04012,-19.9367 8.69633,-0.5582 -23.67722,-15.52974 12.13353,0.0947 z"
+       id="path5270"
+       style="opacity:0.93999999;fill:#333333;fill-opacity:1;stroke:none" />
+  </g>
+</svg>

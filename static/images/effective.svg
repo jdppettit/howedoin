@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="161.3833"
+   height="179.84776"
+   id="svg3070">
+  <defs
+     id="defs3072" />
+  <metadata
+     id="metadata3075">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-294.30835,-442.43829)"
+     id="layer1">
+    <rect
+       width="161.3833"
+       height="179.84776"
+       ry="32.140095"
+       x="294.30835"
+       y="442.43829"
+       id="rect5207"
+       style="fill:#e6e6e6;fill-opacity:1;stroke:none" />
+    <rect
+       width="66.632172"
+       height="8.6980982"
+       x="342.87369"
+       y="534.23529"
+       id="rect4595"
+       style="fill:#333333;fill-opacity:1" />
+    <rect
+       width="12.902402"
+       height="34.956409"
+       x="349.60489"
+       y="506.04041"
+       id="rect4597"
+       style="fill:#333333;fill-opacity:1" />
+    <rect
+       width="0.2368958"
+       height="2.8432837"
+       x="359.6933"
+       y="512.09833"
+       id="rect4599"
+       style="fill:#333333;fill-opacity:1" />
+    <path
+       d="M 47.857143,267.71931 12.835857,242.93886 51.807,224.99977 z"
+       transform="matrix(0.33165409,0,0,0.28432836,365.61568,415.91264)"
+       id="path4632"
+       style="fill:#333333;fill-opacity:1" />
+    <path
+       d="m 382.09177,482.3579 c -9.24428,4.52991 -12.09867,10.66101 -26.85361,13.81657 l 0,2.69224 c 14.3193,-0.64332 21.67396,-7.59474 26.85361,-16.50881 z"
+       id="path4634"
+       style="fill:#333333;stroke:none" />
+    <rect
+       width="12.902402"
+       height="42.136784"
+       x="369.53864"
+       y="498.57278"
+       id="rect4597-4"
+       style="fill:#333333;fill-opacity:1" />
+    <rect
+       width="12.902402"
+       height="47.881081"
+       x="389.28809"
+       y="491.60532"
+       id="rect4597-4-6"
+       style="fill:#333333;fill-opacity:1" />
+    <text
+       x="318.15805"
+       y="582.6546"
+       id="text5200"
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="318.15805"
+         y="582.6546"
+         id="tspan5202"
+         style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#333333;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L">Effective</tspan></text>
+  </g>
+</svg>
