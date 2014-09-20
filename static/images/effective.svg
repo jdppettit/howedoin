@@ -7,38 +7,12 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
    width="161.3833"
    height="179.84776"
-   id="svg3070"
-   version="1.1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="effective.svg">
+   id="svg3070">
   <defs
      id="defs3072" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="3.959798"
-     inkscape:cx="78.500207"
-     inkscape:cy="73.423357"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     inkscape:window-width="1301"
-     inkscape:window-height="744"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0" />
   <metadata
      id="metadata3075">
     <rdf:RDF>
@@ -52,87 +26,69 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-294.30835,-442.43829)">
+     transform="translate(-294.30835,-442.43829)"
+     id="layer1">
     <rect
-       style="fill:#e6e6e6;fill-opacity:1;stroke:none"
-       id="rect5207"
        width="161.3833"
        height="179.84776"
+       ry="32.140095"
        x="294.30835"
        y="442.43829"
-       ry="32.140095" />
+       id="rect5207"
+       style="fill:#e6e6e6;fill-opacity:1;stroke:none" />
     <rect
-       style="opacity:1;fill:#333333;fill-opacity:1"
-       id="rect4595"
        width="66.632172"
        height="8.6980982"
        x="342.87369"
-       y="534.23529" />
+       y="534.23529"
+       id="rect4595"
+       style="fill:#333333;fill-opacity:1" />
     <rect
-       style="opacity:1;fill:#333333;fill-opacity:1"
-       id="rect4597"
        width="12.902402"
        height="34.956409"
        x="349.60489"
-       y="506.04041" />
+       y="506.04041"
+       id="rect4597"
+       style="fill:#333333;fill-opacity:1" />
     <rect
-       style="opacity:1;fill:#333333;fill-opacity:1"
-       id="rect4599"
        width="0.2368958"
        height="2.8432837"
        x="359.6933"
-       y="512.09833" />
+       y="512.09833"
+       id="rect4599"
+       style="fill:#333333;fill-opacity:1" />
     <path
-       sodipodi:type="star"
-       style="opacity:1;fill:#333333;fill-opacity:1"
-       id="path4632"
-       sodipodi:sides="3"
-       sodipodi:cx="37.5"
-       sodipodi:cy="245.21931"
-       sodipodi:r1="24.769344"
-       sodipodi:r2="12.384672"
-       sodipodi:arg1="1.1393956"
-       sodipodi:arg2="2.1865932"
-       inkscape:flatsided="true"
-       inkscape:rounded="0"
-       inkscape:randomized="0"
        d="M 47.857143,267.71931 12.835857,242.93886 51.807,224.99977 z"
-       inkscape:transform-center-x="1.7174931"
-       inkscape:transform-center-y="0.32420055"
-       transform="matrix(0.33165409,0,0,0.28432836,365.61568,415.91264)" />
+       transform="matrix(0.33165409,0,0,0.28432836,365.61568,415.91264)"
+       id="path4632"
+       style="fill:#333333;fill-opacity:1" />
     <path
-       style="opacity:1;fill:#333333;stroke:none"
        d="m 382.09177,482.3579 c -9.24428,4.52991 -12.09867,10.66101 -26.85361,13.81657 l 0,2.69224 c 14.3193,-0.64332 21.67396,-7.59474 26.85361,-16.50881 z"
        id="path4634"
-       inkscape:connector-curvature="0" />
+       style="fill:#333333;stroke:none" />
     <rect
-       style="opacity:1;fill:#333333;fill-opacity:1"
-       id="rect4597-4"
        width="12.902402"
        height="42.136784"
        x="369.53864"
-       y="498.57278" />
+       y="498.57278"
+       id="rect4597-4"
+       style="fill:#333333;fill-opacity:1" />
     <rect
-       style="opacity:1;fill:#333333;fill-opacity:1"
-       id="rect4597-4-6"
        width="12.902402"
        height="47.881081"
        x="389.28809"
-       y="491.60532" />
+       y="491.60532"
+       id="rect4597-4-6"
+       style="fill:#333333;fill-opacity:1" />
     <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;opacity:1;fill:#333333;fill-opacity:1;stroke:none;font-family:Sans"
        x="318.15805"
        y="582.6546"
        id="text5200"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan5202"
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Sans"><tspan
          x="318.15805"
          y="582.6546"
+         id="tspan5202"
          style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#333333;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L">Effective</tspan></text>
   </g>
 </svg>

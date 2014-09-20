@@ -7,38 +7,12 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
    width="159.26198"
    height="180.55487"
-   id="svg4472"
-   version="1.1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="New document 12">
+   id="svg4472">
   <defs
      id="defs4474" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="64.175632"
-     inkscape:cy="102.68426"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0"
-     inkscape:window-width="1301"
-     inkscape:window-height="744"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1" />
   <metadata
      id="metadata4477">
     <rdf:RDF>
@@ -52,34 +26,29 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-295.36902,-442.08475)">
+     transform="translate(-295.36902,-442.08475)"
+     id="layer1">
     <rect
-       style="opacity:0.93999999;fill:#e6e6e6;fill-opacity:1;stroke:none"
-       id="rect5207-9"
        width="159.26198"
        height="180.55487"
+       ry="32.26646"
        x="295.36902"
        y="442.08475"
-       ry="32.26646" />
+       id="rect5207-9"
+       style="opacity:0.93999999;fill:#e6e6e6;fill-opacity:1;stroke:none" />
     <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;opacity:0.93999999;fill:#333333;fill-opacity:1;stroke:none;font-family:Sans"
        x="316.85474"
        y="584.4223"
        id="text5200-6"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan5202-8"
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;opacity:0.93999999;fill:#333333;fill-opacity:1;stroke:none;font-family:Sans"><tspan
          x="316.85474"
          y="584.4223"
+         id="tspan5202-8"
          style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#333333;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L">Powerful</tspan></text>
     <path
-       style="opacity:0.93999999;fill:#333333;fill-opacity:1;stroke:none"
        d="m 341.51649,492.09771 28.79635,-9.19487 15.57137,18.10168 -9.18496,0.0885 20.44372,17.96499 -7.01676,0.003 20.41687,25.65186 -38.04012,-19.9367 8.69633,-0.5582 -23.67722,-15.52974 12.13353,0.0947 z"
        id="path5270"
-       inkscape:connector-curvature="0" />
+       style="opacity:0.93999999;fill:#333333;fill-opacity:1;stroke:none" />
   </g>
 </svg>

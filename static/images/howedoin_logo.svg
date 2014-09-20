@@ -8,122 +8,69 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
    width="346.82098"
    height="199.46262"
-   id="svg2"
-   version="1.1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="logo1.svg"
-   inkscape:export-filename="/home/levlaz/ownCloud/dev/howedoin/graphics/logo1.png"
-   inkscape:export-xdpi="259.5"
-   inkscape:export-ydpi="259.5">
+   id="svg2">
   <defs
      id="defs4">
     <linearGradient
-       inkscape:collect="always"
        id="linearGradient5210">
       <stop
-         style="stop-color:#00005d;stop-opacity:1;"
-         offset="0"
-         id="stop5212" />
+         id="stop5212"
+         style="stop-color:#00005d;stop-opacity:1"
+         offset="0" />
       <stop
-         style="stop-color:#00005d;stop-opacity:0;"
-         offset="1"
-         id="stop5214" />
+         id="stop5214"
+         style="stop-color:#00005d;stop-opacity:0"
+         offset="1" />
     </linearGradient>
     <linearGradient
-       inkscape:collect="always"
        id="linearGradient3779">
       <stop
-         style="stop-color:#0055d4;stop-opacity:1;"
-         offset="0"
-         id="stop3781" />
+         id="stop3781"
+         style="stop-color:#0055d4;stop-opacity:1"
+         offset="0" />
       <stop
-         style="stop-color:#0055d4;stop-opacity:0;"
-         offset="1"
-         id="stop3783" />
+         id="stop3783"
+         style="stop-color:#0055d4;stop-opacity:0"
+         offset="1" />
     </linearGradient>
-    <inkscape:perspective
-       sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="0 : 526.18109 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="744.09448 : 526.18109 : 1"
-       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
-       id="perspective2993" />
     <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient3779"
-       id="linearGradient3785"
        x1="116.61291"
        y1="504.41525"
        x2="357.05197"
        y2="504.41525"
+       id="linearGradient3785"
+       xlink:href="#linearGradient3779"
        gradientUnits="userSpaceOnUse" />
     <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5210"
-       id="linearGradient5216"
        x1="116.11291"
        y1="504.41525"
        x2="357.55197"
        y2="504.41525"
+       id="linearGradient5216"
+       xlink:href="#linearGradient5210"
        gradientUnits="userSpaceOnUse" />
     <clipPath
-       clipPathUnits="userSpaceOnUse"
        id="clipPath5236">
       <rect
-         style="fill:#00005d;fill-opacity:1;stroke:none"
-         id="rect5238"
          width="285.80246"
          height="217.61227"
          x="109.17516"
-         y="237.60414" />
+         y="237.60414"
+         id="rect5238"
+         style="fill:#00005d;fill-opacity:1;stroke:none" />
     </clipPath>
     <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5210"
-       id="linearGradient5279"
        x1="133.2962"
        y1="357.65286"
        x2="374.73526"
        y2="357.65286"
+       id="linearGradient5279"
+       xlink:href="#linearGradient5210"
        gradientUnits="userSpaceOnUse" />
   </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="2.4710538"
-     inkscape:cx="138.21142"
-     inkscape:cy="112.43644"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     inkscape:window-width="1301"
-     inkscape:window-height="744"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1"
-     inkscape:snap-global="false"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0">
-    <inkscape:grid
-       type="xygrid"
-       id="grid5224"
-       empspacing="5"
-       visible="true"
-       enabled="true"
-       snapvisiblegridlinesonly="true"
-       originx="-115.89317px"
-       originy="-652.37807px" />
-  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -137,111 +84,93 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
+     transform="translate(-115.89317,-200.5215)"
      id="layer1"
-     style="display:inline"
-     transform="translate(-115.89317,-200.5215)">
+     style="display:inline">
     <rect
-       style="fill:#00a2ff;fill-opacity:1;stroke:none"
-       id="rect5259"
        width="346.82098"
        height="199.46262"
        x="115.89317"
-       y="200.5215" />
+       y="200.5215"
+       id="rect5259"
+       style="fill:#00a2ff;fill-opacity:1;stroke:none" />
     <text
-       xml:space="preserve"
-       style="font-size:617.84088135px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#55c1ff;fill-opacity:1;stroke:none;font-family:Sans"
        x="89.449226"
        y="719.14307"
-       id="text2989"
-       sodipodi:linespacing="125%"
        transform="matrix(1.1639213,0,0,0.86210518,-0.5723124,-0.19396544)"
-       clip-path="url(#clipPath5236)"><title
+       clip-path="url(#clipPath5236)"
+       id="text2989"
+       xml:space="preserve"
+       style="font-size:617.84088135px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#55c1ff;fill-opacity:1;stroke:none;font-family:Sans"><title
          id="title3009">Question</title><tspan
-         sodipodi:role="line"
-         id="tspan2991"
          x="89.449226"
          y="719.14307"
+         id="tspan2991"
          style="fill:#55c1ff;fill-opacity:1;stroke:none">?</tspan></text>
     <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        x="147.65648"
        y="611.68201"
        id="text5261"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan5263"
-         x="147.65648"
-         y="611.68201" /></text>
-    <text
-       clip-path="url(#clipPath5236)"
-       transform="matrix(1.1639213,0,0,0.86210518,-0.36996958,-8.2876783)"
-       sodipodi:linespacing="125%"
-       id="text5288"
-       y="719.14307"
-       x="89.449226"
-       style="font-size:617.84088135px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#8dd5ff;fill-opacity:1;stroke:none;font-family:Sans"
-       xml:space="preserve"><title
-         id="title5290">Question</title><tspan
-         style="fill:#8dd5ff;fill-opacity:1;stroke:none"
-         y="719.14307"
-         x="89.449226"
-         id="tspan5292"
-         sodipodi:role="line">?</tspan></text>
-    <text
        xml:space="preserve"
-       style="font-size:617.84088135px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#c6eaff;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="147.65648"
+         y="611.68201"
+         id="tspan5263" /></text>
+    <text
        x="89.449226"
        y="719.14307"
-       id="text5294"
-       sodipodi:linespacing="125%"
-       transform="matrix(1.1639213,0,0,0.86210518,-0.39339754,-15.167333)"
-       clip-path="url(#clipPath5236)"><title
-         id="title5296">Question</title><tspan
-         sodipodi:role="line"
-         id="tspan5298"
+       transform="matrix(1.1639213,0,0,0.86210518,-0.36996958,-8.2876783)"
+       clip-path="url(#clipPath5236)"
+       id="text5288"
+       xml:space="preserve"
+       style="font-size:617.84088135px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#8dd5ff;fill-opacity:1;stroke:none;font-family:Sans"><title
+         id="title5290">Question</title><tspan
          x="89.449226"
          y="719.14307"
+         id="tspan5292"
+         style="fill:#8dd5ff;fill-opacity:1;stroke:none">?</tspan></text>
+    <text
+       x="89.449226"
+       y="719.14307"
+       transform="matrix(1.1639213,0,0,0.86210518,-0.39339754,-15.167333)"
+       clip-path="url(#clipPath5236)"
+       id="text5294"
+       xml:space="preserve"
+       style="font-size:617.84088135px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#c6eaff;fill-opacity:1;stroke:none;font-family:Sans"><title
+         id="title5296">Question</title><tspan
+         x="89.449226"
+         y="719.14307"
+         id="tspan5298"
          style="fill:#c6eaff;fill-opacity:1;stroke:none">?</tspan></text>
   </g>
   <g
-     inkscape:groupmode="layer"
+     transform="translate(-115.89317,-200.5215)"
      id="layer3"
-     inkscape:label="Layer#1"
-     style="display:inline"
-     transform="translate(-115.89317,-200.5215)" />
+     style="display:inline" />
   <g
-     inkscape:groupmode="layer"
+     transform="translate(-115.89317,-200.5215)"
      id="layer2"
-     inkscape:label="Layer"
-     style="display:inline"
-     transform="translate(-115.89317,-200.5215)">
+     style="display:inline">
     <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
        x="151.75711"
        y="336.40079"
        id="text5301"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan5303"
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
          x="151.75711"
          y="336.40079"
+         id="tspan5303"
          style="font-size:36px">howedoin</tspan></text>
     <text
-       xml:space="preserve"
-       style="font-size:40.11517334px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
        x="153.99339"
        y="353.20172"
+       transform="scale(1.0028793,0.99712897)"
        id="text5305"
-       sodipodi:linespacing="125%"
-       transform="scale(1.0028793,0.99712897)"><tspan
-         sodipodi:role="line"
-         id="tspan5307"
+       xml:space="preserve"
+       style="font-size:40.11517334px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
          x="153.99339"
          y="353.20172"
+         id="tspan5307"
          style="font-size:10.4822073px;fill:#ffffff">customer satisfaction, delivered </tspan></text>
   </g>
 </svg>
